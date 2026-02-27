@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海虎·磁场增量</title>
+<style>
+/* --- 海虎/武神 风格核心变量 --- */
+:root {
+    --bg-color: #050000; /* 深黑带红 */
+    --panel-bg: #1a0505; /* 暗红黑 */
+    --text-color: #e0e0e0;
+    --accent-color: #00ffff; /* 磁场电流青 */
+    --accent-glow: rgba(0, 255, 255, 0.6);
+    --danger-color: #ff0000; /* 血红 */
+    --danger-glow: rgba(255, 0, 0, 0.7);
+    --gold-color: #ffd700; /* 金属金 */
+    --gold-glow: rgba(255, 215, 0, 0.5);
+    --border-color: #550000;
+    --font-main: "Impact", "Arial Black", "Microsoft YaHei", sans-serif; /* 粗犷字体 */
+    --font-body: "Verdana", "Microsoft YaHei", sans-serif;
+    --red-dot: #ff0000;
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image: radial-gradient(circle at 50% 50%, #220000 0%, #000000 100%);
+    color: var(--text-color);
+    font-family: var(--font-body);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+    border: 5px solid #330000;
+    box-sizing: border-box;
+}
+
+/* --- 侧边栏：像钢铁堡垒 --- */
+#nav-sidebar {
+    width: 200px;
+    background: #000;
+    border-right: 4px solid var(--danger-color);
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    z-index: 100;
+    position: relative;
+    box-shadow: 5px 0 20px rgba(0,0,0,0.8);
+}
+
+.nav-btn {
+    background: transparent;
+    border: none;
+    border-left: 5px solid #330000;
+    color: #666;
+    padding: 20px 15px;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); /* 切角效果 */
+}
+
+.nav-btn:hover { 
+    color: #fff; 
+    background: linear-gradient(90deg, #330000 0%, transparent 100%); 
+    padding-left: 25px;
+}
+
+.nav-btn.active { 
+    color: var(--accent-color); 
+    border-left-color: var(--accent-color); 
+    background: linear-gradient(90deg, rgba(0, 255, 255, 0.1) 0%, transparent 100%);
+    font-weight: 900; 
+    text-shadow: 0 0 10px var(--accent-glow);
+    transform: scale(1.05);
+}
+
+.nav-btn.disabled { 
+    opacity: 0.2; 
+    pointer-events: none; 
+    filter: grayscale(1); 
+}
+
+.nav-btn.challenge-active { 
+    color: var(--danger-color); 
+    border-left-color: var(--danger-color); 
+    text-shadow: 0 0 8px var(--danger-glow);
+}
+
+.nav-btn.achievement-active { 
+    color: var(--gold-color); 
+    border-left-color: var(--gold-color); 
+    text-shadow: 0 0 8px var(--gold-glow);
+}
+
+.nav-btn.system-btn { 
+    margin-top: auto; 
+    border-top: 2px solid #330000; 
+    text-align: center; 
+    font-size: 0.8rem; 
+    padding: 15px; 
+    color: #555; 
+    border-left: none;
+    clip-path: none;
+}
+.nav-btn.system-btn:hover { color: #fff; background: #220000; }
+
+/* Red Dot Indicator - 像警报灯 */
+.red-dot {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 10px;
+    height: 10px;
+    background-color: var(--red-dot);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--danger-color);
+    animation: pulse-dot 0.8s infinite alternate;
+    display: none;
+}
+@keyframes pulse-dot {
+    from { opacity: 0.6; transform: scale(1); }
+    to { opacity: 1; transform: scale(1.3); box-shadow: 0 0 15px var(--danger-color); }
+}
+
+/* --- 主区域 --- */
+#main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    background: rgba(0,0,0,0.3);
+}
+
+#top-bar {
+    height: 70px;
+    border-bottom: 3px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    background: linear-gradient(180deg, #110000 0%, #000 100%);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.resource-display { 
+    font-size: 1.5rem; 
+    font-family: var(--font-main); 
+    font-style: italic;
+    text-transform: uppercase;
+}
+.resource-val { 
+    color: #fff; 
+    font-size: 2rem; 
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    margin: 0 10px;
+}
+.resource-unit { font-size: 1rem; color: #888; }
+.global-mult { 
+    font-size: 0.9rem; 
+    color: var(--gold-color); 
+    font-family: var(--font-main);
+    background: rgba(255, 215, 0, 0.1);
+    padding: 5px 10px;
+    border: 1px solid var(--gold-color);
+}
+
+#content-panels {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.panel-view {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
+    padding: 20px;
+    overflow-y: auto;
+    display: none;
+    box-sizing: border-box;
+    animation: slamIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: rgba(10, 0, 0, 0.6);
+    border: 1px solid #330000;
+}
+.panel-view.active { display: block; }
+
+@keyframes slamIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* --- 标题风格：漫画分镜感 --- */
+h2 { 
+    border-bottom: 4px solid var(--accent-color); 
+    padding-bottom: 15px; 
+    color: var(--accent-color); 
+    margin-top: 0; 
+    font-family: var(--font-main);
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    font-style: italic;
+    text-shadow: 3px 3px 0px #000;
+    letter-spacing: 5px;
+}
+h2.danger { 
+    color: var(--danger-color); 
+    border-color: var(--danger-color); 
+    text-shadow: 3px 3px 0px #300;
+}
+h2.gold { 
+    color: var(--gold-color); 
+    border-color: var(--gold-color); 
+    text-shadow: 3px 3px 0px #332200;
+}
+
+p { line-height: 1.6; color: #ccc; }
+
+.stat-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 20px; 
+    margin-bottom: 30px; 
+}
+
+/* --- 卡片：像技能书或数据板 --- */
+.upgrade-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+    border: 2px solid #444;
+    border-top: 4px solid #666;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+.upgrade-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+}
+.upgrade-card:hover { 
+    border-color: #888; 
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+.upgrade-card h3 { 
+    margin: 0 0 10px 0; 
+    font-size: 1.2rem; 
+    color: #fff; 
+    font-family: var(--font-main);
+    text-transform: uppercase;
+}
+.upgrade-card p { 
+    font-size: 0.85rem; 
+    color: #999; 
+    margin: 0 0 15px 0; 
+    height: 40px; 
+    font-family: var(--font-body);
+}
+
+/* --- 按钮：充满力量感 --- */
+.btn-buy {
+    background: #220000;
+    border: 2px solid var(--accent-color);
+    color: var(--accent-color);
+    padding: 12px;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-size: 1rem;
+    text-align: center;
+    transition: all 0.1s;
+    text-transform: uppercase;
+    font-weight: bold;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+.btn-buy::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+}
+.btn-buy:hover::after { left: 100%; }
+
+.btn-buy:hover:not(:disabled) { 
+    background: var(--accent-color); 
+    color: #000; 
+    box-shadow: 0 0 20px var(--accent-glow);
+    transform: scale(1.02);
+}
+.btn-buy:disabled { 
+    border-color: #444; 
+    color: #444; 
+    cursor: not-allowed; 
+    background: #111; 
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-buy.danger { 
+    border-color: var(--danger-color); 
+    color: var(--danger-color); 
+    background: #220000;
+}
+.btn-buy.danger:hover:not(:disabled) { 
+    background: var(--danger-color); 
+    color: #fff; 
+    box-shadow: 0 0 20px var(--danger-glow); 
+}
+
+.btn-buy.gold { 
+    border-color: var(--gold-color); 
+    color: var(--gold-color); 
+    background: #221100;
+}
+.btn-buy.gold:hover:not(:disabled) { 
+    background: var(--gold-color); 
+    color: #000; 
+    box-shadow: 0 0 20px var(--gold-glow); 
+}
+
+.btn-buy.heal { 
+    border-color: #00ccff; 
+    color: #00ccff; 
+}
+.btn-buy.heal:hover:not(:disabled) { 
+    background: #00ccff; 
+    color: #000; 
+    box-shadow: 0 0 15px rgba(0, 204, 255, 0.6); 
+}
+
+/* Final Upgrade Style */
+.upgrade-card.final-upgrade {
+    grid-column: 1 / -1;
+    border: 3px solid var(--gold-color);
+    background: linear-gradient(135deg, #332200 0%, #110000 100%);
+    padding: 40px;
+    transform: scale(1.02);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+    text-align: center;
+}
+.upgrade-card.final-upgrade h3 {
+    font-size: 2.5rem;
+    color: var(--gold-color);
+    text-shadow: 0 0 15px var(--gold-glow);
+    margin-bottom: 20px;
+    letter-spacing: 5px;
+}
+.upgrade-card.final-upgrade p {
+    font-size: 1.2rem;
+    color: #eee;
+    height: auto;
+    margin-bottom: 25px;
+}
+.upgrade-card.final-upgrade .btn-buy {
+    font-size: 1.5rem;
+    padding: 20px 50px;
+    border-width: 3px;
+}
+
+/* Progress Bar - 能量槽 */
+.progress-wrap {
+    background: #111;
+    height: 10px;
+    width: 100%;
+    margin-top: 10px;
+    border: 1px solid #444;
+    position: relative;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0088aa, var(--accent-color));
+    width: 0%;
+    transition: width 0.2s;
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+.progress-fill.danger { 
+    background: linear-gradient(90deg, #880000, var(--danger-color)); 
+    box-shadow: 0 0 10px var(--danger-glow);
+}
+.progress-fill.gold { 
+    background: linear-gradient(90deg, #aa8800, var(--gold-color)); 
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+.progress-fill.heal { 
+    background: linear-gradient(90deg, #006688, #00ccff); 
+}
+
+/* Achievement Items */
+.achievement-item {
+    display: flex;
+    align-items: center;
+    background: #111;
+    border: 1px solid #333;
+    padding: 15px;
+    margin-bottom: 10px;
+    opacity: 0.5;
+    filter: grayscale(1);
+    border-left: 3px solid #333;
+}
+.achievement-item.unlocked {
+    opacity: 1;
+    filter: grayscale(0);
+    border-color: var(--gold-color);
+    border-left: 5px solid var(--gold-color);
+    background: linear-gradient(90deg, #1a1a1a 0%, #2a2a10 100%);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+}
+.ach-icon {
+    width: 50px;
+    height: 50px;
+    background: #000;
+    border: 2px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 20px;
+    color: #555;
+    font-family: var(--font-main);
+}
+.achievement-item.unlocked .ach-icon {
+    border-color: var(--gold-color);
+    color: var(--gold-color);
+    box-shadow: 0 0 10px var(--gold-glow);
+    background: #221100;
+}
+.ach-info { flex: 1; }
+.ach-title { font-weight: 900; color: #fff; font-size: 1.1rem; font-family: var(--font-main); text-transform: uppercase;}
+.ach-desc { font-size: 0.9rem; color: #aaa; margin-top: 5px; }
+.ach-reward { font-size: 0.8rem; color: var(--gold-color); margin-top: 5px; font-weight: bold; }
+
+/* Battle Styles - 战斗界面 */
+.battle-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+.battle-side {
+    background: #111;
+    padding: 20px;
+    border: 2px solid #333;
+    text-align: center;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+}
+.battle-side.player { border-color: var(--accent-color); box-shadow: 0 0 15px rgba(0, 255, 255, 0.1); }
+.battle-side.enemy { border-color: var(--danger-color); box-shadow: 0 0 15px rgba(255, 0, 0, 0.1); }
+
+.hp-bar-container {
+    width: 100%;
+    height: 30px;
+    background: #220000;
+    margin: 15px 0;
+    position: relative;
+    border: 2px solid #555;
+    transform: skewX(-10deg); /* 倾斜的血条，更有动感 */
+}
+.hp-bar {
+    height: 100%;
+    transition: width 0.1s linear;
+    transform-origin: left;
+}
+.player .hp-bar { background: linear-gradient(90deg, #00aaaa, var(--accent-color)); }
+.enemy .hp-bar { background: linear-gradient(90deg, #aa0000, var(--danger-color)); box-shadow: 0 0 15px var(--danger-glow); }
+
+.hp-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+    line-height: 26px;
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
+    font-weight: 900;
+    font-family: var(--font-main);
+    transform: skewX(10deg); /* 文字反向倾斜回来 */
+}
+
+.enemy-hp-display {
+    font-size: 1.8rem;
+    color: var(--danger-color);
+    font-weight: 900;
+    text-shadow: 0 0 10px var(--danger-glow);
+    margin: 10px 0;
+    display: block;
+    font-family: var(--font-main);
+    letter-spacing: 2px;
+}
+.enemy-stat-row { font-size: 1rem; color: #ccc; margin: 5px 0; font-weight: bold; }
+
+/* Battle Controls */
+.battle-controls {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+    background: #0a0a0a;
+    border: 2px solid #444;
+    border-top: 4px solid var(--danger-color);
+}
+.battle-status {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+    height: 40px;
+    font-family: var(--font-main);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.status-fighting { color: var(--danger-color); animation: shake 0.5s infinite; text-shadow: 0 0 10px var(--danger-glow); }
+.status-waiting { color: var(--accent-color); }
+.status-cooldown { color: #666; }
+.status-injured { color: #ff6600; }
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.btn-battle {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    margin: 0 15px;
+    min-width: 150px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+.btn-flee {
+    border-color: #666;
+    color: #666;
+    background: #111;
+}
+.btn-flee:hover:not(:disabled) {
+    background: #666;
+    color: #000;
+    box-shadow: 0 0 15px rgba(100,100,100,0.5);
+}
+
+/* Cinematic Ending Screen */
+#cinematic-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 3000;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background-image: radial-gradient(circle, #300 0%, #000 80%);
+}
+#cinematic-text {
+    font-size: 2.2rem; /* 稍微加大字体 */
+    color: #fff;
+    max-width: 900px;
+    line-height: 1.8;
+    white-space: pre-line;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+    text-shadow: 
+        0 0 10px #000, /* 黑色描边底 */
+        0 0 20px var(--accent-color), /* 主发光：青白色 */
+        0 0 30px var(--danger-color); /* 辅助发光：血红色 */
+    font-family: var(--font-main);
+    font-style: italic;
+    font-weight: 900; /* 加粗 */
+    letter-spacing: 3px; /* 增加字间距，更有漫画感 */
+}
+#cinematic-text.visible { opacity: 1; }
+#cinematic-restart-btn {
+    margin-top: 50px;
+    padding: 20px 60px;
+    font-size: 1.5rem;
+    background: transparent;
+    border: 3px solid var(--gold-color);
+    color: var(--gold-color);
+    cursor: pointer;
+    font-family: var(--font-main);
+    display: none;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+}
+#cinematic-restart-btn:hover {
+    background: var(--gold-color);
+    color: #000;
+    box-shadow: 0 0 30px var(--gold-glow);
+}
+
+/* Log Container */
+#log-container {
+    height: 150px;
+    background: #000;
+    border-top: 3px solid #330000;
+    padding: 15px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    color: #777;
+    font-family: 'Courier New', monospace;
+    box-shadow: inset 0 10px 20px rgba(0,0,0,0.8);
+}
+.log-entry { margin-bottom: 6px; border-bottom: 1px dashed #222; padding-bottom: 2px; }
+.log-important { color: var(--accent-color); font-weight: bold; }
+.log-gold { color: var(--gold-color); font-weight: 900; text-shadow: 0 0 5px var(--gold-glow); }
+.log-danger { color: var(--danger-color); font-weight: bold; }
+.log-heal { color: #00ccff; }
+
+.info-row {
+    font-size: 1.1rem;
+    color: var(--gold-color);
+    margin-bottom: 20px;
+    text-align: center;
+    background: rgba(255, 215, 0, 0.05);
+    padding: 10px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    font-family: var(--font-main);
+    letter-spacing: 1px;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #050000; }
+::-webkit-scrollbar-thumb { background: #440000; border: 1px solid #220000; }
+::-webkit-scrollbar-thumb:hover { background: #660000; }
+
+</style>
+</head>
+<body>
+<div id="nav-sidebar">
+<button class="nav-btn active" onclick="ui.switchTab('tier1')" id="nav-tier1">电流推动 <div class="red-dot" id="dot-tier1"></div></button>
+<button class="nav-btn disabled" onclick="ui.switchTab('tier2')" id="nav-tier2">磁场转动 <div class="red-dot" id="dot-tier2"></div></button>
+<button class="nav-btn disabled" onclick="ui.switchTab('tier3')" id="nav-tier3">地狱磁场 <div class="red-dot" id="dot-tier3"></div></button>
+<div style="flex:1"></div>
+<button class="nav-btn disabled" onclick="ui.switchTab('challenge')" id="nav-challenge">挑战强者 <div class="red-dot" id="dot-challenge"></div></button>
+<button class="nav-btn" onclick="ui.switchTab('achievements')" id="nav-achievements">武道成就</button>
+<!-- System Buttons -->
+<button class="nav-btn system-btn" onclick="game.saveGame(true)">保存进度</button>
+<button class="nav-btn system-btn" onclick="game.loadGame()">读取进度</button>
+<button class="nav-btn system-btn" onclick="game.exportSave()">导出存档</button>
+<button class="nav-btn system-btn" onclick="game.importSave()">导入存档</button>
+<button class="nav-btn system-btn" style="color:#f55;" onclick="if(confirm('确定要删档重开？这一世的修行将全部作废！')){game.hardReset()}">删档重开</button>
+</div>
+
+<div id="main-area">
+<div id="top-bar">
+<div class="resource-display">
+<span id="res-name">电流</span>:<span id="res-val" class="resource-val">0</span><span id="res-unit" class="resource-unit">伏特</span>
+</div>
+<div class="global-mult">总倍率：x<span id="total-mult">1.00</span> (成就：x<span id="ach-mult">1.00</span> | 境界：x<span id="realm-mult">1.00</span>)</div>
+</div>
+
+<div id="content-panels">
+<!-- T1: 电流推动 -->
+<div id="view-tier1" class="panel-view active">
+<h2>起源：电流推动</h2>
+<p style="color:#888; margin-bottom: 20px; font-size: 1.1rem;">积累伏特。上限锁定为60亿。<br><span style="color:var(--accent-color); font-weight:bold">提示：即使进入高层，仍可在此点击或升级伏特建筑。</span></p>
+<div class="stat-grid">
+<div class="upgrade-card">
+<h3>摩擦细胞</h3>
+<p>点击产生电流。</p>
+<button class="btn-buy" onclick="game.clickAction()">推动 (+<span id="t1-click-val">1</span>V)</button>
+</div>
+<div class="upgrade-card">
+<h3>强化身体</h3>
+<p>以电流力量强化身体。</p>
+<button class="btn-buy" id="btn-buy-gen" onclick="game.buyGen()">购买 (花费：<span id="cost-gen">10</span>V)<br>拥有：<span id="count-gen">0</span></button>
+</div>
+<div class="upgrade-card">
+<h3>超级感知 (点击)</h3>
+<p>获得感知力量，增强自身摩擦细胞能力。</p>
+<button class="btn-buy" id="btn-buy-cap" onclick="game.buyCap()">升级 (花费：<span id="cost-cap">50</span>V)<br>等级：<span id="lvl-cap">0</span></button>
+</div>
+<div class="upgrade-card">
+<h3>电流增幅 (效率)</h3>
+<p>提升自动摩擦细胞效率。</p>
+<button class="btn-buy" id="btn-buy-trans" onclick="game.buyTrans()">升级 (花费：<span id="cost-trans">200</span>V)<br>等级：<span id="lvl-trans">0</span></button>
+</div>
+<div class="upgrade-card">
+<h3>电流力量 (全局)</h3>
+<p>提升所有电流产出。</p>
+<button class="btn-buy" id="btn-buy-super" onclick="game.buySuper()">铺设 (花费：<span id="cost-super">1000</span>V)<br>等级：<span id="lvl-super">0</span></button>
+</div>
+<!-- NEW: Base Production Boost -->
+<div class="upgrade-card" style="border-color: #00ccff; border-top-color: #00ccff;">
+<h3 style="color: #00ccff">本源加速 (电流)</h3>
+<p>大幅提升伏特获取速度 (x1.5/级)。<br></p>
+<button class="btn-buy heal" id="btn-buy-t1-boost" onclick="game.buyT1Boost()">升级 (花费：<span id="cost-t1-boost">100k</span>V)<br>等级：<span id="lvl-t1-boost">0</span>/3</button>
+</div>
+</div>
+
+<div class="upgrade-card" style="max-width: 400px; border-color: var(--danger-color); border-top-color: var(--danger-color);">
+<h3 style="color: var(--danger-color)">散功重修</h3>
+<p>重置伏特进度，获得永久倍数增幅。<br><span style="color:#aaa">注意：256倍后需求大幅提升。这就是武道的代价！</span></p>
+<button class="btn-buy danger" id="btn-prestige" onclick="game.doPrestige()">立即重修 (当前倍数：x<span id="prestige-mult-disp">1</span>)</button>
+<div class="progress-wrap">
+<div id="prog-prestige" class="progress-fill danger"></div>
+</div>
+</div>
+
+<!-- Volt Retention Upgrade -->
+<div class="upgrade-card" style="max-width: 400px; border-color: var(--gold-color); border-top-color: var(--gold-color); margin-top: 20px;" id="card-volt-retention">
+<h3 style="color: var(--gold-color)">伏特本源保留</h3>
+<p id="volt-retention-desc">散功重修达到64倍后解锁。保留并自动购买伏特层级升级。</p>
+<button class="btn-buy gold" id="btn-buy-volt-retention" onclick="game.buyVoltRetention()" disabled>解锁 (需64倍重修)</button>
+<div style="font-size: 0.7rem; color: #888; margin-top: 5px;">当前等级：<span id="volt-retention-lvl">0</span>/5</div>
+</div>
+
+<div class="upgrade-card" style="max-width: 400px; border-color: var(--gold-color); border-top-color: var(--gold-color); margin-top: 20px;" id="card-breakthrough-t1">
+<h3 style="color: var(--gold-color)">突破界限</h3>
+<p>当伏特达到 500,000 时，解锁真正力量：磁场转动。</p>
+<button class="btn-buy gold" id="btn-breakthrough" onclick="game.enterTier2()" disabled>突破至磁场转动 (需 500,000 V)</button>
+</div>
+</div>
+
+<!-- T2: 磁场转动 -->
+<div id="view-tier2" class="panel-view">
+<h2 style="color: var(--danger-color)">磁场转动</h2>
+<p style="color:#888; margin-bottom: 20px; font-size: 1.1rem;">此处积累<strong>匹数</strong>。伏特已保留（可切换标签页查看/升级）。<br>目标：100,000 匹。<br><span style="color:var(--danger-color); font-weight:bold">警告：超过10万匹后，获取难度将急剧上升（软上限）。<br>必须进入第三层购买功法才能突破上限！</span></p>
+<div class="stat-grid">
+<div class="upgrade-card">
+<h3>磁场转动！</h3>
+<p>点击产生匹数。</p>
+<button class="btn-buy" onclick="game.clickActionHP()">激发 (+<span id="t2-click-val">1</span>匹)</button>
+</div>
+<div class="upgrade-card">
+<h3>磁场马力</h3>
+<p>提升主动谷出力量的威力。</p>
+<button class="btn-buy" id="btn-buy-hp-upg" onclick="game.buyHPUpg()">压缩 (花费：<span id="cost-hp-upg">100</span>匹)<br>等级：<span id="lvl-hp-upg">0</span></button>
+</div>
+<div class="upgrade-card">
+<h3>细胞重组</h3>
+<p>自动产生匹数。</p>
+<button class="btn-buy" id="btn-buy-volt-upg" onclick="game.buyVoltUpg()">共振 (花费：<span id="cost-volt-upg">500</span>匹)<br>等级：<span id="lvl-volt-upg">0</span></button>
+</div>
+<div class="upgrade-card">
+<h3>磁场本源：第二颗心脏</h3>
+<p>利用伏特加速匹数获取 (基于 log10(volt)，受软上限抑制)。</p>
+<button class="btn-buy" id="btn-buy-volt-conv" onclick="game.buyVoltConv()">升级 (花费：<span id="cost-volt-conv">50000</span>匹)<br>等级：<span id="lvl-volt-conv">0</span></button>
+</div>
+<div class="upgrade-card">
+<h3>磁场本源：大脑</h3>
+<p>直接增加自动获取匹数的量。</p>
+<button class="btn-buy" id="btn-buy-auto-hp" onclick="game.buyAutoHP()">升级 (花费：<span id="cost-auto-hp">3000</span>匹)<br>等级：<span id="lvl-auto-hp">0</span></button>
+</div>
+<div class="upgrade-card">
+<h3>情绪推动</h3>
+<p>提升主动获取的匹数量 (基础值已调整)。</p>
+<button class="btn-buy" id="btn-buy-click-hp" onclick="game.buyClickHP()">升级 (花费：<span id="cost-click-hp">1500</span>匹)<br>等级：<span id="lvl-click-hp">0</span></button>
+</div>
+<!-- NEW: Base Production Boost T2 -->
+<div class="upgrade-card" style="border-color: #00ccff; border-top-color: #00ccff;">
+<h3 style="color: #00ccff">本源加速 (磁场)</h3>
+<p>大幅提升匹数获取速度 (x1.5/级)。<br></p>
+<button class="btn-buy heal" id="btn-buy-t2-boost" onclick="game.buyT2Boost()">升级 (花费：<span id="cost-t2-boost">10k</span>匹)<br>等级：<span id="lvl-t2-boost">0</span>/3</button>
+</div>
+</div>
+
+<!-- T2 Prestige -->
+<div class="upgrade-card" style="max-width: 400px; border-color: var(--gold-color); border-top-color: var(--gold-color); margin-top: 20px;">
+<h3 style="color: var(--gold-color)">进入重生池苦修</h3>
+<p>重置匹数及第二层升级，获得永久“苦修倍数”增幅 (每级x2.0)。<br><span style="color:#aaa">注意：不会重置伏特、第一层建筑或第三层功法。价格随次数递增。</span></p>
+<button class="btn-buy gold" id="btn-t2-prestige" onclick="game.doT2Prestige()">进入苦修 (当前倍数：x<span id="t2-prestige-mult-disp">1</span>)</button>
+<div class="progress-wrap">
+<div id="prog-t2-prestige" class="progress-fill gold"></div>
+</div>
+<p style="font-size:0.7rem; color:#888; margin-top:5px;">需求：<span id="t2-prestige-req">10,000</span> 匹</p>
+</div>
+
+<div class="upgrade-card" style="max-width: 400px; border-color: var(--gold-color); border-top-color: var(--gold-color); margin-top: 20px;" id="card-breakthrough-t2">
+<h3 style="color: var(--gold-color)">磁场功法</h3>
+<p>当匹数达到 100,000 时，解锁磁场功法。</p>
+<button class="btn-buy gold" id="btn-breakthrough-t2" onclick="game.enterTier3()" disabled>进入磁场功法 (需 100,000 匹)</button>
+</div>
+</div>
+
+<!-- T3: 地狱磁场 -->
+<div id="view-tier3" class="panel-view">
+<h2 class="danger">磁场功法</h2>
+<p style="color:#888; margin-bottom: 20px; font-size: 1.1rem;">磁场异变，提升极度困难。唯有学习神功可提升匹数。<br><span style="color:#aaa">提示：必须击败足够多的强者才能购买功法。这是强者的世界！</span></p>
+<div class="info-row">已击败强者数量：<span id="t3-wins-count">0</span> 名</div>
+<div id="skill-list" class="stat-grid"></div>
+</div>
+
+<!-- 挑战强者 -->
+<div id="view-challenge" class="panel-view">
+<h2 class="danger">挑战强者</h2>
+<p style="color:#888; font-size: 1.1rem;">通过战斗获取“完全境界”（单位：级），用于购买终极强化。<br><span style="color:#aaa">敌人强度随击败次数动态调整，但绝不超过玩家属性的1.5倍。无冷却时间。<br>购买"自动挑战"升级后，按钮将显示自动状态，胜利后自动继续，失败后自动停止。</span></p>
+<div class="info-row">已击败强者数量：<span id="challenge-wins-count">0</span> 名</div>
+
+<div class="battle-stats">
+<div class="battle-side player">
+<h3>武者 (你)</h3>
+<div>攻击力：<span id="player-atk" style="color:var(--accent-color); font-weight:bold">0</span></div>
+<div>防御力：<span id="player-def" style="color:var(--accent-color); font-weight:bold">0</span></div>
+<div class="hp-bar-container">
+<div id="player-hp-bar" class="hp-bar" style="width: 100%;"></div>
+<div class="hp-text"><span id="player-hp-cur">100</span> / <span id="player-hp-max">100</span></div>
+</div>
+<div style="font-size: 0.9rem; color: #aaa;" id="hp-status-text">非战斗时自动回血</div>
+</div>
+
+<div class="battle-side enemy">
+<h3>强者 (敌) <span style="font-size:0.9rem; color:#888">No.<span id="enemy-wave-num">1</span></span></h3>
+<!-- Large HP Display -->
+<span class="enemy-hp-display"><span id="enemy-hp-cur">0</span> / <span id="enemy-hp-max">0</span></span>
+<div class="hp-bar-container">
+<div id="enemy-hp-bar" class="hp-bar" style="width: 100%;"></div>
+<div class="hp-text">生命力</div>
+</div>
+<div class="enemy-stat-row">攻击力：<span id="enemy-atk">0</span></div>
+<div class="enemy-stat-row">防御力：<span id="enemy-def">0</span></div>
+<div style="font-size: 0.8rem; color: #aaa;">强度受玩家属性软上限限制</div>
+</div>
+</div>
+
+<div class="battle-controls">
+<div id="battle-status" class="battle-status status-waiting">准备挑战</div>
+<div>
+<button class="btn-buy danger btn-battle" id="btn-challenge" onclick="game.startChallenge()">发起挑战</button>
+<button class="btn-buy btn-flee btn-battle" id="btn-flee" onclick="game.fleeBattle()" disabled>逃走</button>
+</div>
+<div style="margin-top: 20px; color: var(--gold-color); font-size: 1.5rem; font-family: var(--font-main);">完全境界：<span id="realm-count">0</span> 级</div>
+<!-- NEW: Auto Battle Toggle Button -->
+<div style="margin-top: 20px;">
+<button class="btn-buy btn-battle" id="btn-auto-toggle" onclick="game.toggleAutoBattle()" style="min-width: auto; padding: 10px 20px; font-size: 1rem;">切换自动挑战</button>
+</div>
+</div>
+
+<h3 class="gold" style="border-color: var(--gold-color); color: var(--gold-color); margin-top: 40px; font-family: var(--font-main); font-size: 1.8rem;">境界升华 (完全境界升级)</h3>
+<div class="stat-grid" id="realm-upgrades"></div>
+</div>
+
+<!-- 成就系统 -->
+<div id="view-achievements" class="panel-view">
+<h2 class="gold">武道成就</h2>
+<p style="color:#888; font-size: 1.1rem;">完成成就以获得永久倍率加成。这就是强者的证明！</p>
+<div id="achievement-list"></div>
+</div>
+</div>
+
+<div id="log-container"></div>
+</div>
+
+<!-- Cinematic Ending Screen -->
+<div id="cinematic-screen">
+<div id="cinematic-text"></div>
+<button id="cinematic-restart-btn" onclick="game.hardReset()">重新开始轮回</button>
+</div>
+
+<script>
+// --- 游戏逻辑部分保持不变，仅做少量文案适配 ---
+const CONFIG = {
+hardCap: 100000, 
+finalCap: 1000000, 
+voltHardCap: 100000000, 
+t1Breakthrough: 500000,
+t2Breakthrough: 100000,
+t3Breakthrough: 999999,
+prestigeReq: 5000,
+t2PrestigeReq: 10000,
+skills: [
+{ id: 'hell', name: '地狱道', baseCost: 100000, mult: 1.5, desc: '解开地狱之苦，产出 x1.5，上限解锁至 20万', reqWins: 10, capUnlock: 200000 },
+{ id: 'tianwu', name: '天武杀道', baseCost: 250000, mult: 2.0, desc: '杀道通天，产出 x2.0，上限解锁至 50万', reqWins: 50, capUnlock: 500000 },
+{ id: 'shura', name: '无我魔刀', baseCost: 500000, mult: 3.0, desc: '无我无敌，产出 x3.0，上限解锁至 80万', reqWins: 150, capUnlock: 800000 },
+{ id: 'bao', name: '大千世界刀', baseCost: 800000, mult: 5.0, desc: '刀斩大千，产出 x5.0，上限解锁至 95万', reqWins: 500, capUnlock: 950000 },
+{ id: 'dao', name: '修罗道', baseCost: 950000, mult: 8.0, desc: '绝情修罗，产出 x8.0，上限解锁至 99万', reqWins: 1500, capUnlock: 990000 },
+{ id: 'wo', name: '海虎爆破拳', baseCost: 990000, mult: 15.0, desc: '终极拳法，产出 x15.0。彻底解开限制，允许达到 100万！', reqWins: 5000, capUnlock: 1000000, unlocksFinalCap: true },
+{ id: 'final_break', name: '自毁境界！！！', baseCost: 999999, mult: 0, desc: '终极突破！开启最终结局。', isFinal: true, reqWins: 10000 }
+],
+achievements: [
+{ id: 'volt_1k', name: '初出茅庐', desc: '累计获得 1,000 伏特', condition: (s) => s.totalVolt >= 1000, rewardMult: 1.1 },
+{ id: 'volt_500k', name: '电流大师', desc: '拥有 500,000 伏特', condition: (s) => s.volt >= 500000, rewardMult: 1.2 },
+{ id: 'tier2_enter', name: '磁场转动', desc: '进入磁场转动', condition: (s) => s.tier >= 2, rewardMult: 1.5 },
+{ id: 'hp_100k', name: '十万匹力量', desc: '拥有 100,000 匹磁场力量', condition: (s) => s.totalHP >= 100000, rewardMult: 1.3 },
+{ id: 'tier3_enter', name: '地狱之门', desc: '进入磁场功法', condition: (s) => s.tier >= 3, rewardMult: 2.0 },
+{ id: 'win_battle_10', name: '百战百胜', desc: '击败 10 位强者', condition: (s) => s.battleWins >= 10, rewardMult: 1.5 },
+{ id: 'realm_10', name: '完全境界·初', desc: '拥有 10 级完全境界', condition: (s) => s.realmCount >= 10, rewardMult: 1.5 },
+{ id: 'game_clear', name: '一百万匹', desc: '达到一百万匹力量', condition: (s) => s.gameWon, rewardMult: 2.0 }
+],
+realmUpgrades: [
+{ id: 'r_atk', name: '攻击强化', desc: '提升挑战攻击力 (x1.2/级)', baseCost: 1, costMult: 1.5, maxLevel: 20, effect: (lvl) => Math.pow(1.2, lvl), type: 'atk' },
+{ id: 'r_def', name: '防御强化', desc: '提升挑战防御力 (x1.2/级)', baseCost: 1, costMult: 1.5, maxLevel: 20, effect: (lvl) => Math.pow(1.2, lvl), type: 'def' },
+{ id: 'r_res_t1', name: '电流感悟', desc: '伏特获取倍率 (x1.1/级)', baseCost: 5, costMult: 2.0, maxLevel: 10, effect: (lvl) => Math.pow(1.1, lvl), type: 'res_t1', reqTier: 1 },
+{ id: 'r_res_t2', name: '磁场感悟', desc: '匹数获取倍率 (x1.1/级)', baseCost: 10, costMult: 2.5, maxLevel: 10, effect: (lvl) => Math.pow(1.1, lvl), type: 'res_t2', reqTier: 2 },
+{ id: 'r_res_t3', name: '杀道感悟', desc: '地狱层产出倍率 (x1.2/级)', baseCost: 20, costMult: 3.0, maxLevel: 10, effect: (lvl) => Math.pow(1.2, lvl), type: 'res_t3', reqTier: 3 },
+{ id: 'r_regen', name: '生命复苏', desc: '脱战回血速度 (x1.5/级)', baseCost: 5, costMult: 2.5, maxLevel: 10, effect: (lvl) => Math.pow(1.5, lvl), type: 'regen', reqTier: 2 },
+{ id: 'r_auto_battle', name: '自动挑战', desc: '解锁后自动连续挑战强者 (价格昂贵)', baseCost: 500, costMult: 5.0, maxLevel: 1, effect: (lvl) => lvl > 0, type: 'auto', reqTier: 2 }
+]
+};
+
+const game = {
+state: {},
+battleTimer: null,
+autoBattleEnabled: false, 
+cinematicLines: [
+"你……终于来了。",
+"即便是当年那个不是我的我，任由大能将其掌控。",
+"在最后的最后，迫我做出了自愿放弃的选择，让世界变成了这个无趣模样。",
+"但命运终究会让我们再次走到这里",
+"现在，开始你最后的路程吧。",
+"我……白武男，呵……期待与你的最后一战。"
+],
+getInitialState() {
+return {
+tier: 1,
+volt: 0, totalVolt: 0, prestigeCount: 0,
+genCount: 0, genCost: 10, capLvl: 0, capCost: 50, transLvl: 0, transCost: 200, superLvl: 0, superCost: 1000,
+t1BoostLvl: 0, t1BoostCost: 100000,
+voltRetentionLevel: 0,
+horsePower: 0, totalHP: 0, t2PrestigeCount: 0,
+hpUpgLvl: 0, hpUpgCost: 100, voltUpgLvl: 0, voltUpgCost: 500, voltConvLvl: 0, voltConvCost: 50000,
+autoHPLvl: 0, autoHPCost: 3000, clickHPLvl: 0, clickHPCost: 1500,
+t2BoostLvl: 0, t2BoostCost: 10000,
+skills: {}, realmCount: 0, battleWins: 0,
+playerMaxHp: 100, playerCurHp: 100, enemyMaxHp: 100, enemyCurHp: 100, enemyAtk: 0, enemyDef: 0,
+isBattling: false, isInjured: false, injuredUntil: 0, hpRegenActive: true,
+realmUpgrades: {}, unlockedAchievements: [], gameWon: false, startTime: Date.now()
+};
+},
+init() {
+this.state = this.getInitialState();
+this.loadGame();
+ui.init();
+this.checkAchievements();
+this.renderRealmUpgrades();
+this.renderSkills();
+this.renderAchievements();
+this.renderVoltRetention();
+setInterval(() => {
+if (!this.state.gameWon) this.checkProgression();
+ui.update();
+ui.checkRedDots();
+}, 100);
+setInterval(() => {
+if (this.state.gameWon) return;
+this.processAutoProduction();
+this.handlePassiveRegen();
+this.checkAutoBattle();
+}, 1000);
+setInterval(() => this.saveGame(), 30000);
+this.log("系统启动。v8更新：上限严格锁定10万，自动挑战逻辑重构，点击大幅削弱。");
+},
+hardReset() {
+if (confirm("【警告】确定要删档重开吗？这一世的修行将全部作废！")) {
+localStorage.removeItem('magneticIncrementSave_v3');
+location.reload();
+}
+},
+processAutoProduction() {
+const s = this.state;
+const achMult = this.getAchievementMult();
+const realmMult = this.getRealmResourceMult();
+if (s.genCount > 0) {
+const pMult = Math.pow(2, s.prestigeCount);
+const transEff = 1 + (s.transLvl * 0.1);
+const superEff = 1 + (s.superLvl * 0.2);
+const boostMult = Math.pow(1.5, s.t1BoostLvl);
+let productionPerSecond = s.genCount * 3 * transEff * pMult * superEff * achMult * realmMult * boostMult;
+if (productionPerSecond > 0) this.addVolt(productionPerSecond);
+}
+if (s.tier >= 2) {
+const t2Mult = Math.pow(2, s.t2PrestigeCount);
+const realmBonus = this.getRealmResourceMult(true);
+const boostMult = Math.pow(1.5, s.t2BoostLvl);
+let baseAuto = (Math.pow(s.voltUpgLvl, 2) * 1) + (s.autoHPLvl * 5);
+let rawVoltConversion = 0;
+if (s.voltConvLvl > 0) {
+rawVoltConversion = (Math.log10(Math.max(1, s.volt)) * 10) * s.voltConvLvl;
+}
+let voltEfficiency = 1.0;
+const currentHP = s.horsePower;
+if (currentHP > 100000) {
+if (currentHP < 500000) {
+const progress = (currentHP - 100000) / 400000;
+voltEfficiency = 1.0 - (progress * 0.9);
+} else {
+const stepsOver500k = Math.floor((currentHP - 500000) / 100000);
+voltEfficiency = 0.1 * Math.pow(0.8, stepsOver500k);
+if (voltEfficiency < 0.01) voltEfficiency = 0.01;
+}
+}
+let voltConversion = rawVoltConversion * voltEfficiency;
+let softCapMultiplier = 1.0;
+if (currentHP >= 100000) {
+const progress = (currentHP - 100000) / 100000;
+if (progress > 0) {
+softCapMultiplier = Math.pow(1 - Math.min(0.99, progress), 2);
+if (softCapMultiplier < 0.0001) softCapMultiplier = 0.0001;
+}
+}
+let totalBase = baseAuto + voltConversion;
+if (totalBase > 0) {
+let finalProduction = totalBase * realmBonus * t2Mult * boostMult * softCapMultiplier;
+this.addHP(finalProduction);
+}
+}
+if (s.isInjured) {
+const now = Date.now();
+if (now >= s.injuredUntil) {
+s.isInjured = false;
+s.playerCurHp = Math.ceil(s.playerMaxHp * 0.01);
+this.log("你从重伤中苏醒，恢复了微弱气息。", true);
+} else {
+const remaining = Math.ceil((s.injuredUntil - now) / 1000);
+document.getElementById('hp-status-text').innerText = `重伤恢复中... (${remaining}s)`;
+document.getElementById('hp-status-text').style.color = '#ff6600';
+}
+return;
+}
+if (!s.isBattling && s.playerCurHp > 0 && s.playerCurHp < s.playerMaxHp) {
+const stats = this.getBattleStats();
+s.playerMaxHp = stats.pMaxHp;
+if (s.playerCurHp > s.playerMaxHp) s.playerCurHp = s.playerCurHp;
+const regenLvl = s.realmUpgrades['r_regen'] || 0;
+const regenMult = Math.pow(1.5, regenLvl);
+const baseRegen = Math.ceil(s.playerMaxHp * 0.1);
+const regen = Math.floor(baseRegen * regenMult);
+s.playerCurHp = Math.min(s.playerMaxHp, s.playerCurHp + regen);
+document.getElementById('hp-status-text').innerText = `非战斗回血中 (+${ui.formatNum(regen)}/s)`;
+document.getElementById('hp-status-text').style.color = '#00ccff';
+} else if (!s.isBattling && s.playerCurHp >= s.playerMaxHp) {
+document.getElementById('hp-status-text').innerText = "生命值已满";
+document.getElementById('hp-status-text').style.color = '#888';
+}
+},
+checkAutoBattle() {
+const s = this.state;
+if (s.tier < 2) return;
+const hasAutoUpgrade = parseInt(s.realmUpgrades['r_auto_battle'] || '0') === 1;
+if (!hasAutoUpgrade || !this.autoBattleEnabled || s.isBattling || s.isInjured || s.playerCurHp <= 0) return;
+if (hasAutoUpgrade && this.autoBattleEnabled && !s.isBattling && !s.isInjured && s.playerCurHp > 0) {
+this.startChallenge(true);
+}
+},
+addVolt(amount) {
+const oldVolt = this.state.volt;
+const maxVolt = CONFIG.voltHardCap;
+if (this.state.volt >= maxVolt) return;
+this.state.volt += amount;
+if (this.state.volt > maxVolt) this.state.volt = maxVolt;
+this.state.totalVolt += amount;
+if (Math.floor(this.state.totalVolt) > Math.floor(oldVolt)) this.checkAchievements();
+},
+addHP(amount) {
+if (this.state.tier < 2) return;
+const currentCap = this.getCurrentHPCap();
+const oldHP = this.state.horsePower;
+if (this.state.horsePower >= currentCap) {
+const tinyGrowth = amount * 0.0000001;
+this.state.horsePower += tinyGrowth;
+this.state.totalHP += tinyGrowth;
+return;
+}
+this.state.horsePower += amount;
+if (this.state.horsePower > currentCap) {
+this.state.horsePower = currentCap;
+}
+this.state.totalHP += amount;
+if (Math.floor(this.state.totalHP) > Math.floor(oldHP)) this.checkAchievements();
+},
+getCurrentHPCap() {
+const s = this.state;
+if (s.tier < 3) return CONFIG.hardCap;
+let cap = CONFIG.hardCap;
+if (s.skills['hell']) cap = Math.max(cap, 200000);
+if (s.skills['tianwu']) cap = Math.max(cap, 500000);
+if (s.skills['shura']) cap = Math.max(cap, 800000);
+if (s.skills['bao']) cap = Math.max(cap, 950000);
+if (s.skills['dao']) cap = Math.max(cap, 990000);
+if (s.skills['wo']) cap = CONFIG.finalCap;
+return cap;
+},
+clickAction() {
+const pMult = Math.pow(2, this.state.prestigeCount);
+const superEff = 1 + (this.state.superLvl * 0.2);
+const achMult = this.getAchievementMult();
+const realmMult = this.getRealmResourceMult();
+const boostMult = Math.pow(1.5, this.state.t1BoostLvl);
+const base = 1 + this.state.capLvl;
+const power = base * pMult * superEff * achMult * realmMult * boostMult;
+this.addVolt(power);
+ui.update();
+},
+clickActionHP() {
+if (this.state.tier < 2) return;
+let base = 1 + (this.state.hpUpgLvl * 1) + (this.state.voltUpgLvl * 1) + (this.state.clickHPLvl * 2);
+const achMult = this.getAchievementMult();
+const t2Mult = Math.pow(2, this.state.t2PrestigeCount);
+const realmMult = this.getRealmResourceMult(true);
+const boostMult = Math.pow(1.5, this.state.t2BoostLvl);
+const powerRaw = base * achMult * realmMult * t2Mult * boostMult;
+const currentHP = this.state.horsePower;
+const cap = this.getCurrentHPCap();
+let softCapFactor = 1.0;
+if (currentHP >= 100000) {
+const ratio = (currentHP - 100000) / (cap - 100000);
+if (ratio > 0) {
+softCapFactor = Math.pow(1 - Math.min(0.99, ratio), 3);
+if (softCapFactor < 0.0001) softCapFactor = 0.0001;
+}
+}
+const finalPower = powerRaw * softCapFactor;
+this.addHP(finalPower);
+ui.update();
+},
+buyGen() {
+if (this.state.volt >= this.state.genCost) {
+this.state.volt -= this.state.genCost;
+this.state.genCount++;
+this.state.genCost = Math.floor(this.state.genCost * 1.5);
+ui.update();
+}
+},
+buyCap() {
+if (this.state.volt >= this.state.capCost) {
+this.state.volt -= this.state.capCost;
+this.state.capLvl++;
+this.state.capCost = Math.floor(this.state.capCost * 1.6);
+ui.update();
+}
+},
+buyTrans() {
+if (this.state.volt >= this.state.transCost) {
+this.state.volt -= this.state.transCost;
+this.state.transLvl++;
+this.state.transCost = Math.floor(this.state.transCost * 1.7);
+ui.update();
+}
+},
+buySuper() {
+if (this.state.volt >= this.state.superCost) {
+this.state.volt -= this.state.superCost;
+this.state.superLvl++;
+this.state.superCost = Math.floor(this.state.superCost * 2.0);
+ui.update();
+}
+},
+buyT1Boost() {
+if (this.state.volt >= this.state.t1BoostCost && this.state.t1BoostLvl < 3) {
+this.state.volt -= this.state.t1BoostCost;
+this.state.t1BoostLvl++;
+this.state.t1BoostCost = Math.floor(this.state.t1BoostCost * 5.0);
+this.log("本源加速 (电流) 升级成功！", true);
+ui.update();
+}
+},
+buyT2Boost() {
+if (this.state.horsePower >= this.state.t2BoostCost && this.state.t2BoostLvl < 3) {
+this.state.horsePower -= this.state.t2BoostCost;
+this.state.t2BoostLvl++;
+this.state.t2BoostCost = Math.floor(this.state.t2BoostCost * 8.0);
+this.log("本源加速 (磁场) 升级成功！", true);
+ui.update();
+}
+},
+buyVoltRetention() {
+const s = this.state;
+if (s.voltRetentionLevel >= 5) return;
+const reqPrestige = 6 + s.voltRetentionLevel;
+if (s.prestigeCount < reqPrestige) return;
+const mult = Math.pow(2, s.prestigeCount);
+const cost = Math.floor((mult / 8) * 10000);
+if (s.volt >= cost) {
+if(!confirm(`花费 ${ui.formatNum(cost)} 伏特提升伏特本源保留等级？`)) return;
+s.volt -= cost;
+s.voltRetentionLevel++;
+this.log(`伏特本源保留提升至 Lv.${s.voltRetentionLevel}`, true);
+this.renderVoltRetention();
+ui.update();
+}
+},
+doPrestige() {
+if (this.state.volt < this.getPrestigeCost()) return;
+if (!confirm("确定散功重修？")) return;
+const s = this.state;
+s.prestigeCount++;
+const keepAll = s.voltRetentionLevel >= 5;
+const keepCount = s.voltRetentionLevel;
+s.volt = 0;
+if (!keepAll) {
+if (keepCount < 1) { s.genCount = 0; s.genCost = 10; }
+if (keepCount < 2) { s.capLvl = 0; s.capCost = 50; }
+if (keepCount < 3) { s.transLvl = 0; s.transCost = 200; }
+if (keepCount < 4) { s.superLvl = 0; s.superCost = 1000; }
+if (keepCount < 5) { s.t1BoostLvl = 0; s.t1BoostCost = 100000; }
+}
+this.log(`散功重修成功！伏特倍数：x${Math.pow(2, s.prestigeCount)}`, true);
+if (s.voltRetentionLevel >= 5) {
+this.log("伏特本源保留生效：正在自动购买所有升级...", true);
+const buyMax = (costVar, countVar, costMult) => {
+while (s.volt >= s[costVar]) {
+s.volt -= s[costVar];
+s[countVar]++;
+s[costVar] = Math.floor(s[costVar] * costMult);
+}
+};
+buyMax('genCost', 'genCount', 1.5);
+buyMax('capCost', 'capLvl', 1.6);
+buyMax('transCost', 'transLvl', 1.7);
+buyMax('superCost', 'superLvl', 2.0);
+while (s.t1BoostLvl < 3 && s.volt >= s.t1BoostCost) {
+s.volt -= s.t1BoostCost;
+s.t1BoostLvl++;
+s.t1BoostCost = Math.floor(s.t1BoostCost * 5.0);
+}
+this.log("自动购买完成！", true);
+}
+this.checkAchievements();
+this.renderVoltRetention();
+ui.update();
+},
+getPrestigeCost() {
+const count = this.state.prestigeCount;
+const base = CONFIG.prestigeReq;
+if (count < 8) return Math.floor(base * Math.pow(2, count));
+else {
+const thresholdMult = Math.pow(2, 8);
+const progress = count - 7;
+return Math.floor(base * thresholdMult * Math.pow(progress, 3));
+}
+},
+doT2Prestige() {
+if (this.state.tier < 2) return;
+const req = Math.floor(CONFIG.t2PrestigeReq * Math.pow(1.5, this.state.t2PrestigeCount));
+if (this.state.horsePower < req) return;
+if (!confirm("确定进入重生池苦修？")) return;
+this.state.t2PrestigeCount++;
+this.state.horsePower = 0;
+this.state.hpUpgLvl = 0; this.state.hpUpgCost = 100;
+this.state.voltUpgLvl = 0; this.state.voltUpgCost = 500;
+this.state.voltConvLvl = 0; this.state.voltConvCost = 50000;
+this.state.autoHPLvl = 0; this.state.autoHPCost = 3000;
+this.state.clickHPLvl = 0; this.state.clickHPCost = 1500;
+this.state.t2BoostLvl = 0; this.state.t2BoostCost = 10000;
+this.log(`苦修结束！磁场倍数：x${Math.pow(2, this.state.t2PrestigeCount).toFixed(2)}`, true);
+ui.update();
+},
+buyHPUpg() {
+if (this.state.tier < 2) return;
+if (this.state.horsePower >= this.state.hpUpgCost) {
+this.state.horsePower -= this.state.hpUpgCost;
+this.state.hpUpgLvl++;
+this.state.hpUpgCost = Math.floor(this.state.hpUpgCost * 1.8);
+ui.update();
+}
+},
+buyVoltUpg() {
+if (this.state.tier < 2) return;
+if (this.state.horsePower >= this.state.voltUpgCost) {
+this.state.horsePower -= this.state.voltUpgCost;
+this.state.voltUpgLvl++;
+this.state.voltUpgCost = Math.floor(this.state.voltUpgCost * 2.2);
+ui.update();
+}
+},
+buyVoltConv() {
+if (this.state.tier < 2) return;
+if (this.state.horsePower >= this.state.voltConvCost) {
+this.state.horsePower -= this.state.voltConvCost;
+this.state.voltConvLvl++;
+this.state.voltConvCost = Math.floor(this.state.voltConvCost * 2.5);
+ui.update();
+if (this.state.voltConvLvl >= 2) {
+document.getElementById('btn-buy-volt-conv').disabled = true;
+this.log("已达购买上限 (2次)！", true);
+}
+}
+},
+buyAutoHP() {
+if (this.state.tier < 2) return;
+if (this.state.horsePower >= this.state.autoHPCost) {
+this.state.horsePower -= this.state.autoHPCost;
+this.state.autoHPLvl++;
+this.state.autoHPCost = Math.floor(this.state.autoHPCost * 2.3);
+ui.update();
+}
+},
+buyClickHP() {
+if (this.state.tier < 2) return;
+if (this.state.horsePower >= this.state.clickHPCost) {
+this.state.horsePower -= this.state.clickHPCost;
+this.state.clickHPLvl++;
+this.state.clickHPCost = Math.floor(this.state.clickHPCost * 2.0);
+ui.update();
+}
+},
+buySkill(id) {
+if (this.state.tier !== 3) return;
+const skill = CONFIG.skills.find(s => s.id === id);
+const curLvl = this.state.skills[id] || 0;
+if (curLvl >= 1) return;
+if (this.state.battleWins < skill.reqWins) {
+this.log(`实力不足！需要击败 ${skill.reqWins} 名强者才能领悟此功法。`, true);
+return;
+}
+const cost = skill.baseCost;
+if (this.state.horsePower >= cost) {
+this.state.horsePower -= cost;
+this.state.skills[id] = 1;
+if (skill.unlocksFinalCap) {
+this.log(`领悟 ${skill.name}! 匹数上限彻底解开，突破至一百万！`, true);
+} else if (skill.isFinal) {
+this.log(`突破成功！上限解锁为一百万匹！`, true);
+} else {
+this.log(`领悟 ${skill.name}! 上限解锁至 ${ui.formatNum(skill.capUnlock)} 匹！`, true);
+}
+this.renderSkills();
+this.checkProgression();
+ui.update();
+}
+},
+getBattleStats() {
+const atkMult = this.getRealmAtkMult();
+const defMult = this.getRealmDefMult();
+const pAtk = (this.state.horsePower * 0.5 + 100) * atkMult;
+const pDef = (this.state.horsePower * 0.2 + 50) * defMult;
+const pMaxHpVal = 1000 + (this.state.horsePower * 0.1);
+const wave = this.state.battleWins + 1;
+let batchCount = 1;
+if (wave > 5000) {
+batchCount = Math.floor(Math.pow(1.005, wave - 5000) * 50);
+} else if (wave > 1000) {
+batchCount = Math.floor(5 + (wave - 1000) * 0.05);
+} else if (wave > 100) {
+batchCount = Math.floor(1 + (wave - 100) * 0.01);
+}
+if (batchCount > 5000) batchCount = 5000;
+const resourceFactor = 1 + Math.log10(Math.max(1, this.state.volt + this.state.horsePower)) * 0.05;
+let difficultyCurve = 1;
+if (wave <= 10) {
+difficultyCurve = 1 + (wave * 0.2);
+} else {
+difficultyCurve = 3 * Math.pow(1.15, wave - 10);
+}
+let rawEMaxHp = Math.floor(1500 * resourceFactor * difficultyCurve);
+let rawEAtk = Math.floor(rawEMaxHp * 0.12);
+let rawEDef = Math.floor(rawEMaxHp * 0.04);
+const capMultiplier = 1.5;
+const maxEHp = pMaxHpVal * capMultiplier;
+const maxEAtk = pAtk * capMultiplier;
+const maxEDef = pDef * capMultiplier;
+let eMaxHp = Math.min(rawEMaxHp, maxEHp);
+let eAtk = Math.min(rawEAtk, maxEAtk);
+let eDef = Math.min(rawEDef, maxEDef);
+if (wave > 100) {
+eAtk = 7000000;
+eDef = 2000000;
+}
+return { pAtk, pDef, pMaxHp: pMaxHpVal, eMaxHp, eAtk, eDef, wave, batchCount };
+},
+startChallenge(isAuto = false) {
+if (this.state.tier < 2) return;
+const now = Date.now();
+if (this.state.isInjured) {
+if(!isAuto) this.log("重伤未愈，无法挑战！", true);
+return;
+}
+if (this.state.playerCurHp <= 0) {
+if(!isAuto) this.log("生命值过低，请等待恢复...", true);
+return;
+}
+if (this.state.isBattling) return;
+const stats = this.getBattleStats();
+this.state.isBattling = true;
+this.state.enemyMaxHp = stats.eMaxHp;
+this.state.enemyCurHp = stats.eMaxHp;
+this.state.enemyAtk = stats.eAtk;
+this.state.enemyDef = stats.eDef;
+this.state.playerMaxHp = stats.pMaxHp;
+if (this.state.playerCurHp > this.state.playerMaxHp) this.state.playerCurHp = this.state.playerCurHp;
+ui.updateBattleUI(true);
+if(!isAuto) this.log(`挑战开始！对阵第 ${stats.wave} 位强者。`, true);
+this.battleTimer = setInterval(() => {
+this.battleRound();
+}, 800);
+},
+battleRound() {
+const s = this.state;
+if (!s.isBattling) return;
+const stats = this.getBattleStats();
+const pDmg = Math.max(1, Math.floor(stats.pAtk - (s.enemyDef * 0.5)));
+const eDmg = Math.max(1, Math.floor(s.enemyAtk - stats.pDef));
+s.enemyCurHp -= pDmg;
+if (s.enemyCurHp < 0) s.enemyCurHp = 0;
+ui.updateBattleHP();
+if (s.enemyCurHp <= 0) {
+this.endBattle(true);
+return;
+}
+setTimeout(() => {
+if (!s.isBattling) return;
+s.playerCurHp -= eDmg;
+if (s.playerCurHp < 0) s.playerCurHp = 0;
+ui.updateBattleHP();
+if (s.playerCurHp <= 0) {
+this.endBattle(false);
+}
+}, 400);
+},
+fleeBattle() {
+if (!this.state.isBattling) return;
+this.log("你逃走了！士气大减，需要重新调整状态。", true);
+this.endBattle(false, true);
+},
+endBattle(win, fled = false) {
+clearInterval(this.battleTimer);
+this.state.isBattling = false;
+const now = Date.now();
+if (win) {
+const stats = this.getBattleStats();
+const count = stats.batchCount || 1;
+const baseReward = Math.max(1, Math.floor(stats.eMaxHp / 1000));
+const totalReward = baseReward * count;
+this.state.battleWins += count;
+this.state.realmCount += totalReward;
+let logMsg = `挑战胜利！`;
+if (count > 1) {
+logMsg += `势如破竹！一次性击败了 ${count} 位强者 (第 ${stats.wave} - ${stats.wave + count - 1} 波)。`;
+} else {
+logMsg += `击败了第 ${stats.wave} 位强者。`;
+}
+logMsg += ` 获得 ${totalReward} 成 完全境界。`;
+if(!this.state.isInjured) this.log(logMsg, true);
+if (this.autoBattleEnabled) {
+if (!this.state.isInjured && this.state.playerCurHp > 0) {
+setTimeout(() => {
+if(this.autoBattleEnabled && !this.state.isBattling && !this.state.isInjured && this.state.playerCurHp > 0) {
+this.startChallenge(true);
+}
+}, 100);
+} else if (this.state.playerCurHp <= 0) {
+this.log("自动挑战停止：胜利但生命值归零，陷入重伤。", true);
+}
+}
+this.checkAchievements();
+this.renderRealmUpgrades();
+this.renderSkills();
+} else {
+if (!fled) {
+this.log("你被打败了！陷入重伤。自动挑战已停止。", true);
+} else {
+this.log("逃走失败，陷入重伤。自动挑战已停止。", true);
+}
+this.state.playerCurHp = 0;
+this.state.isInjured = true;
+this.state.injuredUntil = now + 10000;
+}
+ui.updateBattleUI(false);
+},
+buyRealmUpgrade(id) {
+const upg = CONFIG.realmUpgrades.find(u => u.id === id);
+const curLvl = this.state.realmUpgrades[id] || 0;
+if (curLvl >= upg.maxLevel) return;
+const cost = Math.floor(upg.baseCost * Math.pow(upg.costMult, curLvl));
+if (this.state.realmCount >= cost) {
+this.state.realmCount -= cost;
+this.state.realmUpgrades[id] = curLvl + 1;
+this.log(`境界提升：${upg.name} Lv.${curLvl+1}`, true);
+this.renderRealmUpgrades();
+ui.update();
+}
+},
+toggleAutoBattle() {
+const hasAuto = parseInt(this.state.realmUpgrades['r_auto_battle'] || '0') === 1;
+if (!hasAuto) {
+this.log("尚未购买自动挑战升级！", true);
+return;
+}
+this.autoBattleEnabled = !this.autoBattleEnabled;
+const status = this.autoBattleEnabled ? "ON" : "OFF";
+const color = this.autoBattleEnabled ? "var(--accent-color)" : "#888";
+const btn = document.getElementById('btn-auto-toggle');
+btn.innerText = `自动挑战：${status}`;
+btn.style.borderColor = this.autoBattleEnabled ? 'var(--danger-color)' : 'var(--accent-color)';
+btn.style.color = this.autoBattleEnabled ? 'var(--danger-color)' : 'var(--accent-color)';
+if (this.autoBattleEnabled) {
+this.log("自动挑战已开启。胜利后将自动发起下一次挑战。", true);
+this.checkAutoBattle();
+} else {
+this.log("自动挑战已关闭。", true);
+}
+ui.update();
+},
+getAchievementMult() {
+let mult = 1;
+this.state.unlockedAchievements.forEach(id => {
+const ach = CONFIG.achievements.find(a => a.id === id);
+if (ach) mult *= ach.rewardMult;
+});
+return mult;
+},
+getRealmResourceMult(isT2 = false, isT3 = false) {
+let mult = 1;
+const rT1 = this.state.realmUpgrades['r_res_t1'] || 0;
+const rT2 = this.state.realmUpgrades['r_res_t2'] || 0;
+const rT3 = this.state.realmUpgrades['r_res_t3'] || 0;
+if (isT3) mult *= Math.pow(1.2, rT3);
+else if (isT2) mult *= Math.pow(1.1, rT2);
+else mult *= Math.pow(1.1, rT1);
+return mult;
+},
+getRealmAtkMult() {
+const lvl = this.state.realmUpgrades['r_atk'] || 0;
+return Math.pow(1.2, lvl);
+},
+getRealmDefMult() {
+const lvl = this.state.realmUpgrades['r_def'] || 0;
+return Math.pow(1.2, lvl);
+},
+checkProgression() {
+if (this.state.tier === 1 && this.state.volt >= CONFIG.t1Breakthrough) {
+const btn = document.getElementById('btn-breakthrough');
+if (btn) {
+btn.disabled = false;
+btn.innerText = "突破至第二重天 (已就绪)";
+btn.style.opacity = "1";
+btn.style.cursor = "pointer";
+}
+}
+if (this.state.tier === 2 && this.state.horsePower >= CONFIG.t2Breakthrough) {
+const btn = document.getElementById('btn-breakthrough-t2');
+if (btn) {
+btn.disabled = false;
+btn.innerText = "进入第三重天 (已就绪)";
+btn.style.opacity = "1";
+btn.style.cursor = "pointer";
+}
+}
+if (this.state.tier === 3) {
+const allSkillsBought = CONFIG.skills.every(s => this.state.skills[s.id] === 1);
+if (allSkillsBought && this.state.horsePower >= CONFIG.finalCap) {
+this.enterFinal();
+}
+}
+},
+enterTier2() {
+if (this.state.volt < CONFIG.t1Breakthrough) {
+this.log("伏特不足，无法突破！", true);
+return;
+}
+this.state.tier = 2;
+this.state.horsePower = 0;
+const cardT1 = document.getElementById('card-breakthrough-t1');
+if(cardT1) cardT1.style.display = 'none';
+this.log("突破成功！进入第二重天：磁场转动。", true);
+ui.unlockTab('tier2');
+ui.unlockTab('challenge');
+ui.switchTab('tier2');
+this.checkAchievements();
+ui.update();
+},
+enterTier3() {
+if (this.state.horsePower < CONFIG.t2Breakthrough) {
+this.log("匹数不足，无法进入地狱！", true);
+return;
+}
+this.state.tier = 3;
+const cardT2 = document.getElementById('card-breakthrough-t2');
+if(cardT2) cardT2.style.display = 'none';
+this.log("天道崩塌...进入第三重天：地狱磁场。", true);
+ui.unlockTab('tier3');
+ui.switchTab('tier3');
+this.renderSkills();
+this.checkAchievements();
+ui.update();
+},
+enterFinal() {
+this.state.tier = 4;
+const screen = document.getElementById('cinematic-screen');
+screen.style.display = 'flex';
+this.playCinematic();
+this.log("达到一百万匹！最终剧情开始！", true);
+},
+playCinematic() {
+const textEl = document.getElementById('cinematic-text');
+const restartBtn = document.getElementById('cinematic-restart-btn');
+let lineIndex = 0;
+const showNextLine = () => {
+if (lineIndex >= this.cinematicLines.length) {
+restartBtn.style.display = 'block';
+return;
+}
+textEl.classList.remove('visible');
+setTimeout(() => {
+textEl.innerText = this.cinematicLines[lineIndex];
+textEl.classList.add('visible');
+lineIndex++;
+setTimeout(showNextLine, 3500);
+}, 2000);
+};
+showNextLine();
+},
+checkAchievements() {
+let changed = false;
+CONFIG.achievements.forEach(ach => {
+if (!this.state.unlockedAchievements.includes(ach.id)) {
+try {
+if (ach.condition(this.state)) {
+this.state.unlockedAchievements.push(ach.id);
+this.log(`成就解锁：${ach.name} (倍率 +${((ach.rewardMult-1)*100).toFixed(0)}%)`, true);
+changed = true;
+}
+} catch (e) { console.error("Achievement error", e); }
+}
+});
+if (changed) {
+this.renderAchievements();
+ui.update();
+}
+},
+renderVoltRetention() {
+const s = this.state;
+const card = document.getElementById('card-volt-retention');
+const btn = document.getElementById('btn-buy-volt-retention');
+const desc = document.getElementById('volt-retention-desc');
+const lvlSpan = document.getElementById('volt-retention-lvl');
+lvlSpan.innerText = s.voltRetentionLevel;
+if (s.voltRetentionLevel >= 5) {
+desc.innerText = "效果：保留所有伏特升级 + 重修后立刻自动购买满 (已达上限)";
+btn.disabled = true;
+btn.innerText = "已满级";
+return;
+}
+const nextReq = 6 + s.voltRetentionLevel;
+const mult = Math.pow(2, s.prestigeCount);
+const cost = Math.floor((mult / 8) * 10000);
+if (s.prestigeCount >= nextReq) {
+card.style.display = 'flex';
+desc.innerText = `效果：${s.voltRetentionLevel + 1 >= 5 ? '保留所有并自动购买' : '多保留一个'}伏特升级。花费：倍数/8 * 10000 伏特`;
+btn.disabled = s.volt < cost;
+btn.innerText = `升级 (花费：${ui.formatNum(cost)} V)`;
+} else {
+card.style.display = 'flex';
+desc.innerText = `解锁需求：散功重修达到 ${Math.pow(2, nextReq)} 倍 (当前 ${Math.pow(2, s.prestigeCount)} 倍)`;
+btn.disabled = true;
+btn.innerText = `需 ${Math.pow(2, nextReq)} 倍重修`;
+}
+},
+renderSkills() {
+const container = document.getElementById('skill-list');
+container.innerHTML = '';
+CONFIG.skills.forEach(s => {
+const lvl = this.state.skills[s.id] || 0;
+if (lvl >= 1) {
+const div = document.createElement('div');
+if (s.isFinal) {
+div.className = 'upgrade-card final-upgrade';
+div.style.opacity = '1';
+div.innerHTML = `<h3 style="color:var(--gold-color)">${s.name}</h3><p>${s.desc} (已达成)</p><button class="btn-buy gold" disabled>已突破</button>`;
+} else {
+div.className = 'upgrade-card';
+div.style.opacity = '0.5';
+div.innerHTML = `<h3 style="color:var(--danger-color)">${s.name}</h3><p>${s.desc} (已领悟)</p><button class="btn-buy danger" disabled>已修炼</button>`;
+}
+container.appendChild(div);
+return;
+}
+const cost = s.baseCost;
+const div = document.createElement('div');
+const canBuy = this.state.battleWins >= s.reqWins;
+const reqText = `需击败 ${s.reqWins} 名强者`;
+const capText = s.capUnlock ? ` (解锁上限:${ui.formatNum(s.capUnlock)})` : '';
+if (s.isFinal) {
+div.className = 'upgrade-card final-upgrade';
+div.innerHTML = `<h3>${s.name}</h3><p>${s.desc}<br><span style="color:${canBuy?'#0f0':'#f00'}">${canBuy ? '条件满足' : reqText}</span></p><button class="btn-buy gold" onclick="game.buySkill('${s.id}')" ${!canBuy ? 'disabled' : ''}>尝试突破 (花费：${ui.formatNum(cost)} 匹)</button>`;
+} else {
+div.className = 'upgrade-card';
+div.innerHTML = `<h3 style="color:var(--danger-color)">${s.name}</h3><p>${s.desc}${capText}<br><span style="color:${canBuy?'#0f0':'#f00'}">${canBuy ? '条件满足' : reqText}</span></p><button class="btn-buy danger" onclick="game.buySkill('${s.id}')" ${!canBuy ? 'disabled' : ''}>修炼 (花费：${ui.formatNum(cost)} 匹)</button>`;
+}
+container.appendChild(div);
+});
+},
+renderRealmUpgrades() {
+const container = document.getElementById('realm-upgrades');
+container.innerHTML = '';
+CONFIG.realmUpgrades.forEach(u => {
+if (this.state.tier < (u.reqTier || 1)) return;
+const lvl = this.state.realmUpgrades[u.id] || 0;
+if (lvl >= u.maxLevel) return;
+const cost = Math.floor(u.baseCost * Math.pow(u.costMult, lvl));
+const div = document.createElement('div');
+div.className = 'upgrade-card';
+div.innerHTML = `<h3 class="gold">${u.name} <span style="font-size:0.8rem; color:#888">Lv.${lvl}/${u.maxLevel}</span></h3><p>${u.desc}</p><button class="btn-buy gold" onclick="game.buyRealmUpgrade('${u.id}')">升华 (花费：${cost} 成)</button>`;
+container.appendChild(div);
+});
+if (container.innerHTML === '') container.innerHTML = '<p style="color:#666; grid-column: 1/-1;">暂无可购买的境界升级</p>';
+},
+renderAchievements() {
+const container = document.getElementById('achievement-list');
+container.innerHTML = '';
+CONFIG.achievements.forEach(ach => {
+const unlocked = this.state.unlockedAchievements.includes(ach.id);
+const div = document.createElement('div');
+div.className = `achievement-item ${unlocked ? 'unlocked' : ''}`;
+div.innerHTML = `<div class="ach-icon">${unlocked ? '★' : '?'}</div><div class="ach-info"><div class="ach-title">${ach.name}</div><div class="ach-desc">${ach.desc}</div><div class="ach-reward">${unlocked ? `奖励：全局倍率 x${ach.rewardMult}` : '???'}</div></div>`;
+container.appendChild(div);
+});
+},
+log(msg, important = false) {
+const area = document.getElementById('log-container');
+const div = document.createElement('div');
+let cls = 'log-entry';
+if (important) cls += ' log-important';
+if (msg.includes("重伤") || msg.includes("冷却") || msg.includes("打败")) cls += ' log-danger';
+if (msg.includes("突破") || msg.includes("一百万") || msg.includes("胜利")) cls += ' log-gold';
+if (msg.includes("苏醒") || msg.includes("回血") || msg.includes("自动购买")) cls += ' log-heal';
+div.className = cls;
+div.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+area.prepend(div);
+if (area.children.length > 50) area.lastChild.remove();
+},
+saveGame(notify = false) {
+localStorage.setItem('magneticIncrementSave_v3', JSON.stringify(this.state));
+if(notify) this.log("游戏进度已保存。", true);
+},
+loadGame() {
+const saved = localStorage.getItem('magneticIncrementSave_v3');
+if (saved) {
+try {
+const parsed = JSON.parse(saved);
+const initial = this.getInitialState();
+this.state = { ...initial, ...parsed };
+if (!Array.isArray(this.state.unlockedAchievements)) this.state.unlockedAchievements = [];
+if (this.state.autoBattleEnabled === undefined) this.state.autoBattleEnabled = false;
+if (this.state.tier >= 2) {
+const cardT1 = document.getElementById('card-breakthrough-t1');
+if(cardT1) cardT1.style.display = 'none';
+}
+if (this.state.tier >= 3) {
+const cardT2 = document.getElementById('card-breakthrough-t2');
+if(cardT2) cardT2.style.display = 'none';
+}
+} catch (e) {
+console.error("Save error", e);
+this.state = this.getInitialState();
+}
+}
+},
+exportSave() {
+const str = btoa(JSON.stringify(this.state));
+prompt("复制存档:", str);
+},
+importSave() {
+const str = prompt("粘贴存档:");
+if (!str) return;
+try {
+const parsed = JSON.parse(atob(str));
+if (parsed.volt !== undefined) {
+this.state = { ...this.getInitialState(), ...parsed };
+this.saveGame();
+location.reload();
+} else alert("无效存档");
+} catch (e) { alert("存档损坏"); }
+}
+};
+
+const ui = {
+init() {
+this.switchTab('tier1');
+if (game.state.tier >= 2) {
+this.unlockTab('tier2');
+this.unlockTab('challenge');
+document.getElementById('card-breakthrough-t1').style.display = 'none';
+}
+if (game.state.tier >= 3) {
+this.unlockTab('tier3');
+document.getElementById('card-breakthrough-t2').style.display = 'none';
+}
+this.update();
+},
+switchTab(tabId) {
+document.querySelectorAll('.panel-view').forEach(el => el.classList.remove('active'));
+document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active', 'challenge-active', 'achievement-active'));
+document.getElementById(`view-${tabId}`).classList.add('active');
+const btn = document.getElementById(`nav-${tabId}`);
+if (btn) {
+btn.classList.add('active');
+if (tabId === 'challenge') btn.classList.add('challenge-active');
+if (tabId === 'achievements') btn.classList.add('achievement-active');
+}
+},
+unlockTab(tabId) {
+const btn = document.getElementById(`nav-${tabId}`);
+if (btn) btn.classList.remove('disabled');
+},
+formatNum(num) {
+if (num >= 1e8) return (num/1e8).toFixed(2) + '亿';
+if (num >= 1e4) return (num/1e4).toFixed(2) + '万';
+if (num >= 1e3) return (num/1e3).toFixed(1) + 'k';
+return Math.floor(num).toLocaleString();
+},
+checkRedDots() {
+const s = game.state;
+const t1HasBuyable = s.volt >= s.genCost || s.volt >= s.capCost || s.volt >= s.transCost || s.volt >= s.superCost || (s.volt >= s.t1BoostCost && s.t1BoostLvl < 3);
+document.getElementById('dot-tier1').style.display = (s.tier === 1 && t1HasBuyable) ? 'block' : 'none';
+if (s.tier >= 2) {
+const t2HasBuyable = s.horsePower >= s.hpUpgCost || s.horsePower >= s.voltUpgCost || s.horsePower >= s.voltConvCost || s.horsePower >= s.autoHPCost || s.horsePower >= s.clickHPCost || (s.horsePower >= s.t2BoostCost && s.t2BoostLvl < 3);
+document.getElementById('dot-tier2').style.display = t2HasBuyable ? 'block' : 'none';
+}
+if (s.tier === 3) {
+let t3HasBuyable = false;
+CONFIG.skills.forEach(skill => {
+if (!s.skills[skill.id] && s.horsePower >= skill.baseCost && s.battleWins >= skill.reqWins) t3HasBuyable = true;
+});
+document.getElementById('dot-tier3').style.display = t3HasBuyable ? 'block' : 'none';
+}
+if (s.tier >= 2) {
+const canChallenge = !s.isBattling && !s.isInjured && s.playerCurHp > 0;
+let realmBuyable = false;
+CONFIG.realmUpgrades.forEach(u => {
+if (s.tier >= (u.reqTier||1)) {
+const lvl = s.realmUpgrades[u.id] || 0;
+if (lvl < u.maxLevel && s.realmCount >= Math.floor(u.baseCost * Math.pow(u.costMult, lvl))) realmBuyable = true;
+}
+});
+document.getElementById('dot-challenge').style.display = (canChallenge || realmBuyable) ? 'block' : 'none';
+}
+},
+update() {
+const s = game.state;
+const achMult = game.getAchievementMult();
+const realmMult = game.getRealmResourceMult();
+const activeTab = document.querySelector('.panel-view.active').id;
+let resName = "电流", resVal = s.volt, resUnit = "伏特";
+let resColor = "var(--accent-color)";
+const cap = game.getCurrentHPCap();
+if (activeTab === 'view-tier1') {
+resName = "电流"; resVal = s.volt; resUnit = "伏特";
+const pMult = Math.pow(2, s.prestigeCount);
+const superEff = 1 + (s.superLvl * 0.2);
+const boostMult = Math.pow(1.5, s.t1BoostLvl);
+const clickPow = (1 + s.capLvl) * pMult * superEff * achMult * realmMult * boostMult;
+document.getElementById('t1-click-val').innerText = this.formatNum(clickPow);
+document.getElementById('cost-gen').innerText = this.formatNum(s.genCost);
+document.getElementById('count-gen').innerText = s.genCount;
+document.getElementById('btn-buy-gen').disabled = s.volt < s.genCost;
+document.getElementById('cost-cap').innerText = this.formatNum(s.capCost);
+document.getElementById('lvl-cap').innerText = s.capLvl;
+document.getElementById('btn-buy-cap').disabled = s.volt < s.capCost;
+document.getElementById('cost-trans').innerText = this.formatNum(s.transCost);
+document.getElementById('lvl-trans').innerText = s.transLvl;
+document.getElementById('btn-buy-trans').disabled = s.volt < s.transCost;
+document.getElementById('cost-super').innerText = this.formatNum(s.superCost);
+document.getElementById('lvl-super').innerText = s.superLvl;
+document.getElementById('btn-buy-super').disabled = s.volt < s.superCost;
+document.getElementById('cost-t1-boost').innerText = this.formatNum(s.t1BoostCost);
+document.getElementById('lvl-t1-boost').innerText = s.t1BoostLvl;
+document.getElementById('btn-buy-t1-boost').disabled = s.volt < s.t1BoostCost || s.t1BoostLvl >= 3;
+const currentReq = game.getPrestigeCost();
+const prog = Math.min(100, (s.volt / currentReq) * 100);
+document.getElementById('prog-prestige').style.width = prog + '%';
+document.getElementById('prestige-mult-disp').innerText = Math.pow(2, s.prestigeCount);
+document.getElementById('btn-prestige').disabled = s.volt < currentReq;
+game.renderVoltRetention();
+const btnBT = document.getElementById('btn-breakthrough');
+if (s.volt >= CONFIG.t1Breakthrough && s.tier === 1) {
+btnBT.disabled = false;
+btnBT.style.opacity = "1";
+btnBT.style.borderColor = "var(--gold-color)";
+btnBT.style.color = "var(--gold-color)";
+} else {
+btnBT.disabled = true;
+btnBT.style.opacity = "0.5";
+btnBT.style.borderColor = "#444";
+btnBT.style.color = "#444";
+}
+}
+else if (activeTab === 'view-tier2') {
+resName = "磁场"; resVal = s.horsePower; resUnit = "匹";
+resColor = "var(--danger-color)";
+if (s.horsePower >= cap) {
+resVal = cap;
+} else {
+resVal = s.horsePower;
+}
+const t2Mult = Math.pow(2, s.t2PrestigeCount);
+const boostMult = Math.pow(1.5, s.t2BoostLvl);
+const clickPowRaw = (1 + s.hpUpgLvl * 1 + s.voltUpgLvl * 1 + s.clickHPLvl * 2) * achMult * game.getRealmResourceMult(true) * t2Mult * boostMult;
+let softCapFactor = 1.0;
+if (s.horsePower >= 100000) {
+const ratio = (s.horsePower - 100000) / (cap - 100000);
+if (ratio > 0) softCapFactor = Math.pow(1 - Math.min(0.99, ratio), 3);
+}
+const clickPow = clickPowRaw * softCapFactor;
+document.getElementById('t2-click-val').innerText = this.formatNum(clickPow);
+document.getElementById('cost-hp-upg').innerText = this.formatNum(s.hpUpgCost);
+document.getElementById('lvl-hp-upg').innerText = s.hpUpgLvl;
+document.getElementById('btn-buy-hp-upg').disabled = s.horsePower < s.hpUpgCost;
+document.getElementById('cost-volt-upg').innerText = this.formatNum(s.voltUpgCost);
+document.getElementById('lvl-volt-upg').innerText = s.voltUpgLvl;
+document.getElementById('btn-buy-volt-upg').disabled = s.horsePower < s.voltUpgCost;
+document.getElementById('cost-volt-conv').innerText = this.formatNum(s.voltConvCost);
+document.getElementById('lvl-volt-conv').innerText = s.voltConvLvl;
+document.getElementById('btn-buy-volt-conv').disabled = s.horsePower < s.voltConvCost || s.voltConvLvl >= 2;
+document.getElementById('cost-auto-hp').innerText = this.formatNum(s.autoHPCost);
+document.getElementById('lvl-auto-hp').innerText = s.autoHPLvl;
+document.getElementById('btn-buy-auto-hp').disabled = s.horsePower < s.autoHPCost;
+document.getElementById('cost-click-hp').innerText = this.formatNum(s.clickHPCost);
+document.getElementById('lvl-click-hp').innerText = s.clickHPLvl;
+document.getElementById('btn-buy-click-hp').disabled = s.horsePower < s.clickHPCost;
+document.getElementById('cost-t2-boost').innerText = this.formatNum(s.t2BoostCost);
+document.getElementById('lvl-t2-boost').innerText = s.t2BoostLvl;
+document.getElementById('btn-buy-t2-boost').disabled = s.horsePower < s.t2BoostCost || s.t2BoostLvl >= 3;
+const t2Req = Math.floor(CONFIG.t2PrestigeReq * Math.pow(1.5, s.t2PrestigeCount));
+document.getElementById('t2-prestige-req').innerText = this.formatNum(t2Req);
+const t2Prog = Math.min(100, (s.horsePower / t2Req) * 100);
+document.getElementById('prog-t2-prestige').style.width = t2Prog + '%';
+document.getElementById('t2-prestige-mult-disp').innerText = Math.pow(2, s.t2PrestigeCount).toFixed(2);
+document.getElementById('btn-t2-prestige').disabled = s.horsePower < t2Req;
+const btnBT2 = document.getElementById('btn-breakthrough-t2');
+if (s.horsePower >= CONFIG.t2Breakthrough && s.tier === 2) {
+btnBT2.disabled = false;
+btnBT2.style.opacity = "1";
+btnBT2.style.borderColor = "var(--gold-color)";
+btnBT2.style.color = "var(--gold-color)";
+} else {
+btnBT2.disabled = true;
+btnBT2.style.opacity = "0.5";
+}
+}
+else if (activeTab === 'view-tier3') {
+resName = "磁场"; resVal = s.horsePower; resUnit = "匹";
+resColor = "var(--danger-color)";
+if (s.horsePower >= cap) {
+resVal = cap;
+} else {
+resVal = s.horsePower;
+}
+const t3WinsDisplay = s.battleWins >= 10000 ? "你打倒了他妈的整个世界！" : s.battleWins;
+document.getElementById('t3-wins-count').innerText = t3WinsDisplay;
+}
+else if (activeTab === 'view-challenge' || activeTab === 'view-achievements') {
+if (s.tier === 1) { resName = "电流"; resVal = s.volt; resUnit = "伏特"; }
+else {
+resName = "磁场"; resVal = s.horsePower; resUnit = "匹";
+resColor = "var(--danger-color)";
+if (s.horsePower >= cap) {
+resVal = cap;
+} else {
+resVal = s.horsePower;
+}
+}
+}
+document.getElementById('res-name').innerText = resName;
+document.getElementById('res-name').style.color = resColor;
+const displayVal = (s.tier === 4 && activeTab !== 'view-tier1') ? "一百万" : this.formatNum(resVal);
+document.getElementById('res-val').innerText = displayVal;
+document.getElementById('res-unit').innerText = resUnit;
+document.getElementById('total-mult').innerText = (achMult * realmMult).toFixed(2);
+document.getElementById('ach-mult').innerText = achMult.toFixed(2);
+document.getElementById('realm-mult').innerText = realmMult.toFixed(2);
+if (activeTab === 'view-challenge' && s.tier >= 2) {
+const winsDisplay = s.battleWins >= 10000 ? "你打倒了他妈的整个世界！" : s.battleWins;
+document.getElementById('challenge-wins-count').innerText = winsDisplay;
+const stats = game.getBattleStats();
+s.playerAtkCache = stats.pAtk;
+document.getElementById('player-atk').innerText = this.formatNum(stats.pAtk);
+document.getElementById('player-def').innerText = this.formatNum(stats.pDef);
+document.getElementById('player-hp-max').innerText = this.formatNum(Math.floor(stats.pMaxHp));
+document.getElementById('player-hp-cur').innerText = this.formatNum(Math.floor(s.playerCurHp));
+const pHpPct = (s.playerCurHp / stats.pMaxHp) * 100;
+document.getElementById('player-hp-bar').style.width = Math.max(0, pHpPct) + '%';
+document.getElementById('enemy-wave-num').innerText = stats.wave;
+document.getElementById('enemy-hp-max').innerText = this.formatNum(stats.eMaxHp);
+document.getElementById('enemy-hp-cur').innerText = this.formatNum(Math.floor(s.enemyCurHp));
+document.getElementById('enemy-atk').innerText = this.formatNum(stats.eAtk);
+document.getElementById('enemy-def').innerText = this.formatNum(stats.eDef);
+const eHpPct = stats.eMaxHp > 0 ? (s.enemyCurHp / stats.eMaxHp) * 100 : 0;
+document.getElementById('enemy-hp-bar').style.width = Math.max(0, eHpPct) + '%';
+document.getElementById('realm-count').innerText = this.formatNum(s.realmCount);
+const btnChallenge = document.getElementById('btn-challenge');
+const btnFlee = document.getElementById('btn-flee');
+const statusDiv = document.getElementById('battle-status');
+const now = Date.now();
+if (s.isInjured) {
+const remaining = Math.ceil((s.injuredUntil - now) / 1000);
+statusDiv.innerText = `重伤恢复中 (${remaining}s)`;
+statusDiv.className = "battle-status status-injured";
+btnChallenge.disabled = true;
+btnFlee.disabled = true;
+} else if (s.isBattling) {
+statusDiv.innerText = "战斗中...";
+statusDiv.className = "battle-status status-fighting";
+btnChallenge.disabled = true;
+btnFlee.disabled = false;
+} else {
+btnFlee.disabled = true;
+if (s.playerCurHp <= 0) {
+statusDiv.innerText = "等待复活...";
+statusDiv.className = "battle-status status-cooldown";
+btnChallenge.disabled = true;
+} else {
+statusDiv.innerText = "准备挑战";
+statusDiv.className = "battle-status status-waiting";
+btnChallenge.disabled = false;
+}
+}
+const btnAutoToggle = document.getElementById('btn-auto-toggle');
+const hasAuto = parseInt(s.realmUpgrades['r_auto_battle'] || '0') === 1;
+if (!hasAuto) {
+btnAutoToggle.disabled = true;
+btnAutoToggle.style.borderColor = '#444';
+btnAutoToggle.style.color = '#444';
+btnAutoToggle.style.backgroundColor = '#111';
+btnAutoToggle.innerText = "未购买升级";
+} else {
+btnAutoToggle.disabled = false;
+btnAutoToggle.style.borderColor = game.autoBattleEnabled ? 'var(--danger-color)' : 'var(--accent-color)';
+btnAutoToggle.style.color = game.autoBattleEnabled ? 'var(--danger-color)' : 'var(--accent-color)';
+btnAutoToggle.style.backgroundColor = '#222';
+btnAutoToggle.style.cursor = 'pointer';
+const statusText = game.autoBattleEnabled ? "ON" : "OFF";
+btnAutoToggle.innerText = `自动挑战：${statusText}`;
+}
+const rButtons = document.querySelectorAll('#realm-upgrades button');
+let rIdx = 0;
+CONFIG.realmUpgrades.forEach(u => {
+if (s.tier < (u.reqTier||1)) return;
+const lvl = s.realmUpgrades[u.id] || 0;
+if (lvl >= u.maxLevel) return;
+const cost = Math.floor(u.baseCost * Math.pow(u.costMult, lvl));
+if (rButtons[rIdx]) rButtons[rIdx].disabled = s.realmCount < cost;
+rIdx++;
+});
+}
+},
+updateBattleUI(inBattle) {
+this.update();
+},
+updateBattleHP() {
+const s = game.state;
+const stats = game.getBattleStats();
+document.getElementById('player-hp-cur').innerText = Math.floor(s.playerCurHp);
+document.getElementById('enemy-hp-cur').innerText = Math.floor(s.enemyCurHp);
+const pHpPct = (s.playerCurHp / stats.pMaxHp) * 100;
+const eHpPct = stats.eMaxHp > 0 ? (s.enemyCurHp / stats.eMaxHp) * 100 : 0;
+document.getElementById('player-hp-bar').style.width = Math.max(0, pHpPct) + '%';
+document.getElementById('enemy-hp-bar').style.width = Math.max(0, eHpPct) + '%';
+}
+};
+
+window.onload = () => game.init();
+</script>
+</body>
+</html>
