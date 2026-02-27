@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>海虎·磁场增量 - 修正版</title>
+<title>磁场增量</title>
 <style>
 /* --- 样式部分保持不变，仅做少量文案适配 --- */
 :root {
@@ -603,13 +603,138 @@ letter-spacing: 1px;
 ::-webkit-scrollbar-track { background: #050000; }
 ::-webkit-scrollbar-thumb { background: #440000; border: 1px solid #220000; }
 ::-webkit-scrollbar-thumb:hover { background: #660000; }
+/* --- 手机端适配样式 --- */
+@media screen and (max-width: 768px) {
+    /* 改变主体布局方向为垂直 */
+    body {
+        flex-direction: column;
+        height: auto; /* 允许高度自适应 */
+        overflow-y: auto; /* 允许整体纵向滚动 */
+        border: none; /* 去掉大边框以适应小屏 */
+    }
+
+    /* 侧边栏改为顶部导航栏 */
+    #nav-sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 4px solid var(--danger-color);
+        flex-direction: row; /* 按钮横向排列 */
+        overflow-x: auto; /* 允许横向滚动 */
+        padding: 10px 5px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+        white-space: nowrap; /* 防止按钮换行 */
+    }
+
+    /* 导航按钮样式调整 */
+    .nav-btn {
+        border-left: none;
+        border-bottom: 5px solid #330000;
+        padding: 10px 15px;
+        font-size: 0.9rem;
+        clip-path: polygon(0 0, 100% 0, 100% 90%, 90% 100%, 0 100%);
+        margin-right: 10px;
+        flex-shrink: 0; /* 防止按钮被压缩 */
+    }
+
+    .nav-btn:hover {
+        padding-left: 15px; /* 取消悬停时的左侧位移，避免跳动 */
+        background: linear-gradient(0deg, #330000 0%, transparent 100%);
+    }
+
+    .nav-btn.active {
+        border-bottom-color: var(--accent-color);
+        background: linear-gradient(0deg, rgba(0, 255, 255, 0.1) 0%, transparent 100%);
+    }
+    
+    /* 系统按钮单独一行或放在最后 */
+    .nav-btn.system-btn {
+        margin-top: 0;
+        margin-left: auto; /* 推到最右侧（如果空间够） */
+        border-top: none;
+        border-bottom: 5px solid #330000;
+        font-size: 0.7rem;
+        padding: 10px;
+    }
+
+    /* 主区域调整 */
+    #main-area {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    /* 顶部资源栏调整 */
+    #top-bar {
+        height: auto;
+        flex-direction: column;
+        padding: 15px;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .resource-display {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+    
+    .resource-val {
+        font-size: 1.5rem;
+    }
+
+    .global-mult {
+        font-size: 0.8rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* 内容面板调整 */
+    #content-panels {
+        padding: 10px;
+        height: auto;
+        overflow: visible;
+    }
+
+    .panel-view {
+        position: relative; /* 取消绝对定位，改为文档流 */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    /* 网格布局调整：单列显示 */
+    .stat-grid {
+        grid-template-columns: 1fr; /* 强制单列 */
+        gap: 15px;
+    }
+
+    /* 战斗区域调整 */
+    .battle-stats {
+        grid-template-columns: 1fr; /* 玩家和敌人上下排列 */
+        gap: 15px;
+    }
+
+    /* 字体大小微调 */
+    h2 {
+        font-size: 1.8rem;
+        letter-spacing: 2px;
+    }
+    
+    /* 日志区域高度限制，避免占用太多屏幕 */
+    #log-container {
+        height: 100px;
+        font-size: 0.8rem;
+    }
+}
 </style>
 </head>
 <body>
 <div id="nav-sidebar">
 <button class="nav-btn active" onclick="ui.switchTab('tier1')" id="nav-tier1">电流推动 <div class="red-dot" id="dot-tier1"></div></button>
 <button class="nav-btn disabled" onclick="ui.switchTab('tier2')" id="nav-tier2">磁场转动 <div class="red-dot" id="dot-tier2"></div></button>
-<button class="nav-btn disabled" onclick="ui.switchTab('tier3')" id="nav-tier3">地狱磁场 <div class="red-dot" id="dot-tier3"></div></button>
+<button class="nav-btn disabled" onclick="ui.switchTab('tier3')" id="nav-tier3">磁场功法 <div class="red-dot" id="dot-tier3"></div></button>
 <div style="flex:1"></div>
 <button class="nav-btn disabled" onclick="ui.switchTab('challenge')" id="nav-challenge">挑战强者 <div class="red-dot" id="dot-challenge"></div></button>
 <button class="nav-btn" onclick="ui.switchTab('achievements')" id="nav-achievements">武道成就</button>
@@ -1571,7 +1696,7 @@ this.state.tier = 2;
 this.state.horsePower = 0;
 const cardT1 = document.getElementById('card-breakthrough-t1');
 if(cardT1) cardT1.style.display = 'none';
-this.log("突破成功！进入第二重天：磁场转动。", true);
+this.log("突破成功！进入真正力量：磁场转动。", true);
 ui.unlockTab('tier2');
 ui.unlockTab('challenge');
 ui.switchTab('tier2');
@@ -1586,7 +1711,7 @@ return;
 this.state.tier = 3;
 const cardT2 = document.getElementById('card-breakthrough-t2');
 if(cardT2) cardT2.style.display = 'none';
-this.log("天道崩塌...进入第三重天：地狱磁场。", true);
+this.log("修行难进...进入磁场功法。", true);
 ui.unlockTab('tier3');
 ui.switchTab('tier3');
 this.renderSkills();
