@@ -285,6 +285,34 @@ background: #111;
 transform: none;
 box-shadow: none;
 }
+/* c1挑战：红色裂痕覆盖整个升级卡片 */
+.card-cracked {
+position: relative !important;
+pointer-events: none !important;
+}
+.card-cracked > * {
+opacity: 0.35;
+}
+.card-cracked::after {
+content: '' !important;
+display: block !important;
+position: absolute !important;
+inset: 0 !important;
+border: 2px solid rgba(180,0,0,0.55) !important;
+border-radius: inherit !important;
+background:
+  linear-gradient(113deg, transparent 22%, rgba(200,0,0,0.13) 22.4%, transparent 23%),
+  linear-gradient(47deg,  transparent 35%, rgba(180,0,0,0.11) 35.4%, transparent 36%),
+  linear-gradient(158deg, transparent 55%, rgba(160,0,0,0.10) 55.4%, transparent 56%),
+  linear-gradient(72deg,  transparent 14%, rgba(200,0,0,0.09) 14.4%, transparent 15%),
+  linear-gradient(135deg, transparent 68%, rgba(180,0,0,0.12) 68.4%, transparent 69%),
+  linear-gradient(25deg,  transparent 80%, rgba(200,0,0,0.08) 80.4%, transparent 81%),
+  radial-gradient(ellipse at 30% 40%, rgba(140,0,0,0.18) 0%, transparent 55%),
+  radial-gradient(ellipse at 70% 65%, rgba(120,0,0,0.14) 0%, transparent 50%) !important;
+pointer-events: none !important;
+z-index: 10 !important;
+box-shadow: inset 0 0 18px rgba(180,0,0,0.18), 0 0 8px rgba(180,0,0,0.25) !important;
+}
 .btn-buy.danger {
 border-color: var(--danger-color);
 color: var(--danger-color);
@@ -487,6 +515,14 @@ letter-spacing: 2px;
 .status-waiting { color: var(--accent-color); }
 .status-cooldown { color: #666; }
 .status-injured { color: #ff6600; }
+@keyframes ult-glow-pulse {
+  0% { box-shadow: 0 0 4px 1px rgba(180,80,255,0.4), 0 0 8px 2px rgba(180,80,255,0.2); }
+  100% { box-shadow: 0 0 10px 3px rgba(220,120,255,0.85), 0 0 20px 6px rgba(180,80,255,0.45); }
+}
+.ult-node-affordable {
+  animation: ult-glow-pulse 0.9s ease-in-out infinite alternate !important;
+  border-color: #cc66ff !important;
+}
 @keyframes shake {
 0% { transform: translate(1px, 1px) rotate(0deg); }
 10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -603,6 +639,73 @@ letter-spacing: 1px;
 ::-webkit-scrollbar-track { background: #050000; }
 ::-webkit-scrollbar-thumb { background: #440000; border: 1px solid #220000; }
 ::-webkit-scrollbar-thumb:hover { background: #660000; }
+/* Ultimate tier styles */
+.ult-tree-node {
+background: linear-gradient(135deg, #1a001a, #0d000d);
+    border: 2px solid #660066;
+    border-top: 4px solid #aa00aa;
+    padding: 10px 15px; /* 减小内边距 */
+    min-width: 180px;   /* 减小最小宽度，使图标变小 */
+    max-width: 220px;   /* 减小最大宽度 */
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    font-size: 0.9rem;  /* 可选：稍微减小字体以适配小图标 */
+}
+.ult-tree-node:hover:not(.locked) {
+  border-color: #ff00ff;
+  box-shadow: 0 0 20px rgba(255,0,255,0.3);
+  transform: scale(1.02);
+}
+.ult-tree-node.unlocked {
+  border-color: #ff00ff;
+  background: linear-gradient(135deg, #2a002a, #110011);
+  box-shadow: 0 0 15px rgba(255,0,255,0.2);
+}
+.ult-tree-node.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ult-tree-connector {
+  width: 3px;
+  height: 30px;
+  background: linear-gradient(180deg, #660066, #330033);
+  margin: 0 auto;
+}
+.ult-challenge-card {
+  background: linear-gradient(135deg, #1a0a00, #0d0500);
+  border: 2px solid #662200;
+  border-top: 4px solid #aa4400;
+  padding: 20px;
+  position: relative;
+}
+.ult-challenge-card.completed { border-color: #00aa44; border-top-color: #00ff66; }
+.ult-challenge-card.active-challenge { border-color: #ff4400; box-shadow: 0 0 20px rgba(255,68,0,0.4); }
+.ult-challenge-card h4 { color: #ff8844; font-family: var(--font-main); font-size:1.2rem; margin:0 0 8px 0; }
+.ult-challenge-card.completed h4 { color: #00ff66; }
+.body-part-card {
+  background: linear-gradient(135deg, #001a10, #000d08);
+  border: 2px solid #004422;
+  border-top: 4px solid #00aa55;
+  padding: 20px;
+  text-align: center;
+}
+.body-part-card.owned { border-color: #00ffaa; box-shadow: 0 0 15px rgba(0,255,170,0.2); }
+.body-part-card h4 { color: #00ffaa; font-family:var(--font-main); font-size:1.3rem; margin:0 0 8px 0; }
+/* In-challenge indicator */
+.challenge-mode-banner {
+  background: linear-gradient(90deg, #330000, #220000);
+  border: 2px solid #ff4400;
+  color: #ff8844;
+  padding: 10px 20px;
+  text-align: center;
+  font-family: var(--font-main);
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  display: none;
+}
+.challenge-mode-banner.active { display: block; }
 /* --- 手机端适配样式 --- */
 @media screen and (max-width: 768px) {
     /* 改变主体布局方向为垂直 */
@@ -736,7 +839,10 @@ letter-spacing: 1px;
 <button class="nav-btn disabled" onclick="ui.switchTab('tier2')" id="nav-tier2">磁场转动 <div class="red-dot" id="dot-tier2"></div></button>
 <button class="nav-btn disabled" onclick="ui.switchTab('tier3')" id="nav-tier3">磁场功法 <div class="red-dot" id="dot-tier3"></div></button>
 <div style="flex:1"></div>
+<button class="nav-btn disabled" onclick="ui.switchTab('tier4')" id="nav-tier4" style="color: #ff00ff; border-left-color: #ff00ff;">终极强者 <div class="red-dot" id="dot-tier4"></div></button>
+<button class="nav-btn disabled" onclick="ui.switchTab('magnetic-body')" id="nav-magnetic-body" style="color: #00ffaa;">磁场肉体</button>
 <button class="nav-btn disabled" onclick="ui.switchTab('challenge')" id="nav-challenge">挑战强者 <div class="red-dot" id="dot-challenge"></div></button>
+<button class="nav-btn disabled" onclick="ui.switchTab('flow')" id="nav-flow" style="color:#0099ff;border-left-color:#003366;">💧 流量</button>
 <button class="nav-btn" onclick="ui.switchTab('achievements')" id="nav-achievements">武道成就</button>
 <!-- System Buttons -->
 <button class="nav-btn system-btn" onclick="game.saveGame(true)">保存进度</button>
@@ -746,9 +852,14 @@ letter-spacing: 1px;
 <button class="nav-btn system-btn" style="color:#f55;" onclick="if(confirm('确定要删档重开？这一世的修行将全部作废！')){game.hardReset()}">删档重开</button>
 </div>
 <div id="main-area">
+<div id="challenge-mode-banner" class="challenge-mode-banner">
+⚔️ 挑战模式进行中：<span id="challenge-mode-name">-</span><span id="challenge-timer" style="color:#ffaa44;"></span> | <button onclick="game.exitUltimateChallenge()" style="background:transparent;border:1px solid #ff4400;color:#ff4400;cursor:pointer;padding:3px 10px;font-family:var(--font-main);">放弃挑战</button>
+</div>
+<div id="milestone-msg" style="display:none;position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,#1a003a,#330066);border:2px solid #cc44ff;color:#ffddff;padding:14px 28px;font-family:var(--font-main);font-size:1.1rem;text-align:center;border-radius:4px;box-shadow:0 0 30px rgba(180,80,255,0.7);max-width:600px;pointer-events:none;"></div>
 <div id="top-bar">
 <div class="resource-display">
 <span id="res-name">电流</span>:<span id="res-val" class="resource-val">0</span><span id="res-unit" class="resource-unit">伏特</span>
+<span id="power-display" style="display:none; margin-left:20px; color:#ff00ff; font-size:1.2rem;">力量：<span id="power-val" style="color:#ff44ff; font-size:1.8rem; text-shadow:0 0 10px #ff00ff;">0</span><span style="font-size:0.9rem;color:#aa66aa">（万→亿→兆→万兆）</span> <span id="btn-ultimate-reset-inline" style="display:none;"><button onclick="game.doUltimateReset()" style="background:#330033;border:2px solid #ff00ff;color:#ff00ff;padding:4px 12px;cursor:pointer;font-family:var(--font-main);font-size:0.85rem;margin-left:10px;" title="重置获取终极点数">重置 (→终极点数: +<span id="ultimate-reset-preview">0</span>)</button></span></span>
 </div>
 <div class="global-mult">总倍率：x<span id="total-mult">1.00</span> (成就：x<span id="ach-mult">1.00</span> | 境界：x<span id="realm-mult">1.00</span>)</div>
 </div>
@@ -756,131 +867,130 @@ letter-spacing: 1px;
 <!-- T1: 电流推动 -->
 <div id="view-tier1" class="panel-view active">
 <h2>起源：电流推动</h2>
-<p style="color:#888; margin-bottom: 20px; font-size: 1.1rem;">积累伏特。上限锁定为60亿。<br><span style="color:var(--accent-color); font-weight:bold">提示：即使进入高层，仍可在此点击或升级伏特建筑。</span></p>
-<div class="stat-grid">
-<div class="upgrade-card">
-<h3>摩擦细胞</h3>
-<p>点击产生电流。</p>
-<button class="btn-buy" onclick="game.clickAction()">推动 (+<span id="t1-click-val">1</span>V)</button>
+<p style="color:#888; margin-bottom: 10px; font-size: 1rem;">积累伏特。<span id="volt-cap-info" style="color:var(--accent-color);">上限锁定为60亿。</span><span style="color:var(--accent-color); font-weight:bold"> 提示：即使进入高层，仍可在此点击或升级。</span></p>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:15px;">
+<div class="upgrade-card" style="padding:12px;">
+<h3 style="font-size:1rem;margin-bottom:5px;">摩擦细胞</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">点击产生电流。</p>
+<button class="btn-buy" onclick="game.clickAction()" style="padding:8px;">推动 (+<span id="t1-click-val">1</span>V)</button>
 </div>
-<div class="upgrade-card">
-<h3>强化身体</h3>
-<p>以电流力量强化身体。</p>
-<button class="btn-buy" id="btn-buy-gen" onclick="game.buyGen()">购买 (花费：<span id="cost-gen">10</span>V)<br>拥有：<span id="count-gen">0</span></button>
+<div class="upgrade-card" style="padding:12px;">
+<h3 style="font-size:1rem;margin-bottom:5px;">强化身体</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">以电流力量强化身体。</p>
+<button class="btn-buy" id="btn-buy-gen" onclick="game.buyGen()" style="padding:8px;">购买 (花费：<span id="cost-gen">10</span>V) 拥有：<span id="count-gen">0</span></button>
 </div>
-<div class="upgrade-card">
-<h3>超级感知 (点击)</h3>
-<p>获得感知力量，增强自身摩擦细胞能力。</p>
-<button class="btn-buy" id="btn-buy-cap" onclick="game.buyCap()">升级 (花费：<span id="cost-cap">50</span>V)<br>等级：<span id="lvl-cap">0</span></button>
+<div class="upgrade-card" style="padding:12px;">
+<h3 style="font-size:1rem;margin-bottom:5px;">超级感知 (点击)</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">增强摩擦细胞能力。</p>
+<button class="btn-buy" id="btn-buy-cap" onclick="game.buyCap()" style="padding:8px;">升级 (<span id="cost-cap">50</span>V) 等级：<span id="lvl-cap">0</span></button>
 </div>
-<div class="upgrade-card">
-<h3>电流增幅 (效率)</h3>
-<p>提升自动摩擦细胞效率。</p>
-<button class="btn-buy" id="btn-buy-trans" onclick="game.buyTrans()">升级 (花费：<span id="cost-trans">200</span>V)<br>等级：<span id="lvl-trans">0</span></button>
+<div class="upgrade-card" style="padding:12px;">
+<h3 style="font-size:1rem;margin-bottom:5px;">电流增幅 (效率)</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">提升自动摩擦细胞效率。</p>
+<button class="btn-buy" id="btn-buy-trans" onclick="game.buyTrans()" style="padding:8px;">升级 (<span id="cost-trans">200</span>V) 等级：<span id="lvl-trans">0</span></button>
 </div>
-<div class="upgrade-card">
-<h3>电流力量 (全局)</h3>
-<p>提升所有电流产出。</p>
-<button class="btn-buy" id="btn-buy-super" onclick="game.buySuper()">铺设 (花费：<span id="cost-super">1000</span>V)<br>等级：<span id="lvl-super">0</span></button>
+<div class="upgrade-card" style="padding:12px;">
+<h3 style="font-size:1rem;margin-bottom:5px;">电流力量 (全局)</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">提升所有电流产出。</p>
+<button class="btn-buy" id="btn-buy-super" onclick="game.buySuper()" style="padding:8px;">铺设 (<span id="cost-super">1000</span>V) 等级：<span id="lvl-super">0</span></button>
 </div>
-<!-- NEW: Base Production Boost -->
-<div class="upgrade-card" style="border-color: #00ccff; border-top-color: #00ccff;">
-<h3 style="color: #00ccff">本源加速 (电流)</h3>
-<p>大幅提升伏特获取速度 (x1.5/级)。<br></p>
-<button class="btn-buy heal" id="btn-buy-t1-boost" onclick="game.buyT1Boost()">升级 (花费：<span id="cost-t1-boost">100k</span>V)<br>等级：<span id="lvl-t1-boost">0</span>/3</button>
+<div class="upgrade-card" style="padding:12px;border-color: #00ccff; border-top-color: #00ccff;">
+<h3 style="font-size:1rem;margin-bottom:5px;color: #00ccff">本源加速 (电流)</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">大幅提升伏特速度 (x1.5/级)。</p>
+<button class="btn-buy heal" id="btn-buy-t1-boost" onclick="game.buyT1Boost()" style="padding:8px;">升级 (<span id="cost-t1-boost">100k</span>V) 等级：<span id="lvl-t1-boost">0</span>/3</button>
 </div>
 </div>
-<div class="upgrade-card" style="max-width: 400px; border-color: var(--danger-color); border-top-color: var(--danger-color);">
-<h3 style="color: var(--danger-color)">散功重修</h3>
-<p>重置伏特进度，获得永久倍数增幅。<br><span style="color:#aaa">注意：256倍后需求大幅提升。这就是武道的代价！</span></p>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
+<div class="upgrade-card" style="padding:15px;border-color: var(--danger-color); border-top-color: var(--danger-color);">
+<h3 style="color: var(--danger-color);margin-bottom:5px;">散功重修</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.85rem;">重置伏特，获得永久倍数增幅。<span style="color:#aaa">256倍后需求大幅提升。</span></p>
 <button class="btn-buy danger" id="btn-prestige" onclick="game.doPrestige()">立即重修 (当前倍数：x<span id="prestige-mult-disp">1</span>)</button>
-<div class="progress-wrap">
-<div id="prog-prestige" class="progress-fill danger"></div>
+<div class="progress-wrap"><div id="prog-prestige" class="progress-fill danger"></div></div>
 </div>
-</div>
-<!-- Volt Retention Upgrade -->
-<div class="upgrade-card" style="max-width: 400px; border-color: var(--gold-color); border-top-color: var(--gold-color); margin-top: 20px;" id="card-volt-retention">
-<h3 style="color: var(--gold-color)">伏特本源保留</h3>
-<p id="volt-retention-desc">散功重修达到64倍后解锁。保留并自动购买伏特层级升级。</p>
+<div class="upgrade-card" style="padding:15px;border-color: var(--gold-color); border-top-color: var(--gold-color);" id="card-volt-retention">
+<h3 style="color: var(--gold-color);margin-bottom:5px;">伏特本源保留</h3>
+<p id="volt-retention-desc" style="height:auto;margin:0 0 8px;font-size:0.85rem;">散功重修达到64倍后解锁。保留并自动购买伏特层级升级。</p>
 <button class="btn-buy gold" id="btn-buy-volt-retention" onclick="game.buyVoltRetention()" disabled>解锁 (需64倍重修)</button>
 <div style="font-size: 0.7rem; color: #888; margin-top: 5px;">当前等级：<span id="volt-retention-lvl">0</span>/5</div>
 </div>
-<div class="upgrade-card" style="max-width: 400px; border-color: var(--gold-color); border-top-color: var(--gold-color); margin-top: 20px;" id="card-breakthrough-t1">
-<h3 style="color: var(--gold-color)">突破界限</h3>
-<p>当伏特达到 500,000 时，解锁真正力量：磁场转动。</p>
+<div class="upgrade-card" style="padding:15px;border-color: var(--gold-color); border-top-color: var(--gold-color);" id="card-breakthrough-t1">
+<h3 style="color: var(--gold-color);margin-bottom:5px;">突破界限</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.85rem;">当伏特达到 500,000 时，解锁真正力量：磁场转动。</p>
 <button class="btn-buy gold" id="btn-breakthrough" onclick="game.enterTier2()" disabled>突破至磁场转动 (需 500,000 V)</button>
+</div>
 </div>
 </div>
 <!-- T2: 磁场转动 -->
 <div id="view-tier2" class="panel-view">
 <h2 style="color: var(--danger-color)">磁场转动</h2>
-<p style="color:#888; margin-bottom: 20px; font-size: 1.1rem;">此处积累<strong>匹数</strong>。伏特已保留（可切换标签页查看/升级）。<br>目标：100,000 匹。<br><span style="color:var(--danger-color); font-weight:bold">警告：超过10万匹后，获取难度将急剧上升（软上限）。<br>必须进入第三层购买功法才能突破上限！</span></p>
-<div class="stat-grid">
-<div class="upgrade-card">
-<h3>磁场转动！</h3>
-<p>点击产生匹数。</p>
-<button class="btn-buy" onclick="game.clickActionHP()">激发 (+<span id="t2-click-val">1</span>匹)</button>
+<p style="color:#888; margin-bottom: 10px; font-size: 1rem;">此处积累<strong>匹数</strong>。伏特已保留（可切换标签查看/升级）。目标：100,000 匹。<span style="color:var(--danger-color); font-weight:bold"> 超过10万匹后获取难度急剧上升，必须进入第三层！</span></p>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:15px;">
+<div class="upgrade-card" style="padding:12px;">
+<h3 style="font-size:1rem;margin-bottom:5px;">磁场转动！</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">点击产生匹数。</p>
+<button class="btn-buy" onclick="game.clickActionHP()" style="padding:8px;">激发 (+<span id="t2-click-val">1</span>匹)</button>
 </div>
-<div class="upgrade-card">
-<h3>磁场马力</h3>
-<p>提升主动谷出力量的威力。</p>
-<button class="btn-buy" id="btn-buy-hp-upg" onclick="game.buyHPUpg()">压缩 (花费：<span id="cost-hp-upg">100</span>匹)<br>等级：<span id="lvl-hp-upg">0</span></button>
+<div class="upgrade-card" style="padding:12px;">
+<h3 style="font-size:1rem;margin-bottom:5px;">磁场马力</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">提升主动点击威力。</p>
+<button class="btn-buy" id="btn-buy-hp-upg" onclick="game.buyHPUpg()" style="padding:8px;">压缩 (<span id="cost-hp-upg">100</span>匹) 等级：<span id="lvl-hp-upg">0</span></button>
 </div>
-<div class="upgrade-card">
-<h3>细胞重组</h3>
-<p>自动产生匹数。</p>
-<button class="btn-buy" id="btn-buy-volt-upg" onclick="game.buyVoltUpg()">共振 (花费：<span id="cost-volt-upg">500</span>匹)<br>等级：<span id="lvl-volt-upg">0</span></button>
+<div class="upgrade-card" style="padding:12px;">
+<h3 style="font-size:1rem;margin-bottom:5px;">细胞重组</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">自动产生匹数。</p>
+<button class="btn-buy" id="btn-buy-volt-upg" onclick="game.buyVoltUpg()" style="padding:8px;">共振 (<span id="cost-volt-upg">500</span>匹) 等级：<span id="lvl-volt-upg">0</span></button>
 </div>
-<div class="upgrade-card">
-<h3>磁场本源：第二颗心脏</h3>
-<p>利用伏特加速匹数获取 (基于 log10(volt)，受软上限抑制)。</p>
-<button class="btn-buy" id="btn-buy-volt-conv" onclick="game.buyVoltConv()">升级 (花费：<span id="cost-volt-conv">50000</span>匹)<br>等级：<span id="lvl-volt-conv">0</span></button>
+<div class="upgrade-card" style="padding:12px;">
+<h3 style="font-size:1rem;margin-bottom:5px;">第二颗心脏</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">利用伏特加速匹数获取。</p>
+<button class="btn-buy" id="btn-buy-volt-conv" onclick="game.buyVoltConv()" style="padding:8px;">升级 (<span id="cost-volt-conv">50000</span>匹) 等级：<span id="lvl-volt-conv">0</span></button>
 </div>
-<div class="upgrade-card">
-<h3>磁场本源：大脑</h3>
-<p>直接增加自动获取匹数的量。</p>
-<button class="btn-buy" id="btn-buy-auto-hp" onclick="game.buyAutoHP()">升级 (花费：<span id="cost-auto-hp">3000</span>匹)<br>等级：<span id="lvl-auto-hp">0</span></button>
+<div class="upgrade-card" style="padding:12px;">
+<h3 style="font-size:1rem;margin-bottom:5px;">磁场大脑</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">增加自动获取匹数量。</p>
+<button class="btn-buy" id="btn-buy-auto-hp" onclick="game.buyAutoHP()" style="padding:8px;">升级 (<span id="cost-auto-hp">3000</span>匹) 等级：<span id="lvl-auto-hp">0</span></button>
 </div>
-<div class="upgrade-card">
-<h3>情绪推动</h3>
-<p>提升主动获取的匹数量 (基础值已调整)。</p>
-<button class="btn-buy" id="btn-buy-click-hp" onclick="game.buyClickHP()">升级 (花费：<span id="cost-click-hp">1500</span>匹)<br>等级：<span id="lvl-click-hp">0</span></button>
+<div class="upgrade-card" style="padding:12px;">
+<h3 style="font-size:1rem;margin-bottom:5px;">情绪推动</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">提升主动获取的匹数量。</p>
+<button class="btn-buy" id="btn-buy-click-hp" onclick="game.buyClickHP()" style="padding:8px;">升级 (<span id="cost-click-hp">1500</span>匹) 等级：<span id="lvl-click-hp">0</span></button>
 </div>
-<!-- NEW: Base Production Boost T2 -->
-<div class="upgrade-card" style="border-color: #00ccff; border-top-color: #00ccff;">
-<h3 style="color: #00ccff">本源加速 (磁场)</h3>
-<p>大幅提升匹数获取速度 (x1.5/级)。<br></p>
-<button class="btn-buy heal" id="btn-buy-t2-boost" onclick="game.buyT2Boost()">升级  (花费：<span id="cost-t2-boost">10k</span>匹)<br>等级：<span id="lvl-t2-boost">0</span>/3</button>
+<div class="upgrade-card" style="padding:12px;border-color:#00ccff;border-top-color:#00ccff;">
+<h3 style="font-size:1rem;margin-bottom:5px;color:#00ccff">本源加速 (磁场)</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.8rem;">大幅提升匹数速度 (x1.5/级)。</p>
+<button class="btn-buy heal" id="btn-buy-t2-boost" onclick="game.buyT2Boost()" style="padding:8px;">升级 (<span id="cost-t2-boost">10k</span>匹) 等级：<span id="lvl-t2-boost">0</span>/3</button>
 </div>
 </div>
-<!-- T2 Prestige -->
-<div class="upgrade-card" style="max-width: 400px; border-color: var(--gold-color); border-top-color: var(--gold-color); margin-top: 20px;">
-<h3 style="color: var(--gold-color)">进入重生池苦修</h3>
-<p>重置匹数及第二层升级，获得永久“苦修倍数”增幅 (每级x2.0)。<br><span style="color:#aaa">注意：不会重置伏特、第一层建筑或第三层功法。价格随次数递增。</span></p>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
+<div class="upgrade-card" style="padding:15px;border-color:var(--gold-color);border-top-color:var(--gold-color);">
+<h3 style="color:var(--gold-color);margin-bottom:5px;">进入重生池苦修</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.85rem;">重置匹数及第二层升级，获得永久"苦修倍数"增幅 (每级x2.0)。<span style="color:#aaa">不会重置伏特、第一层或第三层。价格递增。</span></p>
 <button class="btn-buy gold" id="btn-t2-prestige" onclick="game.doT2Prestige()">进入苦修 (当前倍数：x<span id="t2-prestige-mult-disp">1</span>)</button>
-<div class="progress-wrap">
-<div id="prog-t2-prestige" class="progress-fill gold"></div>
+<div class="progress-wrap"><div id="prog-t2-prestige" class="progress-fill gold"></div></div>
+<p style="font-size:0.7rem;color:#888;margin-top:5px;">需求：<span id="t2-prestige-req">10,000</span> 匹</p>
 </div>
-<p style="font-size:0.7rem; color:#888; margin-top:5px;">需求：<span id="t2-prestige-req">10,000</span> 匹</p>
-</div>
-<div class="upgrade-card" style="max-width: 400px; border-color: var(--gold-color); border-top-color: var(--gold-color); margin-top: 20px;" id="card-breakthrough-t2">
-<h3 style="color: var(--gold-color)">磁场功法</h3>
-<p>当匹数达到 100,000 时，解锁磁场功法。</p>
+<div class="upgrade-card" style="padding:15px;border-color:var(--gold-color);border-top-color:var(--gold-color);" id="card-breakthrough-t2">
+<h3 style="color:var(--gold-color);margin-bottom:5px;">磁场功法</h3>
+<p style="height:auto;margin:0 0 8px;font-size:0.85rem;">当匹数达到 100,000 时，解锁磁场功法。</p>
 <button class="btn-buy gold" id="btn-breakthrough-t2" onclick="game.enterTier3()" disabled>进入磁场功法 (需 100,000 匹)</button>
+</div>
 </div>
 </div>
 <!-- T3: 地狱磁场 -->
 <div id="view-tier3" class="panel-view">
 <h2 class="danger">磁场功法</h2>
 <p style="color:#888; margin-bottom: 20px; font-size: 1.1rem;">磁场异变，提升极度困难。唯有学习神功可提升匹数。<br><span style="color:#aaa">提示：必须击败足够多的强者才能购买功法。这是强者的世界！</span></p>
-<div class="info-row">已击败强者数量：<span id="t3-wins-count">0</span> 名</div>
+<div class="info-row">已击败强者数量：<span id="t3-wins-count">0</span> </div>
 <div id="skill-list" class="stat-grid"></div>
 </div>
 <!-- 挑战强者 -->
 <div id="view-challenge" class="panel-view">
 <h2 class="danger">挑战强者</h2>
 <p style="color:#888; font-size: 1.1rem;">通过战斗获取“完全境界”（单位：级），用于购买 终极强化。<br><span style="color:#aaa">敌人强度随击败次数动态调整，但绝不超过玩家属性的1.5倍。无冷却时间。<br>购买"自动挑战"升级后，按钮将显示自动状态，胜利后自动继续，失败后自动停止。</span></p>
-<div class="info-row">已击败强者数量：<span id="challenge-wins-count">0</span> 名</div>
+<div class="info-row">已击败强者数量：<span id="challenge-wins-count">0</span></div>
+<div id="battle-cap-status" style="margin:4px 0;font-size:0.85rem;color:#ff6644;display:none;">⚠️ 已击败10000名敌人——敌人属性上限已解除！需购买终极升级提升属性才能继续胜利。<br><span style="color:#00ffaa;">🔒 额外解锁：完全境界永久锁定下限为1万（消费不会低于此值），击败数量永不重置。</span></div>
+<div id="battle-power-bonus" style="margin:4px 0;font-size:0.85rem;color:#aa44ff;display:none;"></div>
+<div id="realm-lock-status" style="margin:4px 0;font-size:0.85rem;color:#00ffaa;display:none;">🔒 完全境界与击败数量已永久锁定，不会因重置或购买扣至零。</div>
 <div class="battle-stats">
 <div class="battle-side player">
 <h3>武者 (你)</h3>
@@ -920,7 +1030,67 @@ letter-spacing: 1px;
 <h3 class="gold" style="border-color: var(--gold-color); color: var(--gold-color); margin-top: 40px; font-family: var(--font-main); font-size: 1.8rem;">境界升华 (完全境界升级)</h3>
 <div class="stat-grid" id="realm-upgrades"></div>
 </div>
-<!-- 成就系统 -->
+<!-- T4: 终极强者 -->
+<div id="view-tier4" class="panel-view">
+<h2 style="color:#ff00ff; border-color:#ff00ff; text-shadow:3px 3px 0 #300030;">终极强者之境</h2>
+<div style="background:rgba(255,0,255,0.1); border:1px solid #ff00ff; padding:10px; margin-bottom:15px; text-align:center; font-family:var(--font-main);">
+    <span style="color:#ff88ff; font-size:1.2rem;">力量：</span>
+    <span id="t4-power-display" style="color:#ff00ff; font-size:1.8rem; text-shadow:0 0 10px #ff00ff;">0</span>
+    <span style="color:#aa88aa; font-size:0.9rem;"> ( <span id="t4-pps-display">0</span> /秒 )</span>
+</div>
+<p style="color:#ccc; font-size:1.1rem; margin-bottom:10px;">力量的真正境界。接受九位终极强者的挑战，突破自我极限。<br>
+<span style="color:#ff88ff;">力量来自于你的终极升级数量，每秒自动增加。<br>终极点数通过重置游戏获得，请耐心等待你的第一个终极点数。<br>完全境界（上限一万级）和流量均可提升力量产出。</span></p>
+<div style="background:#1a001a;border:2px solid #ff00ff;padding:15px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+<div style="color:#ff88ff;font-family:var(--font-main);font-size:1.3rem;">终极点数：<span id="ultimate-points-disp" style="color:#ff00ff;font-size:2rem;text-shadow:0 0 10px #ff00ff;">0</span></div>
+<div style="color:#aa88aa;font-size:0.9rem;">力量产出：<span id="power-per-sec" style="color:#ff88ff;">1</span>/秒</div>
+<div style="color:#aa88aa;font-size:0.9rem;">⚡伏特加成：<span id="volt-power-bonus" style="color:#ffcc44;">x1.00</span>（最多x10）</div>
+<div style="color:#aa88aa;font-size:0.9rem;">终极升级数：<span id="ult-upg-count" style="color:#ff88ff;">0</span></div>
+<div style="color:#aa88aa;font-size:0.9rem;">力量上限：<span id="power-cap-display" style="color:#ff88ff;">1兆</span> <span id="power-cap-unlock-hint" style="color:#ffaa44;font-size:0.8rem;"></span></div>
+<button onclick="game.doUltimateReset()" style="background:#330033;border:2px solid #ff00ff;color:#ff00ff;padding:8px 16px;cursor:pointer;font-family:var(--font-main);font-size:0.95rem;margin-left:auto;" title="重置获取终极点数">⟳ 重置获取终极点数 (+<span id="ultimate-reset-preview-t4">0</span>点)</button>
+<div id="ultimate-formula-status" style="margin-top:4px;"></div>
+</div>
+<h3 style="color:#ff00ff;font-family:var(--font-main);font-size:1.8rem;border-bottom:2px solid #ff00ff;padding-bottom:10px;">终极升级树</h3>
+<div id="ultimate-tree" style="display:flex;flex-direction:row;align-items:flex-start;flex-wrap:wrap;gap:8px;"></div>
+<h3 style="color:#ff4444;font-family:var(--font-main);font-size:1.8rem;border-bottom:2px solid #ff4444;padding-bottom:10px;margin-top:30px;">九位终极强者挑战</h3>
+<div id="ultimate-challenges-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px;"></div>
+</div>
+<!-- 磁场肉体 -->
+<div id="view-magnetic-body" class="panel-view">
+<h2 style="color:#00ffaa; border-color:#00ffaa; text-shadow:3px 3px 0 #003022;">磁场肉体</h2>
+<p style="color:#ccc; font-size:1.1rem;">在第四层达到<strong style="color:#00ffaa;">100万力量</strong>可进行一次重置，获取一个磁场肉体。需求十倍递增。<br>
+<span style="color:#88ffcc;">磁场肉体为身体部位提供强力加成，帮助突破极限。</span></p>
+<div style="background:#001a0f;border:2px solid #00ffaa;padding:15px;margin-bottom:20px;display:flex;align-items:center;gap:30px;flex-wrap:wrap;">
+<div style="color:#00ffaa;font-family:var(--font-main);font-size:1.1rem;">已拥有磁场肉体：<span id="body-parts-count" style="color:#00ffaa;font-size:2rem;">0</span></div>
+<div style="color:#88ffcc;font-size:0.9rem;">下次需求：<span id="next-body-cost" style="color:#00ffaa;">100万</span> 力量</div>
+<button onclick="game.doBodyReset()" id="btn-body-reset" style="background:#001a0f;border:2px solid #00ffaa;color:#00ffaa;padding:10px 20px;cursor:pointer;font-family:var(--font-main);" disabled>获取磁场肉体</button>
+</div>
+<div id="body-parts-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;"></div>
+</div>
+<!-- 流量 -->
+<div id="view-flow" class="panel-view">
+<h2 style="color:#0099ff; border-color:#0099ff; text-shadow:3px 3px 0 #000033;">流量</h2>
+<p style="color:#ccc; font-size:1.1rem; margin-bottom:10px;">流量是来自终极强者层的特殊资源，上限为一亿。<br>
+<span style="color:#44aaff;">通过充能积累流量，流量越多，终极强者层力量产出越高（每1000流量+5%）。</span></p>
+<div style="background:#000a1a;border:2px solid #0099ff;padding:15px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+<div style="color:#44aaff;font-family:var(--font-main);font-size:1.3rem;">当前流量：<span id="flow-val" style="color:#0099ff;font-size:2rem;text-shadow:0 0 10px #0099ff;">0</span> / <span style="color:#0066aa;">1亿</span></div>
+<div style="color:#aaccff;font-size:0.9rem;">完全境界加成力量产出：<span id="flow-realm-bonus" style="color:#44aaff;">+0%</span></div>
+<div style="color:#aaccff;font-size:0.9rem;">流量加成力量产出：<span id="flow-power-bonus" style="color:#44aaff;">+0%</span></div>
+</div>
+<!-- 充能条 -->
+<div style="background:#000a1a;border:2px solid #0055aa;padding:20px;margin-bottom:20px;">
+<h3 style="color:#44aaff;font-family:var(--font-main);">充能</h3>
+<p style="color:#aaa;font-size:0.9rem;">点击充能条开始充能（约2.5秒），充满后自动获取流量。购买「自动充能」升级后无需手动点击。</p>
+<div id="flow-charge-bar-wrap" style="background:#001133;height:40px;width:100%;border:2px solid #0055aa;position:relative;cursor:pointer;margin-bottom:10px;overflow:hidden;" onclick="game.startFlowCharge()">
+<div id="flow-charge-bar" style="height:100%;background:linear-gradient(90deg,#003388,#0099ff);width:0%;transition:width 0.1s;box-shadow:0 0 15px rgba(0,153,255,0.5);"></div>
+<div style="position:absolute;top:0;left:0;width:100%;text-align:center;line-height:40px;font-family:var(--font-main);color:#fff;text-shadow:1px 1px 2px #000;font-size:1.1rem;" id="flow-charge-text">点击充能</div>
+</div>
+<div style="color:#44aaff;font-size:0.9rem;">每次充满获取：<span id="flow-amount-per-charge" style="color:#0099ff;font-weight:bold;">1</span> 流量 &nbsp;|&nbsp; 充能时间：<span id="flow-time-text">2.5</span>s</div>
+</div>
+<!-- 流量升级 -->
+<h3 style="color:#0099ff;font-family:var(--font-main);font-size:1.5rem;border-bottom:2px solid #0099ff;padding-bottom:8px;">流量升级</h3>
+<p style="color:#888;font-size:0.9rem;">仅强化流量系统，不影响其他内容。</p>
+<div id="flow-upg-list" class="stat-grid"></div>
+</div>
 <div id="view-achievements" class="panel-view">
 <h2 class="gold">武道成就</h2>
 <p style="color:#888; font-size: 1.1rem;">完成成就以获得永久倍率加成。这就是强者的证明！</p>
@@ -932,7 +1102,8 @@ letter-spacing: 1px;
 <!-- Cinematic Ending Screen -->
 <div id="cinematic-screen">
 <div id="cinematic-text"></div>
-<button id="cinematic-restart-btn" onclick="game.hardReset()">重新开始轮回</button>
+<button id="cinematic-restart-btn" onclick="game.enterTier4World()">进入终极强者之境</button>
+<button id="cinematic-confirm-btn" onclick="game.cinematicConfirm()" style="display:none;margin-top:30px;padding:16px 48px;font-size:1.2rem;background:transparent;border:2px solid var(--gold-color);color:var(--gold-color);cursor:pointer;font-family:var(--font-main);text-transform:uppercase;letter-spacing:3px;transition:all 0.3s;">是的</button>
 </div>
 <script>
 // --- 游戏逻辑部分 ---
@@ -945,14 +1116,266 @@ t2Breakthrough: 100000,
 t3Breakthrough: 999999,
 prestigeReq: 5000,
 t2PrestigeReq: 50000, // 修改：提高基础需求，从10000改为50000
+powerCap: 1e12, // 1兆（基础上限，完成挑战后逐步解锁）
+// 各挑战完成后解锁的力量上限（完成n个挑战后使用第n项）
+challengePowerCaps: [1e12, 1e13, 1e14, 1e15, 1e16, 1e17, 1e18, 1e19, 1e20, 1e21],
+bodyResetCosts: [1e13, 1e15, 1e17, 5e17, 9.9e18],
+// 最高上限：1e21（一百万兆）
+realmCap: 10000, // 完全境界上限
+// Ultimate upgrade tree: 50+ nodes, challenges are SEPARATE (reqChallenge links to challenge)
+// reqPower: minimum power needed at time of purchase (checking against saved power from reset)
+ultimateUpgrades: [
+  // === ROW 0: 根基 ===
+  { id: 'u_root', name: '终极之根', desc: '一切终极力量的起点。力量产出x1.5。', cost: 1, row: 0, requires: null },
+
+  // === ROW 1: 初始分支 (cost: 5-15点) ===
+  { id: 'u_power1', name: '力量感知I', desc: '力量产出速度x1.5。', cost: 5, row: 1, requires: 'u_root' },
+  { id: 'u_time1', name: '时间感悟I', desc: '力量产出x1.3（前三层已满不适用）。', cost: 5, row: 1, requires: 'u_root' },
+  { id: 'u_speed1', name: '速度I', desc: '力量产出x1.2，所有资源速度x1.1。', cost: 8, row: 1, requires: 'u_root' },
+
+  // === ROW 1.5: 早期加速 (cost: 20-50点) ===
+  { id: 'u_power1b', name: '力量冲动', desc: '力量产出再x1.3。', cost: 20, row: 2, requires: 'u_power1' },
+  { id: 'u_time1b', name: '时间感悟Ib', desc: '力量产出x1.3（强化自身积累）。', cost: 20, row: 2, requires: 'u_time1' },
+  { id: 'u_speed1b', name: '速度II', desc: '力量产出x1.3，点击资源x1.5。', cost: 25, row: 2, requires: 'u_speed1' },
+  { id: 'u_body1b', name: '肉体感知', desc: '所有肉体加成效果x1.2。', cost: 30, row: 2, requires: null },
+  { id: 'u_chal_unlock1', name: '挑战解锁I', desc: '解锁挑战2、3（需先完成挑战1）。', cost: 50, row: 2, requires: 'u_root', reqChallenge: 'c1' },
+
+  // === ROW 2: 百点级 (cost: 100-500点) ===
+  { id: 'u_power2', name: '力量感知II', desc: '力量产出速度再x2。', cost: 1e2, row: 3, requires: 'u_power1b' },
+  { id: 'u_body2', name: '肉体强化II', desc: '磁场肉体加成效果x1.5。', cost: 1e2, row: 3, requires: 'u_body1b' },
+  { id: 'u_time2', name: '时间感悟II', desc: '力量产出x1.5，强化自身积累。', cost: 1e2, row: 3, requires: 'u_time1b' },
+  { id: 'u_speed2', name: '速度III', desc: '力量产出x1.5，自动资源x1.2。', cost: 1e2, row: 3, requires: 'u_speed1b' },
+  { id: 'u_power2b', name: '力量激涌', desc: '力量产出再x1.5。', cost: 3e2, row: 3, requires: 'u_power2' },
+  { id: 'u_click1', name: '点击强化初', desc: '点击获取资源x2。', cost: 2e2, row: 3, requires: 'u_speed2' },
+
+  // === ROW 3: 千点级 (cost: 1e3-5e3) ===
+  { id: 'u_power3', name: '力量感知III', desc: '力量产出速度再x3。', cost: 1e3, row: 4, requires: 'u_power2b' },
+  { id: 'u_body3', name: '肉体强化III', desc: '磁场肉体加成效果再x2，重置需求减半。', cost: 1e3, row: 4, requires: 'u_body2' },
+  { id: 'u_time3', name: '时间感悟III', desc: '力量产出x2，强化自身积累。', cost: 1e3, row: 4, requires: 'u_time2' },
+  { id: 'u_volt_boost', name: '电流本源', desc: '力量产出x1.5，伏特自动产出x2。', cost: 1e3, row: 4, requires: 'u_time2' },
+  { id: 'u_speed3', name: '速度IV', desc: '力量产出x2，全局资源x1.2。', cost: 1e3, row: 4, requires: 'u_speed2' },
+  { id: 'u_click2', name: '点击强化II', desc: '点击获取资源再x2。', cost: 2e3, row: 4, requires: 'u_click1' },
+  { id: 'u_chal_unlock2', name: '挑战解锁II', desc: '解锁挑战4、5（需先完成挑战3）。', cost: 5e3, row: 4, requires: 'u_chal_unlock1', reqChallenge: 'c3' },
+
+  // === ROW 4: 万点级 (cost: 1e4-5e4) ===
+  { id: 'u_power4', name: '力量感知IV', desc: '力量产出速度再x5。', cost: 1e4, row: 5, requires: 'u_power3' },
+  { id: 'u_body4', name: '肉体觉醒', desc: '同时拥有3个肉体时，全局额外x2。', cost: 1e4, row: 5, requires: 'u_body3' },
+  { id: 'u_mag_boost', name: '磁场本源', desc: '力量产出x1.5，匹数自动产出x2。', cost: 1e4, row: 5, requires: 'u_volt_boost' },
+  { id: 'u_realm_boost', name: '境界感悟', desc: '完全境界奖励+100%。', cost: 1e4, row: 5, requires: 'u_time3' },
+  { id: 'u_speed4', name: '速度V', desc: '力量产出x2.5，点击x1.5。', cost: 1e4, row: 5, requires: 'u_speed3' },
+  { id: 'u_power4b', name: '力量爆发', desc: '力量产出再x2。', cost: 2e4, row: 5, requires: 'u_power4' },
+  { id: 'u_click3', name: '点击强化III', desc: '点击获取资源再x3。', cost: 2e4, row: 5, requires: 'u_click2' },
+  { id: 'u_chal_unlock3', name: '挑战解锁III', desc: '解锁挑战6、7（需先完成挑战5）。', cost: 4e4, row: 5, requires: 'u_chal_unlock2', reqChallenge: 'c5' },
+
+  // === ROW 5: 十万点级 (cost: 1e5-5e5) ===
+  { id: 'u_power5', name: '力量感知V', desc: '力量产出速度再x8。', cost: 1e5, row: 6, requires: 'u_power4b' },
+  { id: 'u_click_boost', name: '点击强化IV', desc: '点击获取资源再x4。', cost: 1e5, row: 6, requires: 'u_click3' },
+  { id: 'u_prestige_boost', name: '重修感悟', desc: '散功重修倍率+50%（叠加）。', cost: 1e5, row: 6, requires: 'u_realm_boost' },
+  { id: 'u_body5', name: '肉体全满', desc: '拥有全部5个肉体时，力量产出x5。', cost: 1e5, row: 6, requires: 'u_body4' },
+  { id: 'u_volt_boost2', name: '电流本源II', desc: '力量产出x2，伏特自动产出x3。', cost: 1e5, row: 6, requires: 'u_volt_boost' },
+  { id: 'u_mag_boost2', name: '磁场本源II', desc: '力量产出x2，匹数自动产出x3。', cost: 1e5, row: 6, requires: 'u_mag_boost' },
+  { id: 'u_speed5', name: '速度VI', desc: '力量产出x3，全局资源x1.5。', cost: 2e5, row: 6, requires: 'u_speed4' },
+  { id: 'u_chal_unlock4', name: '挑战解锁IV', desc: '解锁挑战8、9（需先完成挑战7）。', cost: 4e5, row: 6, requires: 'u_chal_unlock3', reqChallenge: 'c7' },
+
+  // === ROW 6: 百万点级 (cost: 1e6-5e6) ===
+  { id: 'u_power6', name: '力量感知VI', desc: '力量产出速度再x15。', cost: 1e6, row: 7, requires: 'u_power5' },
+  { id: 'u_click_boost2', name: '点击强化V', desc: '点击获取资源再x5。', cost: 1e6, row: 7, requires: 'u_click_boost' },
+  { id: 'u_t2prestige', name: '苦修顿悟', desc: '苦修倍率不受递增惩罚（每次均+100%）。', cost: 1e6, row: 7, requires: 'u_prestige_boost' },
+  { id: 'u_body_regen', name: '肉体再生', desc: '拥有心脏肉体时，受伤恢复时间减少80%。', cost: 1e6, row: 7, requires: 'u_body5' },
+  { id: 'u_skill_boost', name: '功法顿悟', desc: '第三层功法产出倍率翻倍。', cost: 1e6, row: 7, requires: 'u_time3' },
+  { id: 'u_speed6', name: '速度VII', desc: '力量产出x4，所有资源x2。', cost: 2e6, row: 7, requires: 'u_speed5' },
+  { id: 'u_power6b', name: '力量洪流', desc: '力量产出再x3。', cost: 3e6, row: 7, requires: 'u_power6' },
+
+  // === ROW 7: 千万点级 (cost: 1e7-5e7) ===
+  { id: 'u_power7', name: '力量感知VII', desc: '力量产出速度再x25。', cost: 1e7, row: 8, requires: 'u_power6b' },
+  { id: 'u_volt_cap', name: '电流解限', desc: '伏特上限提升至600亿。', cost: 1e7, row: 8, requires: 'u_click_boost2' },
+  { id: 'u_battle_power', name: '战斗强化', desc: '挑战强者攻防属性翻倍。', cost: 1e7, row: 8, requires: 'u_realm_boost' },
+  { id: 'u_speed7', name: '速度VIII', desc: '力量产出x5，点击资源x2。', cost: 1e7, row: 8, requires: 'u_speed6' },
+  { id: 'u_volt_boost3', name: '电流本源III', desc: '力量产出x3，伏特自动产出x5。', cost: 2e7, row: 8, requires: 'u_volt_boost2' },
+  { id: 'u_mag_boost3', name: '磁场本源III', desc: '力量产出x3，匹数自动产出x5。', cost: 2e7, row: 8, requires: 'u_mag_boost2' },
+  { id: 'u_chal_unlock5', name: '挑战解锁V', desc: '解锁挑战10（需先完成挑战9）。', cost: 4e7, row: 8, requires: 'u_chal_unlock4', reqChallenge: 'c9' },
+
+  // === ROW 8: 亿点级 (cost: 1e8-5e8) ===
+  { id: 'u_power8', name: '力量感知VIII', desc: '力量产出速度再x50。', cost: 1e8, row: 9, requires: 'u_power7' },
+  { id: 'u_auto_all', name: '全自动化', desc: '散功重修、苦修自动执行（达到条件后）。', cost: 1e8, row: 9, requires: 'u_volt_cap' },
+  { id: 'u_softcap_kill', name: '软上限终结', desc: '消除所有资源的软上限惩罚。', cost: 1e8, row: 9},
+  { id: 'u_realm_auto', name: '境界自动', desc: '自动购买最低费用的境界升级。', cost: 1e8, row: 9, requires: 'u_battle_power' },
+  { id: 'u_body_synergy', name: '肉体共鸣', desc: '每拥有一个肉体，力量产出+100%（叠加）。', cost: 1e8, row: 9, requires: 'u_body_regen' },
+  { id: 'u_speed8', name: '速度IX', desc: '力量产出x6，全局x1.5。', cost: 2e8, row: 9, requires: 'u_speed7' },
+  { id: 'u_power8b', name: '力量浪潮', desc: '力量产出再x5。', cost: 3e8, row: 9, requires: 'u_power8' },
+
+  // === ROW 9: 十亿点级 (cost: 1e9-5e9) ===
+  { id: 'u_power9', name: '力量感知IX', desc: '力量产出速度再x100。', cost: 1e9, row: 10, requires: 'u_power8b' },
+  { id: 'u_t3_free', name: '第三层自由', desc: '第三层功法可用，无需完成挑战条件。', cost: 1e9, row: 10, requires: 'u_softcap_kill' },
+  { id: 'u_all_boost', name: '全层共鸣', desc: '所有层级产出x3。', cost: 1e9, row: 10, requires: 'u_auto_all' },
+  { id: 'u_challenge_reward', name: '挑战奖励倍增', desc: '所有挑战获得的终极点数x3。', cost: 1e9, row: 10, requires: 'u_realm_auto' },
+  { id: 'u_speed9', name: '速度X', desc: '力量产出x8，点击x3。', cost: 1e9, row: 10, requires: 'u_speed8' },
+  { id: 'u_volt_boost4', name: '电流本源IV', desc: '力量产出x5，伏特自动产出x10。', cost: 2e9, row: 10, requires: 'u_volt_boost3' },
+  { id: 'u_mag_boost4', name: '磁场本源IV', desc: '力量产出x5，匹数自动产出x10。', cost: 2e9, row: 10, requires: 'u_mag_boost3' },
+
+  // === ROW 10: 百亿点级 (cost: 1e10-5e10) ===
+  { id: 'u_power10', name: '力量感知X', desc: '力量产出速度再x200。', cost: 1e10, row: 11, requires: 'u_power9' },
+  { id: 'u_dimension', name: '维度突破', desc: '所有层级产出再x10。', cost: 1e10, row: 11, requires: 'u_all_boost' },
+  { id: 'u_godhood', name: '神格初显', desc: '力量产出再x50，力量上限突破限制。', cost: 1e10, row: 11, requires: 'u_t3_free' },
+  { id: 'u_ultra_reward', name: '超级奖励', desc: '所有挑战获得的终极点数再x5。', cost: 1e10, row: 11, requires: 'u_challenge_reward' },
+  { id: 'u_speed10', name: '速度XI', desc: '力量产出x10，全局x2。', cost: 1e10, row: 11, requires: 'u_speed9' },
+  { id: 'u_power10b', name: '力量洪流II', desc: '力量产出再x10。', cost: 3e10, row: 11, requires: 'u_power10' },
+  { id: 'u_body_all', name: '肉体融合', desc: '磁场肉体所有效果额外x2。', cost: 2e10, row: 11, requires: 'u_body_synergy' },
+
+  // === ROW 11: 千亿点级 (cost: 1e11-5e11) ===
+  { id: 'u_power11', name: '力量感知XI', desc: '力量产出速度再x300。', cost: 1e11, row: 12, requires: 'u_power10b' },
+  { id: 'u_all_boost2', name: '全层共鸣II', desc: '所有层级产出再x5。', cost: 1e11, row: 12, requires: 'u_dimension' },
+  { id: 'u_godhood2', name: '神格绽放', desc: '力量产出再x100。', cost: 1e11, row: 12, requires: 'u_godhood' },
+  { id: 'u_speed11', name: '速度XII', desc: '力量产出x12，点击x5。', cost: 1e11, row: 12, requires: 'u_speed10' },
+  { id: 'u_volt_boost5', name: '电流无限', desc: '力量产出x8，伏特自动产出x20。', cost: 2e11, row: 12, requires: 'u_volt_boost4' },
+  { id: 'u_mag_boost5', name: '磁场无限', desc: '力量产出x8，匹数自动产出x20。', cost: 2e11, row: 12, requires: 'u_mag_boost4' },
+  { id: 'u_realm_boost2', name: '境界感悟II', desc: '完全境界奖励再+200%。', cost: 3e11, row: 12, requires: 'u_all_boost2' },
+
+  // === ROW 12: 兆点级 (cost: 1e12-5e12) ===
+  { id: 'u_power12', name: '力量感知XII', desc: '力量产出速度再x500。', cost: 1e12, row: 13, requires: 'u_power11' },
+  { id: 'u_all_boost3', name: '全层共鸣III', desc: '所有层级产出再x10。', cost: 1e12, row: 13, requires: 'u_all_boost2' },
+  { id: 'u_speed12', name: '速度XIII', desc: '力量产出x15，全局x3。', cost: 1e12, row: 13, requires: 'u_speed11' },
+  { id: 'u_final1', name: '终极领悟I', desc: '全局产出x10，力量产出x500。', cost: 2e12, row: 13, requires: 'u_power12' },
+  { id: 'u_ultimate_synergy', name: '终极共鸣', desc: '每购买10个终极升级，力量产出额外x1.5。', cost: 3e12, row: 13, requires: 'u_godhood2' },
+
+  // === ROW 13: 十兆点级 (cost: 1e13-5e13) ===
+  { id: 'u_power13', name: '力量感知XIII', desc: '力量产出速度再x1000。', cost: 1e13, row: 14, requires: 'u_final1' },
+  { id: 'u_final2', name: '终极领悟II', desc: '所有肉体加成效果x5，点击加成x10。', cost: 1e13, row: 14, requires: 'u_all_boost3' },
+  { id: 'u_speed13', name: '速度XIV', desc: '力量产出x20，所有资源x5。', cost: 2e13, row: 14, requires: 'u_speed12' },
+  { id: 'u_realm_boost3', name: '境界感悟III', desc: '完全境界奖励再+500%。', cost: 3e13, row: 14, requires: 'u_realm_boost2' },
+
+  // === ROW 14: 百兆点级 (cost: 1e14-5e14) ===
+  { id: 'u_power14', name: '力量感知XIV', desc: '力量产出速度再x2000。', cost: 1e14, row: 15, requires: 'u_power13' },
+  { id: 'u_all_boost4', name: '全层共鸣IV', desc: '所有层级产出再x20。', cost: 1e14, row: 15, requires: 'u_final2' },
+  { id: 'u_speed14', name: '速度XV', desc: '力量产出x30，全局x5。', cost: 2e14, row: 15, requires: 'u_speed13' },
+  { id: 'u_final3', name: '终极领悟III', desc: '挑战奖励终极点数x10，重置点数翻倍。', cost: 3e14, row: 15, requires: 'u_ultra_reward' },
+
+  // === ROW 15: 千兆点级 (cost: 1e15-5e15) ===
+  { id: 'u_power15', name: '力量感知XV', desc: '力量产出速度再x5000。', cost: 1e15, row: 16, requires: 'u_power14' },
+  { id: 'u_speed15', name: '速度XVI', desc: '力量产出x50，所有资源x10。', cost: 1e15, row: 16, requires: 'u_speed14' },
+  { id: 'u_all_boost5', name: '全层共鸣V', desc: '所有层级产出再x50。', cost: 2e15, row: 16, requires: 'u_all_boost4' },
+  { id: 'u_transcend_prep', name: '超越准备', desc: '力量产出x100，解锁最终升级路径。', cost: 3e15, row: 16, requires: 'u_final3' },
+
+  // === ROW 16: 超越 ===
+  { id: 'u_transcend', name: '超越轮回', desc: '一切产出x100，成为真正的终极强者！', cost: 1e16, row: 17, requires: 'u_power15' },
+  { id: 'u_final_power', name: '无尽力量', desc: '力量产出x10000，突破一切限制！', cost: 2e16, row: 17, requires: 'u_transcend_prep' },
+
+  // === 大量中期填充升级 (额外49个) ===
+  // 力量系列扩展
+  { id: 'u_pow_a1', name: '力场震动I', desc: '力量产出x1.2。', cost: 15, row: 1, requires: 'u_root' },
+  { id: 'u_pow_a2', name: '力场震动II', desc: '力量产出x1.3。', cost: 60, row: 2, requires: 'u_pow_a1' },
+  { id: 'u_pow_a3', name: '力场震动III', desc: '力量产出x1.5。', cost: 500, row: 3, requires: 'u_pow_a2' },
+  { id: 'u_pow_a4', name: '力场震动IV', desc: '力量产出x2。', cost: 5000, row: 4, requires: 'u_pow_a3' },
+  { id: 'u_pow_a5', name: '力场震动V', desc: '力量产出x3。', cost: 5e4, row: 5, requires: 'u_pow_a4' },
+  { id: 'u_pow_a6', name: '力场震动VI', desc: '力量产出x5。', cost: 5e5, row: 6, requires: 'u_pow_a5' },
+  { id: 'u_pow_a7', name: '力场震动VII', desc: '力量产出x8。', cost: 5e6, row: 7, requires: 'u_pow_a6' },
+  { id: 'u_pow_a8', name: '力场震动VIII', desc: '力量产出x15。', cost: 5e7, row: 8, requires: 'u_pow_a7' },
+  { id: 'u_pow_a9', name: '力场震动IX', desc: '力量产出x30。', cost: 5e8, row: 9, requires: 'u_pow_a8' },
+  { id: 'u_pow_a10', name: '力场震动X', desc: '力量产出x60。', cost: 5e9, row: 10, requires: 'u_pow_a9' },
+  // 资源系列扩展
+  { id: 'u_res_a1', name: '资源感知I', desc: '力量产出x1.1，自身获取强化。', cost: 12, row: 1, requires: 'u_root' },
+  { id: 'u_res_a2', name: '资源感知II', desc: '力量产出x1.2，自身获取强化。', cost: 80, row: 2, requires: 'u_res_a1' },
+  { id: 'u_res_a3', name: '资源感知III', desc: '力量产出x1.3，自身获取强化。', cost: 800, row: 3, requires: 'u_res_a2' },
+  { id: 'u_res_a4', name: '资源感知IV', desc: '力量产出x1.5，自身获取强化。', cost: 8000, row: 4, requires: 'u_res_a3' },
+  { id: 'u_res_a5', name: '资源感知V', desc: '力量产出x2，自身获取强化。', cost: 8e4, row: 5, requires: 'u_res_a4' },
+  { id: 'u_res_a6', name: '资源感知VI', desc: '力量产出x3，自身获取强化。', cost: 8e5, row: 6, requires: 'u_res_a5' },
+  { id: 'u_res_a7', name: '资源感知VII', desc: '力量产出x5，自身获取强化。', cost: 8e6, row: 7, requires: 'u_res_a6' },
+  { id: 'u_res_a8', name: '资源感知VIII', desc: '力量产出x8，自身获取强化。', cost: 8e7, row: 8, requires: 'u_res_a7' },
+  { id: 'u_res_a9', name: '资源感知IX', desc: '力量产出x15，自身获取强化。', cost: 8e8, row: 9, requires: 'u_res_a8' },
+  { id: 'u_res_a10', name: '资源感知X', desc: '力量产出x30，自身获取强化。', cost: 8e9, row: 10, requires: 'u_res_a9' },
+  // 战斗系列扩展
+  { id: 'u_battle_a1', name: '武道精通I', desc: '全属性（攻击/防御）翻 1.00e200 倍。', cost: 10, row: 1, requires: 'u_root' },
+  { id: 'u_battle_a2', name: '武道精通II', desc: '挑战强者攻击+40%，防御+20%。', cost: 100, row: 2, requires: 'u_battle_a1' },
+  { id: 'u_battle_a3', name: '武道精通III', desc: '挑战攻防翻倍。', cost: 2000, row: 3, requires: 'u_battle_a2' },
+  { id: 'u_battle_a4', name: '武道精通IV', desc: '挑战攻防再x2。', cost: 2e4, row: 4, requires: 'u_battle_a3' },
+  { id: 'u_battle_a5', name: '武道精通V', desc: '挑战攻防再x3。', cost: 2e5, row: 5, requires: 'u_battle_a4' },
+  { id: 'u_battle_a6', name: '武道精通VI', desc: '完全境界奖励+100%。', cost: 2e6, row: 6, requires: 'u_battle_a5' },
+  { id: 'u_battle_a7', name: '武道精通VII', desc: '挑战攻防再x5。', cost: 2e7, row: 7, requires: 'u_battle_a6' },
+  { id: 'u_battle_a8', name: '武道无双I', desc: '每击败100位强者，力量产出+10%（叠加）。', cost: 2e8, row: 8, requires: 'u_battle_a7' },
+  { id: 'u_battle_a9', name: '武道无双II', desc: '每击败100位强者，力量产出+20%（叠加）。', cost: 2e9, row: 9, requires: 'u_battle_a8' },
+  { id: 'u_battle_a10', name: '武道无双III', desc: '每击败100位强者，力量产出+50%（叠加）。', cost: 2e10, row: 10, requires: 'u_battle_a9' },
+  // 肉体系列扩展
+  { id: 'u_body_a1', name: '磁场肉体感应I', desc: '拥有一个肉体时，全局倍率+20%。', cost: 18, row: 1, requires: 'u_root' },
+  { id: 'u_body_a2', name: '磁场肉体感应II', desc: '拥有一个肉体时，全局倍率+40%。', cost: 150, row: 2, requires: 'u_body_a1' },
+  { id: 'u_body_a3', name: '磁场肉体感应III', desc: '磁场肉体需求-20%。', cost: 1500, row: 3, requires: 'u_body_a2' },
+  { id: 'u_body_a4', name: '磁场肉体感应IV', desc: '磁场肉体需求-30%，加成x1.3。', cost: 1.5e4, row: 4, requires: 'u_body_a3' },
+  { id: 'u_body_a5', name: '磁场肉体感应V', desc: '磁场肉体加成x1.5。', cost: 1.5e5, row: 5, requires: 'u_body_a4' },
+  { id: 'u_body_a6', name: '磁场肉体觉醒', desc: '磁场肉体加成x2。', cost: 1.5e6, row: 6, requires: 'u_body_a5' },
+  { id: 'u_body_a7', name: '磁场肉体圆满', desc: '磁场肉体加成x3。', cost: 1.5e7, row: 7, requires: 'u_body_a6' },
+  { id: 'u_body_a8', name: '磁场肉体极限', desc: '磁场肉体加成x5。', cost: 1.5e8, row: 8, requires: 'u_body_a7' },
+  // 综合系列
+  { id: 'u_synergy_a1', name: '共鸣初现', desc: '所有资源和力量+10%。', cost: 40, row: 2, requires: 'u_root' },
+  { id: 'u_synergy_a2', name: '共鸣增幅', desc: '所有资源和力量+20%。', cost: 400, row: 3, requires: 'u_synergy_a1' },
+  { id: 'u_synergy_a3', name: '共鸣爆发', desc: '所有资源和力量x1.5。', cost: 4000, row: 4, requires: 'u_synergy_a2' },
+  { id: 'u_synergy_a4', name: '共鸣洪流', desc: '所有资源和力量x2。', cost: 4e4, row: 5, requires: 'u_synergy_a3' },
+  { id: 'u_synergy_a5', name: '共鸣超越', desc: '所有资源和力量x5。', cost: 4e5, row: 6, requires: 'u_synergy_a4' },
+  { id: 'u_synergy_a6', name: '共鸣终极', desc: '所有资源和力量x10。', cost: 4e6, row: 7, requires: 'u_synergy_a5' },
+  { id: 'u_synergy_a7', name: '共鸣无尽', desc: '所有资源和力量x20。', cost: 4e7, row: 8, requires: 'u_synergy_a6' },
+  { id: 'u_synergy_a8', name: '共鸣超维', desc: '所有资源和力量x50。', cost: 4e8, row: 9, requires: 'u_synergy_a7' },
+  { id: 'u_synergy_a9', name: '共鸣神格', desc: '所有资源和力量x100，力量产出额外x10。', cost: 4e9, row: 10, requires: 'u_synergy_a8' },
+  { id: 'u_ach_boost1', name: '成就之力I', desc: '成就倍率x1.5，力量产出+50%。', cost: 3e4, row: 5, requires: 'u_synergy_a3' },
+  { id: 'u_ach_boost2', name: '成就之力II', desc: '成就倍率x2，力量产出+100%。', cost: 3e6, row: 7, requires: 'u_ach_boost1' },
+],
+// Challenges are SEPARATE from the tree — they are gated by challenge unlock upgrades
+// powerReq: minimum current power needed to START the challenge
+
+ultimateChallenges: [
+  { id: 'c1', name: '第一位强者：凶邪黑兽·克豹',
+    desc: '第一层产出减少90%，成就加成完全封锁（成就和击败数量保留，完成/放弃后恢复）。禁止点击获取伏特，本源加速禁用。被动每秒+1伏特，自动获取伏特×10。从零开始，完成第一、二层突破（进入磁场转动）。',
+    reward: '终极点数 +1e8 & 终极点数获取公式强化（×1.5倍指数加成）', pointReward: 1e8, reqUpg: null, pointReq: 0, powerReq: 1e12, difficulty: 1,
+    restriction: { t1Mult: 0.1, noAchMult: true, noClick: true, noT1Boost: true, c1PassiveVolt: true, c1AutoVoltX10: true }, winCondition: { tier: 2 } },
+  { id: 'c2', name: '第二位强者：霸者天神·巨鲨天王',
+    desc: '第二层产出减少80%。从零开始，完成两次苦修。',
+    reward: '终极点数 +5e10', pointReward: 5e10, reqUpg: 'u_chal_unlock1', pointReq: 5e7, powerReq: 5e12, difficulty: 2,
+    restriction: { t2Mult: 0.2 }, winCondition: { t2PrestigeCount: 2 } },
+  { id: 'c3', name: '第三位强者：义之铁王·释天风',
+    desc: '成就倍率完全归零。从零开始，完成全部三层突破并进入磁场功法。',
+    reward: '终极点数 +5e13', pointReward: 5e13, reqUpg: 'u_chal_unlock1', pointReq: 2e10, powerReq: 2e13, difficulty: 3,
+    restriction: { noAchMult: true }, winCondition: { tier: 3 } },
+  { id: 'c4', name: '第四位强者：万千武神为一体·无极天王',
+    desc: '禁用前三层所有主动升级，仅保留点击。从零完成第一层突破。',
+    reward: '终极点数 +2e17', pointReward: 2e17, reqUpg: 'u_chal_unlock2', pointReq: 2e13, powerReq: 1e14, difficulty: 4,
+    restriction: { noUpgrades: true }, winCondition: { tier: 2 } },
+  { id: 'c5', name: '第五位强者：一秒地狱·大刀武神',
+    desc: '仅限10分钟，完成第一层突破（进入磁场转动）。',
+    reward: '终极点数 +1e21', pointReward: 1e21, reqUpg: 'u_chal_unlock2', pointReq: 1e17, powerReq: 5e14, difficulty: 5,
+    restriction: { timeLimit: 600 }, winCondition: { tier: 2 } },
+  { id: 'c6', name: '第六位强者：杀人鲸·奥加',
+    desc: '所有资源上限减半。从零完成第二层突破。',
+    reward: '终极点数 +5e25', pointReward: 5e25, reqUpg: 'u_chal_unlock3', pointReq: 5e20, powerReq: 2e15, difficulty: 6,
+    restriction: { halfCap: true }, winCondition: { tier: 2 } },
+  { id: 'c7', name: '第七位强者：海虎·白军浪',
+    desc: '禁用第一层所有升级，成就加成减半。从零完成全部三层突破。',
+    reward: '终极点数 +1e31', pointReward: 1e31, reqUpg: 'u_chal_unlock3', pointReq: 1e26, powerReq: 1e16, difficulty: 7,
+    restriction: { noT1Upgrades: true, halfAchMult: true }, winCondition: { tier: 3 } },
+  { id: 'c8', name: '第八位强者：仁者暗帝·刹暗天',
+    desc: '挑战强者属性x3倍。从零击败150位强者。',
+    reward: '终极点数 +5e37', pointReward: 5e37, reqUpg: 'u_chal_unlock4', pointReq: 5e31, powerReq: 5e16, difficulty: 8,
+    restriction: { enemyMult: 3.0 }, winCondition: { battleWins: 150 } },
+  { id: 'c9', name: '第九位强者：帝者战神·白武男',
+    desc: '所有产出减少98%，时间限制15分钟。从零完成第一层突破。',
+    reward: '终极点数 +2e45', pointReward: 2e45, reqUpg: 'u_chal_unlock4', pointReq: 2e38, powerReq: 2e17, difficulty: 9,
+    restriction: { t1Mult: 0.02, t2Mult: 0.02, timeLimit: 900 }, winCondition: { tier: 2 } },
+  { id: 'c10', name: '第十位强者：释天武',
+    desc: '综合全部限制（产出×0.1、成就归零、升级封锁、无境界加成）。从零完成全部三层并进入磁场功法。',
+    reward: '终极点数 +1e60', pointReward: 1e60, reqUpg: 'u_chal_unlock5', pointReq: 1e50, powerReq: 1e18, difficulty: 10,
+    restriction: { t1Mult: 0.1, t2Mult: 0.1, noAchMult: true, noUpgrades: true }, winCondition: { tier: 3 } },
+],
+bodyParts: [
+  { id: 'head', name: '头颅', desc: '终极大脑强化，全局倍率+50%', effect: 'globalMult', value: 1.5 },
+  { id: 'arms', name: '手臂', desc: '磁场力量加成，点击倍率+100%', effect: 'clickMult', value: 2.0 },
+  { id: 'heart', name: '心脏', desc: '生命力量源泉，自动产出速度+80%', effect: 'autoMult', value: 1.8 },
+  { id: 'brain', name: '大脑', desc: '智识极致，升级倍率+60%', effect: 'upgMult', value: 1.6 },
+  { id: 'legs', name: '大腿', desc: '力量根基，所有层级数值增速+70%', effect: 'speedMult', value: 1.7 },
+],
 skills: [
-{ id: 'hell', name: '地狱道', baseCost: 100000, mult: 1.5, desc: '解开地狱之苦，产出 x1.5，上限解锁至 20万', reqWins: 20, capUnlock: 200000 }, // 修改：reqWins 翻倍 (10->20)
-{ id: 'tianwu', name: '天武杀道', baseCost: 200000, mult: 2.0, desc: '杀道通天，产出 x2.0，上限解锁至 50万', reqWins: 100, capUnlock: 500000 }, // 修改：baseCost 25万->20万; reqWins 翻倍 (50->100)
-{ id: 'shura', name: '无我魔刀', baseCost: 500000, mult: 3.0, desc: '无我无敌，产出 x3.0，上限解锁至 80万', reqWins: 300, capUnlock: 800000 }, // 修改：reqWins 翻倍 (150->300)
-{ id: 'bao', name: '大千世界刀', baseCost: 800000, mult: 5.0, desc: '刀斩大千，产出 x5.0，上限解锁至 95万', reqWins: 1000, capUnlock: 950000 }, // 修改：reqWins 翻倍 (500->1000)
-{ id: 'dao', name: '修罗道', baseCost: 950000, mult: 8.0, desc: '绝情修罗，产出 x8.0，上限解锁至 99万', reqWins: 3000, capUnlock: 990000 }, // 修改：reqWins 翻倍 (1500->3000)
-{ id: 'wo', name: '海虎爆破拳', baseCost: 990000, mult: 15.0, desc: '终极拳法，产出 x15.0。彻底解开限制，允许达到 100万！', reqWins: 10000, capUnlock: 1000000, unlocksFinalCap: true }, // 修改：reqWins 翻倍 (5000->10000)
-{ id: 'final_break', name: '自毁境界！！！', baseCost: 999999, mult: 0, desc: '终极突破！开启最终结局。', isFinal: true, reqWins: 20000 } // 修改：reqWins 翻倍 (10000->20000)
+{ id: 'hell', name: '地狱道', baseCost: 100000, mult: 1.5, desc: '解开地狱之苦，产出 x1.5，上限解锁至 20万', reqWins: 50, capUnlock: 200000 },
+{ id: 'tianwu', name: '天武杀道', baseCost: 200000, mult: 2.0, desc: '杀道通天，产出 x2.0，上限解锁至 50万', reqWins: 200, capUnlock: 500000 },
+{ id: 'shura', name: '无我魔刀', baseCost: 500000, mult: 3.0, desc: '无我无敌，产出 x3.0，上限解锁至 80万', reqWins: 300, capUnlock: 800000 },
+{ id: 'bao', name: '大千世界刀', baseCost: 800000, mult: 5.0, desc: '刀斩大千，产出 x5.0，上限解锁至 95万', reqWins: 1000, capUnlock: 950000 },
+{ id: 'dao', name: '修罗道', baseCost: 950000, mult: 8.0, desc: '绝情修罗，产出 x8.0，上限解锁至 99万', reqWins: 3000, capUnlock: 990000 },
+{ id: 'wo', name: '海虎爆破拳', baseCost: 990000, mult: 15.0, desc: '终极拳法，产出 x15.0。彻底解开限制，允许达到 100万！', reqWins: 10000, capUnlock: 1000000, unlocksFinalCap: true },
+{ id: 'final_break', name: '自毁境界！！！', baseCost: 999999, mult: 0, desc: '终极突破！开启最终结局。', isFinal: true, reqWins: 20000 }
 ],
 achievements: [
 { id: 'volt_1k', name: '初出茅庐', desc: '累计获得 1,000 伏特', condition: (s) => s.totalVolt >= 1000, rewardMult: 1.1 },
@@ -962,20 +1385,90 @@ achievements: [
 { id: 'tier3_enter', name: '地狱之门', desc: '进入磁场功法', condition: (s) => s.tier >= 3, rewardMult: 2.0 },
 { id: 'win_battle_10', name: '百战百胜', desc: '击败 10 位强者', condition: (s) => s.battleWins >= 10, rewardMult: 1.5 },
 { id: 'realm_10', name: '完全境界·初', desc: '拥有 10 级完全境界', condition: (s) => s.realmCount >= 10, rewardMult: 1.5 },
-{ id: 'game_clear', name: '一百万匹', desc: '达到一百万匹力量', condition: (s) => s.gameWon, rewardMult: 2.0 }
+{ id: 'game_clear', name: '一百万匹', desc: '达到一百万匹力量', condition: (s) => s.gameWon, rewardMult: 2.0 },
+// 更多成就
+{ id: 'prestige_8', name: '苦修老兵', desc: '散功重修达到8次', condition: (s) => s.prestigeCount >= 8, rewardMult: 1.3 },
+{ id: 'prestige_16', name: '涅槃重生', desc: '散功重修达到12次', condition: (s) => s.prestigeCount >= 12, rewardMult: 1.5 },
+{ id: 't2_prestige_5', name: '磁场苦行者', desc: '进入重生池苦修达到5次', condition: (s) => s.t2PrestigeCount >= 5, rewardMult: 1.5 },
+{ id: 'win_battle_100', name: '百战强者', desc: '击败 100 位强者', condition: (s) => s.battleWins >= 100, rewardMult: 1.5 },
+{ id: 'win_battle_1000', name: '千战无敌', desc: '击败 1000 位强者', condition: (s) => s.battleWins >= 1000, rewardMult: 2.0 },
+{ id: 'win_battle_10000', name: '万军统帅', desc: '击败 10000 位强者', condition: (s) => s.battleWins >= 10000, rewardMult: 2.0 },
+{ id: 'realm_100', name: '完全境界·进', desc: '拥有 100 级完全境界', condition: (s) => s.realmCount >= 100, rewardMult: 1.5 },
+{ id: 'realm_10000', name: '完全境界·极', desc: '拥有 10000 级完全境界', condition: (s) => s.realmCount >= 10000, rewardMult: 2.0 },
+{ id: 'reincarnation_1', name: '元神转世', desc: '完成第一次元神转世', condition: (s) => (s.realmUpgrades['r_reincarnation'] || 0) >= 1, rewardMult: 2.0 },
+{ id: 'reincarnation_3', name: '三世流转', desc: '完成3次元神转世', condition: (s) => (s.realmUpgrades['r_reincarnation'] || 0) >= 3, rewardMult: 2.5 },
+{ id: 'tier4_enter', name: '终极强者之境', desc: '进入终极强者之境', condition: (s) => s.tier4Unlocked, rewardMult: 3.0 },
+{ id: 'ult_reset_1', name: '终极觉醒', desc: '完成第一次终极重置', condition: (s) => s.ultimatePoints > 0, rewardMult: 2.0 },
+{ id: 'ult_upg_5', name: '终极感悟I', desc: '购买5个终极升级', condition: (s) => Object.values(s.ultimateUpgrades||{}).filter(v=>v).length >= 5, rewardMult: 1.5 },
+{ id: 'ult_upg_20', name: '终极感悟II', desc: '购买20个终极升级', condition: (s) => Object.values(s.ultimateUpgrades||{}).filter(v=>v).length >= 20, rewardMult: 2.0 },
+{ id: 'ult_upg_50', name: '终极感悟III', desc: '购买50个终极升级', condition: (s) => Object.values(s.ultimateUpgrades||{}).filter(v=>v).length >= 50, rewardMult: 2.5 },
+{ id: 'ult_upg_100', name: '终极感悟IV', desc: '购买100个终极升级', condition: (s) => Object.values(s.ultimateUpgrades||{}).filter(v=>v).length >= 100, rewardMult: 3.0 },
+{ id: 'challenge_1_done', name: '初战告捷', desc: '完成第一个终极强者挑战', condition: (s) => (s.completedChallenges||[]).length >= 1, rewardMult: 2.0 },
+{ id: 'challenge_5_done', name: '五路皆通', desc: '完成5个终极强者挑战', condition: (s) => (s.completedChallenges||[]).length >= 5, rewardMult: 3.0 },
+{ id: 'body_1', name: '磁场肉身·初', desc: '获得第一个磁场肉体', condition: (s) => (s.bodyParts||[]).length >= 1, rewardMult: 2.0 },
+{ id: 'body_5', name: '磁场肉身·满', desc: '获得全部5个磁场肉体', condition: (s) => (s.bodyParts||[]).length >= 5, rewardMult: 5.0 }
+],
+flowUpgrades: [
+ { id: 'fl_amount1',  name: '流量感知I',    desc: '每次充满流量获取+4。',   baseCost: 50,    costMult: 2.5, maxLevel: 3, type: 'amount' },
+ { id: 'fl_speed1',  name: '充能优化I',    desc: '充能时间减少10%（最多购买2次）', baseCost: 50, costMult: 3, maxLevel: 2, type: 'speed', value: 0.1 },
+ { id: 'fl_amount2',  name: '流量感知II',   desc: '每次充满流量获取+10。',  baseCost: 300,   costMult: 2.5, maxLevel: 3, type: 'amount' },
+ { id: 'fl_speed2',  name: '充能优化II',   desc: '充能时间减少15%（最多购买2次）', baseCost: 2500, costMult: 3, maxLevel: 2, type: 'speed', value: 0.15 },
+ { id: 'fl_amount3',  name: '流量感知III',  desc: '每次充满流量获取+40。',  baseCost: 1500,  costMult: 2.5, maxLevel: 3, type: 'amount' },
+ { id: 'fl_amount4',  name: '流量感知IV',   desc: '每次充满流量获取+200。', baseCost: 7000,  costMult: 2.5, maxLevel: 3, type: 'amount' },
+ { id: 'fl_speed3',  name: '超导充能I',    desc: '充能时间减少20%（最多购买2次）', baseCost: 25000, costMult: 4, maxLevel: 2, type: 'speed', value: 0.2 },
+ { id: 'fl_amount5',  name: '流量洪流I',    desc: '每次充满流量获取+1000。', baseCost: 30000, costMult: 2.5, maxLevel: 3, type: 'amount' },
+ { id: 'fl_amount6',  name: '流量洪流II',   desc: '每次充满流量获取+1000。', baseCost: 120000, costMult: 2.5, maxLevel: 3, type: 'amount' },
+ { id: 'fl_amount7',  name: '流量洪流III',  desc: '每次充满流量获取+2000。', baseCost: 450000, costMult: 2.5, maxLevel: 3, type: 'amount' },
+ { id: 'fl_speed4',  name: '超导充能II',   desc: '充能时间减少25%（最多购买2次）', baseCost: 800000, costMult: 4, maxLevel: 2, type: 'speed', value: 0.25 },
+ { id: 'fl_amount8',  name: '流量洪流IV',   desc: '每次充满流量获取+4000。', baseCost: 1500000, costMult: 2.5, maxLevel: 3, type: 'amount' },
+ { id: 'fl_amount9',  name: '数据风暴I',    desc: '每次充满流量获取+2万。',  baseCost: 4000000, costMult: 2.5, maxLevel: 3, type: 'amount' },
+ { id: 'fl_amount10', name: '数据风暴II',   desc: '每次充满流量获取+4万。',  baseCost: 8000000, costMult: 2.5, maxLevel: 3, type: 'amount' },
+ { id: 'fl_amount11', name: '数据风暴III',  desc: '每次充满流量获取+10万。', baseCost: 1.2e7,  costMult: 2,   maxLevel: 3, type: 'amount' },
+ { id: 'fl_auto', name: '⚙️ 自动充能', desc: '充能条完成后自动重新开始充能（无需手动点击）。需要拥有1万流量解锁。', baseCost: 10000, costMult: 1, maxLevel: 1, type: 'auto' },
 ],
 realmUpgrades: [
-{ id: 'r_atk', name: '攻击强化', desc: '提升挑战攻击力 (x1.2/级)', baseCost: 1, costMult: 1.5, maxLevel: 20, effect: (lvl) => Math.pow(1.2, lvl), type: 'atk' },
-{ id: 'r_def', name: '防御强化', desc: '提升挑战防御力 (x1.2/级)', baseCost: 1, costMult: 1.5, maxLevel: 20, effect: (lvl) => Math.pow(1.2, lvl), type: 'def' },
-{ id: 'r_res_t1', name: '电流感悟', desc: '伏特获取倍率 (x1.1/级)', baseCost: 5, costMult: 2.0, maxLevel: 10, effect: (lvl) => Math.pow(1.1, lvl), type: 'res_t1', reqTier: 1 },
-{ id: 'r_res_t2', name: '磁场感悟', desc: '匹数获取倍率 (x1.1/级)', baseCost: 10, costMult: 2.5,  maxLevel: 10, effect: (lvl) => Math.pow(1.1, lvl), type: 'res_t2', reqTier: 2 },
-{ id: 'r_res_t3', name: '杀道感悟', desc: '地狱层产出倍率 (x1.2/级)', baseCost: 20, costMult: 3.0, maxLevel: 10, effect: (lvl) => Math.pow(1.2, lvl), type: 'res_t3', reqTier: 3 },
-{ id: 'r_regen', name: '生命复苏', desc: '脱战回血速度 (x1.5/级)', baseCost: 5, costMult: 2.5, maxLevel: 10, effect: (lvl) => Math.pow(1.5, lvl), type: 'regen', reqTier: 2 },
-{ id: 'r_auto_battle', name: '自动挑战', desc: '解锁后自动连续挑战强者 (价格昂贵)', baseCost: 500, costMult: 5.0, maxLevel: 1, effect: (lvl) => lvl > 0, type: 'auto', reqTier: 2 },
-// 新增：元神转世
-{ id: 'r_reincarnation', name: '元神转世', desc: '重置游戏，保留本源加速，永久翻倍强者挑战属性倍率。击败50人解锁，无花费。', baseCost: 0, costMult: 1, maxLevel: 99, effect: (lvl) => Math.pow(2, lvl), type: 'reincarnation', reqTier: 2, reqWins: 50 }
-]
+    { id: 'r_atk', name: '攻击强化', desc: '提升挑战攻击力 (x1.2/级)', baseCost: 1, costMult: 1.3, maxLevel: 20, effect: (lvl) => Math.pow(1.2, lvl), type: 'atk' }, // 原1.5 -> 1.3
+    { id: 'r_def', name: '防御强化', desc: '提升挑战防御力 (x1.2/级)', baseCost: 1, costMult: 1.3, maxLevel: 20, effect: (lvl) => Math.pow(1.2, lvl), type: 'def' }, // 原1.5 -> 1.3
+    { id: 'r_res_t1', name: '电流感悟', desc: '伏特获取倍率 (x1.1/级)', baseCost: 5, costMult: 1.5, maxLevel: 10, effect: (lvl) => Math.pow(1.1, lvl), type: 'res_t1', reqTier: 1 }, // 原2.0 -> 1.5
+    { id: 'r_res_t2', name: '磁场感悟', desc: '匹数获取倍率 (x1.1/级)', baseCost: 10, costMult: 1.6, maxLevel: 10, effect: (lvl) => Math.pow(1.1, lvl), type: 'res_t2', reqTier: 2 }, // 原2.5 -> 1.6
+    { id: 'r_res_t3', name: '杀道感悟', desc: '地狱层产出倍率 (x1.2/级)', baseCost: 20, costMult: 1.8, maxLevel: 10, effect: (lvl) => Math.pow(1.2, lvl), type: 'res_t3', reqTier: 3 }, // 原3.0 -> 1.8
+    { id: 'r_regen', name: '生命复苏', desc: '脱战回血速度 (x1.5/级)', baseCost: 5, costMult: 1.8, maxLevel: 10, effect: (lvl) => Math.pow(1.5, lvl), type: 'regen', reqTier: 2 }, // 原2.5 -> 1.8
+    { id: 'r_auto_battle', name: '自动挑战', desc: '解锁后自动连续挑战强者', baseCost: 500, costMult: 5.0, maxLevel: 1, effect: (lvl) => lvl > 0, type: 'auto', reqTier: 2 },
+    // 元神转世
+    { id: 'r_reincarnation', name: '元神转世', desc: '重置游戏，保留部分升级，永久翻倍强者挑战属性倍率。击败50人解锁，第2次购买后，每次击败敌人获得部分匹数奖励。', baseCost: 0, costMult: 1, maxLevel: 4, effect: (lvl) => Math.pow(2, lvl), type: 'reincarnation', reqTier: 2, reqWins: 50, reincarnationCosts: [0, 0, 0, 0, 0, 0, 0, 0] , reincarnationWinReqs: [50, 150, 350, 750, 1550, 3150, 6350, 12750] }
+],
 };
+
+// ===== 终极升级费用平滑重计算 =====
+// 费用范围：第0行≈1点，第17行≈1e60点
+// 对应新的力量→点数换算：玩家能在合理时间内购买所有升级
+(function recalcUltCosts() {
+  const maxRow = Math.max(...CONFIG.ultimateUpgrades.map(u => u.row));
+  // log10(1e60) = 60，让末排升级约需1e60点
+  const logMax = 60;
+  CONFIG.ultimateUpgrades.forEach(u => {
+    const frac = u.row / maxRow;
+    // 指数分布：低行便宜，高行贵
+    const logCost = Math.pow(frac, 1.2) * logMax; // 1.2次方让中期更平缓
+    const val = Math.pow(10, logCost);
+    u.cost = Math.max(1, isFinite(val) ? val : 1e60);
+  });
+  // 同行内按数组顺序微调：每个后续升级×1.5
+  const rowGroups = {};
+  CONFIG.ultimateUpgrades.forEach(u => {
+    if (!rowGroups[u.row]) rowGroups[u.row] = [];
+    rowGroups[u.row].push(u);
+  });
+  Object.values(rowGroups).forEach(group => {
+    if (group.length <= 1) return;
+    const baseLog = Math.log10(Math.max(1, group[0].cost));
+    group.forEach((u, idx) => {
+      const newLog = baseLog + idx * 0.18;
+      const val = Math.pow(10, newLog);
+      u.cost = isFinite(val) ? Math.max(1, val) : 1e60;
+    });
+  });
+})();
 
 const game = {
 state: {},
@@ -1004,7 +1497,28 @@ skills: {}, realmCount: 0, battleWins: 0,
 playerMaxHp: 100, playerCurHp: 100, enemyMaxHp: 100, enemyCurHp: 100, enemyAtk: 0, enemyDef: 0,
 isBattling: false, isInjured: false, injuredUntil: 0, hpRegenActive: true,
 realmUpgrades: {}, unlockedAchievements: [], gameWon: false, startTime: Date.now(),
-reincarnationMult: 1 // 新增：元神转世倍率
+reincarnationMult: 1,
+// Tier 4 新增
+power: 0,
+ultimatePoints: 0,
+ultimateUpgrades: {},
+completedChallenges: [],
+activeChallenge: null, // challenge id currently active
+challengeStartState: null, // saved state before challenge
+challengeStartTime: null,
+bodyParts: [], // owned body parts
+bodyResetCount: 0,
+magneticBodyUnlocked: false,
+tier4Unlocked: false,
+voltCapUnlocked: false, // 解锁终极强者后获得的伏特上限提升奖励
+// 流量系统
+flow: 0, // 当前流量
+flowMax: 1e8, // 上限一亿
+flowUpgLvl: 0, // 流量升级等级（总计）
+flowUpgrades: {}, // 各流量升级等级
+flowChargeProgress: 0, // 充能进度 0~1
+flowChargeActive: false, // 是否正在充能
+flowUnlocked: false, // 是否已解锁流量页面
 };
 },
 init() {
@@ -1016,43 +1530,142 @@ this.renderRealmUpgrades();
 this.renderSkills();
 this.renderAchievements();
 this.renderVoltRetention();
+this.renderUltimateTree();
+this.renderUltimateChallenges();
+this.renderBodyParts();
 setInterval(() => {
-if (!this.state.gameWon) this.checkProgression();
+this.checkProgression();
 ui.update();
 ui.checkRedDots();
+// 仅在终极点数变化时重渲树（避免100ms重渲导致onclick无法触发）
+if (this.state.tier4Unlocked) {
+  const pts = this.state.ultimatePoints;
+  if (pts !== this._lastUltPtsForTree) {
+    this._lastUltPtsForTree = pts;
+    this.renderUltimateTree();
+  }
+}
 }, 100);
+this.lastUpdateTime = Date.now(); // 初始化，防止首次dt为NaN
 setInterval(() => {
-if (this.state.gameWon) return;
-this.processAutoProduction();
+// In tier4 outside challenge: only run power production and regen
+const now = Date.now();
+const dt = (now - this.lastUpdateTime) / 1000; // 计算经过的秒数
+this.lastUpdateTime = now;
+this.processAutoProduction(dt); 
+this.processPowerProduction(dt);
+this.checkProgression(); // 检查解锁条件
+ui.update();             // 【核心】强制刷新所有界面数值和按钮状态
+ui.checkRedDots();   
 this.handlePassiveRegen();
 this.checkAutoBattle();
-}, 1000);
-setInterval(() => this.saveGame(), 30000);
-this.log("系统启动。v9更新：天武杀道降价，苦修难度提升，敌人平衡性调整，新增元神转世。");
+this.checkChallengeTimeout();
+this.processFlowCharge();
+// 流量充能逻辑也在此运行（保证后台运行）
+if (this.state.flowUnlocked && this.state.flowChargeActive) {
+  this.tickFlowCharge(dt);
+}
+}, 100);
+setInterval(() => this.saveGame(), 10000);
+this.log("系统启动。v10更新：终极强者层、力量资源、磁场肉体已解锁。");
+
+// 后台运行支持：页面隐藏时记录时间，恢复时补算离线进度
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    this._bgHideTime = Date.now();
+  } else {
+    if (this._bgHideTime) {
+      const elapsed = (Date.now() - this._bgHideTime) / 1000; // 秒
+      // 补算后台时间内的资源生产（最多补算1小时，防止异常）
+      const cap = Math.min(elapsed, 3600);
+      const steps = Math.ceil(cap / 0.1);
+      const stepDt = cap / steps;
+      for (let i = 0; i < steps; i++) {
+        this.processAutoProduction(stepDt);
+        this.processPowerProduction(stepDt);
+        // 流量充能
+        if (this.state.flowUnlocked && this.state.flowChargeActive) {
+          const totalTime = this.getFlowChargeTime();
+          this.state.flowChargeProgress = Math.min(1, (this.state.flowChargeProgress || 0) + stepDt / totalTime);
+          if (this.state.flowChargeProgress >= 1) {
+            const upgs = this.state.flowUpgrades || {};
+            let amount = 1;
+            amount += (upgs['fl_amount1'] || 0) * 4;
+            amount += (upgs['fl_amount2'] || 0) * 10;
+            amount += (upgs['fl_amount3'] || 0) * 40;
+            amount += (upgs['fl_amount4'] || 0) * 200;
+            amount += (upgs['fl_amount5'] || 0) * 1000;
+            amount += (upgs['fl_amount6'] || 0) * 1000;
+            amount += (upgs['fl_amount7'] || 0) * 2000;
+            amount += (upgs['fl_amount8'] || 0) * 4000;
+            amount += (upgs['fl_amount9'] || 0) * 20000;
+            amount += (upgs['fl_amount10'] || 0) * 40000;
+            amount += (upgs['fl_amount11'] || 0) * 100000;
+                                                            this.state.flow = Math.min(this.state.flowMax, this.state.flow + amount);
+            this.state.flowChargeProgress = 0;
+            const hasAuto = (this.state.flowUpgrades || {})['fl_auto'] >= 1;
+            this.state.flowChargeActive = hasAuto && this.state.flow < this.state.flowMax;
+          }
+        }
+      }
+      this._bgHideTime = null;
+      ui.update();
+      ui.updateFlowBar();
+    }
+  }
+});
+
+// rAF loop：仅用于流量充能条的视觉动画（不是核心逻辑，rAF暂停时由setInterval补偿）
+let lastTime = performance.now();
+const rafLoop = (now) => {
+const dt = (now - lastTime) / 1000;
+lastTime = now;
+game.tickFlowCharge(dt);
+ui.updateFlowBar();
+requestAnimationFrame(rafLoop);
+};
+requestAnimationFrame(rafLoop);
 },
 hardReset() {
 if (confirm("【警告】确定要删档重开吗？这一世的修行将全部作废！")) {
+localStorage.removeItem('magneticIncrementSave_v4');
 localStorage.removeItem('magneticIncrementSave_v3');
+localStorage.removeItem('magneticT4Backup_v4');
 location.reload();
 }
 },
-processAutoProduction() {
+processAutoProduction(dt) {
+const now = Date.now();
 const s = this.state;
+// dt デフォルト値（呼び出し元がdtを渡さない場合のフォールバック）
+if (!dt || dt <= 0) dt = 0.1;
+// tier1-3 production always runs (including during tier4)
+{
 const achMult = this.getAchievementMult();
 const realmMult = this.getRealmResourceMult();
+// challenge restrictions
+const chalRestrict = this.getChallengeRestriction();
+const t1ChalMult = chalRestrict.t1Mult !== undefined ? chalRestrict.t1Mult : 1;
+const t2ChalMult = chalRestrict.t2Mult !== undefined ? chalRestrict.t2Mult : 1;
+// body part multipliers
+const bodyAutoMult = this.getBodyPartMult('autoMult');
+const bodySpeedMult = this.getBodyPartMult('speedMult');
 if (s.genCount > 0) {
-const pMult = Math.pow(2, s.prestigeCount);
-const transEff = 1 + (s.transLvl * 0.1);
-const superEff = 1 + (s.superLvl * 0.2);
-const boostMult = Math.pow(1.5, s.t1BoostLvl);
-let productionPerSecond = s.genCount * 3 * transEff * pMult * superEff * achMult * realmMult * boostMult;
-if (productionPerSecond > 0) this.addVolt(productionPerSecond);
+const pMult = (s.activeChallenge && s.activeChallenge !== 'c1') ? 1 : Math.pow(2, s.prestigeCount);
+const transEff = (chalRestrict.noUpgrades || chalRestrict.noT1Upgrades) ? 1 : 1 + (s.transLvl * 0.1);
+const superEff = (chalRestrict.noUpgrades || chalRestrict.noT1Upgrades) ? 1 : 1 + (s.superLvl * 0.2);
+const boostMult = (chalRestrict.noUpgrades || chalRestrict.noT1Upgrades || chalRestrict.noT1Boost) ? 1 : Math.pow(1.5, s.t1BoostLvl);
+let productionPerSecond = s.genCount * 3 * transEff * pMult * superEff * achMult * realmMult * boostMult * t1ChalMult * bodyAutoMult * bodySpeedMult;
+if (chalRestrict.c1AutoVoltX10) productionPerSecond *= 10; // c1挑战：自动伏特×10
+if (productionPerSecond > 0) this.addVolt(productionPerSecond * dt);
 }
+// c1挑战：被动每秒+1伏特
+if (chalRestrict.c1PassiveVolt) this.addVolt(1 * dt);
 if (s.tier >= 2) {
-const t2Mult = Math.pow(2, s.t2PrestigeCount);
+const t2Mult = s.activeChallenge ? 1 : Math.pow(2, s.t2PrestigeCount);
 const realmBonus = this.getRealmResourceMult(true);
-const boostMult = Math.pow(1.5, s.t2BoostLvl);
-let baseAuto = (Math.pow(s.voltUpgLvl, 2) * 1) + (s.autoHPLvl * 5);
+const boostMult = (chalRestrict.noUpgrades) ? 1 : Math.pow(1.5, s.t2BoostLvl);
+let baseAuto = 1 + (Math.pow(s.voltUpgLvl, 2) * 1) + (s.autoHPLvl * 5); // 最低1/秒基础产出
 let rawVoltConversion = 0;
 if (s.voltConvLvl > 0) {
 rawVoltConversion = (Math.log10(Math.max(1, s.volt)) * 10) * s.voltConvLvl;
@@ -1080,27 +1693,41 @@ if (softCapMultiplier < 0.0001) softCapMultiplier = 0.0001;
 }
 let totalBase = baseAuto + voltConversion;
 if (totalBase > 0) {
-let finalProduction = totalBase * realmBonus * t2Mult * boostMult * softCapMultiplier;
-this.addHP(finalProduction);
+let finalProduction = totalBase * realmBonus * t2Mult * boostMult * softCapMultiplier * t2ChalMult * bodyAutoMult * bodySpeedMult;
+this.addHP(finalProduction * dt);
 }
 }
+} // end production-only block (tier4 outside challenge skips above)
 if (s.isInjured) {
 const now = Date.now();
 if (now >= s.injuredUntil) {
 s.isInjured = false;
 s.playerCurHp = Math.ceil(s.playerMaxHp * 0.01);
 this.log("你从重伤中苏醒，恢复了微弱气息。", true);
-} else {
-const remaining = Math.ceil((s.injuredUntil - now) / 1000);
-document.getElementById('hp-status-text').innerText = `重伤恢复中... (${remaining}s)`;
-document.getElementById('hp-status-text').style.color = '#ff6600';
+if(this.autoBattleEnabled) {
+             setTimeout(() => this.checkAutoBattle(), 100);
+        }
+    } else {
+        // 更新UI显示剩余时间，避免用户以为时间在增加
+        const remaining = Math.ceil((s.injuredUntil - now) / 1000);
+        const hpStatusText = document.getElementById('hp-status-text');
+        if(hpStatusText) {
+            hpStatusText.innerText = `重伤恢复中... (${remaining}s)`;
+            hpStatusText.style.color = '#ff6600';
+        }
+    }
+    return; // 重伤期间直接返回，不执行回血
 }
-return;
-}
-if (!s.isBattling && s.playerCurHp > 0 && s.playerCurHp < s.playerMaxHp) {
+if (!s.isBattling && s.playerCurHp > 0) {
 const stats = this.getBattleStats();
-s.playerMaxHp = stats.pMaxHp;
-if (s.playerCurHp > s.playerMaxHp) s.playerCurHp = s.playerCurHp;
+const newMaxHp = stats.pMaxHp;
+if (newMaxHp > s.playerMaxHp) {
+// Max HP increased (e.g. after gaining more horsePower), heal the difference
+const diff = newMaxHp - s.playerMaxHp;
+s.playerCurHp = Math.min(newMaxHp, s.playerCurHp + diff);
+s.playerMaxHp = newMaxHp;
+}
+if (s.playerCurHp < s.playerMaxHp) {
 const regenLvl = s.realmUpgrades['r_regen'] || 0;
 const regenMult = Math.pow(1.5, regenLvl);
 const baseRegen = Math.ceil(s.playerMaxHp * 0.1);
@@ -1108,6 +1735,7 @@ const regen = Math.floor(baseRegen * regenMult);
 s.playerCurHp = Math.min(s.playerMaxHp, s.playerCurHp + regen);
 document.getElementById('hp-status-text').innerText = `非战斗回血中 (+${ui.formatNum(regen)}/s)`;
 document.getElementById('hp-status-text').style.color = '#00ccff';
+} // end if playerCurHp < playerMaxHp
 } else if (!s.isBattling && s.playerCurHp >= s.playerMaxHp) {
 document.getElementById('hp-status-text').innerText = "生命值已满";
 document.getElementById('hp-status-text').style.color = '#888';
@@ -1117,15 +1745,31 @@ checkAutoBattle() {
 const s = this.state;
 if (s.tier < 2) return;
 const hasAutoUpgrade = parseInt(s.realmUpgrades['r_auto_battle'] || '0') === 1;
-if (!hasAutoUpgrade || !this.autoBattleEnabled || s.isBattling || s.isInjured || s.playerCurHp <= 0) return;
-if (hasAutoUpgrade && this.autoBattleEnabled && !s.isBattling && !s.isInjured && s.playerCurHp > 0) {
-this.startChallenge(true);
-}
+const now = Date.now();
+    const isStillInjured = s.isInjured && (now < s.injuredUntil);
+
+    if (!hasAutoUpgrade || !this.autoBattleEnabled || s.isBattling || isStillInjured || s.playerCurHp <= 0) return;
+
+    if (hasAutoUpgrade && this.autoBattleEnabled && !s.isBattling && !isStillInjured && s.playerCurHp > 0) {
+        this.startChallenge(true);
+    }
 },
 addVolt(amount) {
 const oldVolt = this.state.volt;
 const maxVolt = CONFIG.voltHardCap;
 if (this.state.volt >= maxVolt) return;
+// c1挑战：伏特软上限——需要1024倍（prestigeCount=10）才能勉强推进到50万
+const chalRestrict = this.getChallengeRestriction();
+if (chalRestrict.c1PassiveVolt) {
+  // 软上限：effectiveCap = 500000 * (prestigeMult / 1024)^1.0，最高不超过voltHardCap
+  const prestigeMult = Math.pow(2, this.state.prestigeCount);
+  const softCap = Math.min(maxVolt, 500000 * (prestigeMult / 1024));
+  if (softCap > 0 && this.state.volt >= softCap) {
+    // 超过软上限后，收益按 (softCap/volt)^4 急剧衰减
+    const ratio = softCap / this.state.volt;
+    amount = amount * Math.pow(ratio, 4);
+  }
+}
 this.state.volt += amount;
 if (this.state.volt > maxVolt) this.state.volt = maxVolt;
 this.state.totalVolt += amount;
@@ -1161,6 +1805,8 @@ if (s.skills['wo']) cap = CONFIG.finalCap;
 return cap;
 },
 clickAction() {
+const chalRestrict = this.getChallengeRestriction();
+if (chalRestrict.noClick) return; // c1挑战禁止点击获取伏特
 const pMult = Math.pow(2, this.state.prestigeCount);
 const superEff = 1 + (this.state.superLvl * 0.2);
 const achMult = this.getAchievementMult();
@@ -1173,6 +1819,8 @@ ui.update();
 },
 clickActionHP() {
 if (this.state.tier < 2) return;
+const chalRestrict = this.getChallengeRestriction();
+if (chalRestrict.noClick) return; // c1挑战禁止点击获取匹数
 let base = 1 + (this.state.hpUpgLvl * 1) + (this.state.voltUpgLvl * 1) + (this.state.clickHPLvl * 2);
 const achMult = this.getAchievementMult();
 const t2Mult = Math.pow(2, this.state.t2PrestigeCount);
@@ -1202,6 +1850,7 @@ ui.update();
 }
 },
 buyCap() {
+if (this.getChallengeRestriction().noClick) return; // c1挑战：点击升级禁用
 if (this.state.volt >= this.state.capCost) {
 this.state.volt -= this.state.capCost;
 this.state.capLvl++;
@@ -1226,12 +1875,19 @@ ui.update();
 }
 },
 buyT1Boost() {
+const chalRestrict = this.getChallengeRestriction();
+if (chalRestrict.noT1Boost) { this.log("挑战中：本源加速已禁用！", true); return; }
 if (this.state.volt >= this.state.t1BoostCost && this.state.t1BoostLvl < 3) {
 this.state.volt -= this.state.t1BoostCost;
 this.state.t1BoostLvl++;
 this.state.t1BoostCost = Math.floor(this.state.t1BoostCost * 5.0);
+this.state.autoBuyVoltUpgrades = true; 
+this.log("伏特本源已注入！自动购买伏特升级已激活。", true);
 this.log("本源加速 (电流) 升级成功！", true);
 ui.update();
+this.renderT1Boost();
+} else {
+alert("伏特不足！");
 }
 },
 buyT2Boost() {
@@ -1328,6 +1984,7 @@ ui.update();
 },
 buyHPUpg() {
 if (this.state.tier < 2) return;
+if (this.getChallengeRestriction().noClick) return; // c1挑战：点击威力升级禁用
 if (this.state.horsePower >= this.state.hpUpgCost) {
 this.state.horsePower -= this.state.hpUpgCost;
 this.state.hpUpgLvl++;
@@ -1368,6 +2025,7 @@ ui.update();
 },
 buyClickHP() {
 if (this.state.tier < 2) return;
+if (this.getChallengeRestriction().noClick) return; // c1挑战：点击升级禁用
 if (this.state.horsePower >= this.state.clickHPCost) {
 this.state.horsePower -= this.state.clickHPCost;
 this.state.clickHPLvl++;
@@ -1376,7 +2034,7 @@ ui.update();
 }
 },
 buySkill(id) {
-if (this.state.tier !== 3) return;
+if (this.state.tier < 3) return;
 const skill = CONFIG.skills.find(s => s.id === id);
 const curLvl = this.state.skills[id] || 0;
 if (curLvl >= 1) return;
@@ -1385,6 +2043,11 @@ this.log(`实力不足！需要击败 ${skill.reqWins} 名强者才能领悟此�
 return;
 }
 const cost = skill.baseCost;
+ if (skill.isFinal) {
+        if (!confirm("⚠️ 警告：购买【自毁境界！！！】将彻底突破极限，触发游戏的最终阶段（结局剧情）。\n\n确定要购买吗？")) {
+            return; // 用户点击取消，不执行购买
+        }
+    }
 if (this.state.horsePower >= cost) {
 this.state.horsePower -= cost;
 this.state.skills[id] = 1;
@@ -1408,7 +2071,7 @@ const reincarnationMult = this.state.reincarnationMult || 1; // 获取转世倍�
 // 玩家属性计算
 const pAtk = (this.state.horsePower * 0.5 + 100) * atkMult * reincarnationMult;
 const pDef = (this.state.horsePower * 0.2 + 50) * defMult * reincarnationMult;
-const pMaxHpVal = 1000 + (this.state.horsePower * 0.1) * reincarnationMult;
+const pMaxHpVal = pAtk * 1.5; 
 
 const wave = this.state.battleWins + 1;
 let batchCount = 1;
@@ -1425,50 +2088,38 @@ if (batchCount > 5000) batchCount = 5000;
 // 1. 基础资源因子：随玩家总资源增长，但增长极慢 (logarithmic)
 const resourceFactor = 1 + Math.log10(Math.max(1, this.state.volt + this.state.horsePower)) * 0.05;
 
-// 2. 难度曲线：前期增长快，后期增长放缓，避免永远打不过
+// 2. 难度曲线：前期增长快，后期增长放缓
 let difficultyCurve = 1;
 if (wave <= 10) {
 difficultyCurve = 1 + (wave * 0.2);
 } else {
-// 降低后期指数增长系数，从1.15降至1.08，让玩家可以靠升级追上
 difficultyCurve = 3 * Math.pow(1.08, wave - 10);
 }
+// 防止指数溢出为 Infinity（当wave极大时1.08^n会溢出）
+if (!isFinite(difficultyCurve) || difficultyCurve > 1e200) difficultyCurve = 1e200;
 
-// 3. 计算原始敌人属性
-let rawEMaxHp = Math.floor(1500 * resourceFactor * difficultyCurve);
-let rawEAtk = Math.floor(rawEMaxHp * 0.12); // 基础比例
-let rawEDef = Math.floor(rawEMaxHp * 0.04);
+// 3. 计算原始敌人属性（限制不超过 1e200，防止显示∞）
+let rawEAtk = Math.floor(Math.min(1e200, 1500 * resourceFactor * difficultyCurve * 0.12));
+    
+    // 5. 敌人属性上限
+    // 击败一万名敌人后解除硬上限，敌人属性继续自然增长（玩家需购买终极升级才能继续胜利）
+    const hardCapRemoved = (this.state.battleWins || 0) >= 10000;
+    const capMultiplier = 1.5;
+    const maxEAtk = pAtk * capMultiplier;
+    let eAtk = rawEAtk;
+    if (!hardCapRemoved && eAtk > maxEAtk) eAtk = maxEAtk;
+    let eMaxHp = Math.floor(eAtk * 3.5);
+    let eDef = Math.floor(1500 * resourceFactor * difficultyCurve * 0.04);
+    const maxEDef = pDef * capMultiplier;
+    if (!hardCapRemoved && eDef > maxEDef) eDef = maxEDef;
+    if (!hardCapRemoved && wave > 100) {
+        const stageAtkCap = Math.min(7000000, maxEAtk);
+        if (eAtk > stageAtkCap) { eAtk = stageAtkCap; eMaxHp = Math.floor(eAtk * 3.5); }
+        const stageDefCap = Math.min(2000000, maxEDef);
+        if (eDef > stageDefCap) eDef = stageDefCap;
+    }
 
-// 4. 应用新规则：血量 = 攻击力 * 3.5
-// 先确定攻击力，再根据3.5倍设定血量，同时保留软上限
-let eAtk = rawEAtk;
-let eMaxHp = Math.floor(eAtk * 3.5); 
-let eDef = rawEDef;
-
-// 5. 软上限限制：敌人属性不超过玩家属性的1.5倍 (防止数值崩坏)
-const capMultiplier = 1.5;
-const maxEHp = pMaxHpVal * capMultiplier;
-const maxEAtk = pAtk * capMultiplier;
-const maxEDef = pDef * capMultiplier;
-
-// 如果计算出的敌人属性超过上限，则截断
-if (eMaxHp > maxEHp) eMaxHp = maxEHp;
-if (eAtk > maxEAtk) eAtk = maxEAtk;
-if (eDef > maxEDef) eDef = maxEDef;
-
-// 特殊阶段调整 (保持原有逻辑，但确保不破坏3.5倍血量的核心规则)
-if (wave > 100) {
-// 这里只是给一个保底数值，如果玩家很强，依然受限于capMultiplier
-eAtk = Math.min(7000000, maxEAtk);
-eDef = Math.min(2000000, maxEDef);
-// 重新校准血量以符合3.5倍规则，除非触发生命值上限
-if (eAtk * 3.5 < eMaxHp) {
-    eMaxHp = Math.floor(eAtk * 3.5);
-}
-if (eMaxHp > maxEHp) eMaxHp = maxEHp;
-}
-
-return { pAtk, pDef, pMaxHp: pMaxHpVal, eMaxHp, eAtk, eDef, wave, batchCount };
+ return { pAtk, pDef, pMaxHp: pMaxHpVal, eMaxHp, eAtk, eDef, wave, batchCount };
 },
 startChallenge(isAuto = false) {
 if (this.state.tier < 2) return;
@@ -1534,8 +2185,18 @@ const count = stats.batchCount || 1;
 const baseReward = Math.max(1, Math.floor(stats.eMaxHp / 1000));
 const totalReward = baseReward * count;
 this.state.battleWins += count;
-this.state.realmCount += totalReward;
 let logMsg = `挑战胜利！`;
+const reincarnationLvl = this.state.realmUpgrades['r_reincarnation'] || 0;
+if (reincarnationLvl >= 2) {
+    const bonusHP = 100 * reincarnationLvl; 
+    this.addHP(bonusHP);
+    if (count > 1) {
+        logMsg += ` <span style="color:#00ffaa">[转世奖励] 额外获得 ${ui.formatNum(bonusHP * count)} 匹！</span>`;
+    } else {
+        logMsg += ` <span style="color:#00ffaa">[转世奖励] 额外获得 ${ui.formatNum(bonusHP)} 匹！</span>`;
+    }
+}
+this.state.realmCount = Math.min(CONFIG.realmCap, this.state.realmCount + totalReward);
 if (count > 1) {
 logMsg += `势如破竹！一次性击败了 ${count} 位强者 (第 ${stats.wave} - ${stats.wave + count - 1} 波)。`;
 } else {
@@ -1565,7 +2226,18 @@ this.log("逃走失败，陷入重伤。自动挑战已停止。", true);
 }
 this.state.playerCurHp = 0;
 this.state.isInjured = true;
-this.state.injuredUntil = now + 10000;
+let injuryDuration = 10000;
+
+// 检查是否拥有心脏肉体 且 购买了 "肉体再生" (u_body_regen) 升级
+const hasHeart = this.state.bodyParts && this.state.bodyParts.includes('heart');
+const hasRegenUpgrade = this.state.ultimateUpgrades && this.state.ultimateUpgrades['u_body_regen'];
+
+if (hasHeart && hasRegenUpgrade) {
+    // 减少 80% 时间，即只保留 20%
+    injuryDuration = injuryDuration * 0.2; 
+    this.log("心脏修复！重伤恢复速度大幅提升！", true);
+}
+this.state.injuredUntil = now + injuryDuration;
 }
 ui.updateBattleUI(false);
 },
@@ -1580,38 +2252,87 @@ if (id === 'r_reincarnation') {
         this.log(`需要击败 ${upg.reqWins} 名强者才能进行元神转世！`, true);
         return;
     }
-    if (!confirm("确定进行元神转世？这将重置游戏所有内容（除本源加速外），但永久翻倍挑战属性倍率！")) return;
+    const costs = upg.reincarnationCosts || [0];
+    const reincCost = curLvl < costs.length ? costs[curLvl] : Math.floor(costs[costs.length-1] * Math.pow(5, curLvl - costs.length + 1));
+    if (reincCost > 0 && this.state.realmCount < reincCost) {
+        this.log(`元神转世需要 ${ui.formatNum(reincCost)} 完全境界！当前：${ui.formatNum(this.state.realmCount)}`, true);
+        return;
+    }
+    const costText = reincCost > 0 ? `\n费用：${ui.formatNum(reincCost)} 完全境界` : "";
+    if (!confirm("确定进行元神转世？这将重置游戏所有内容（除本源加速、终极强者、磁场肉体及流量进度外），但永久翻倍挑战属性倍率！" + costText)) return;
+    if (reincCost > 0) this.state.realmCount -= reincCost;
+    // 安全锁底：击败1万敌人后，完全境界永不低于1万
+    if ((this.state.battleWins || 0) >= 10000) {
+      this.state.realmCount = Math.max(10000, this.state.realmCount);
+    }
     
     // 执行转世逻辑
     this.state.reincarnationMult *= 2;
     this.state.realmUpgrades[id] = curLvl + 1;
     
     // 重置游戏状态，但保留 t1BoostLvl, t2BoostLvl, t1BoostCost, t2BoostCost, reincarnationMult
-    const savedBoosts = {
+    const keptData = {
+        // 终极强者层
+        tier4Unlocked: this.state.tier4Unlocked,
+        ultimatePoints: this.state.ultimatePoints,
+        ultimateUpgrades: JSON.parse(JSON.stringify(this.state.ultimateUpgrades)),
+        completedChallenges: JSON.parse(JSON.stringify(this.state.completedChallenges)),
+        power: this.state.power,
+        
+        // 磁场肉体
+        bodyParts: JSON.parse(JSON.stringify(this.state.bodyParts)),
+        bodyResetCount: this.state.bodyResetCount,
+        magneticBodyUnlocked: this.state.magneticBodyUnlocked,
+        
+        // 流量系统
+        flow: this.state.flow,
+        flowUpgrades: JSON.parse(JSON.stringify(this.state.flowUpgrades)),
+        flowUnlocked: this.state.flowUnlocked,
+        
+        // 本源加速 (关键：必须保留)
         t1BoostLvl: this.state.t1BoostLvl,
         t1BoostCost: this.state.t1BoostCost,
         t2BoostLvl: this.state.t2BoostLvl,
         t2BoostCost: this.state.t2BoostCost,
+        
+        // 转世本身的状态
         reincarnationMult: this.state.reincarnationMult,
-        realmUpgrades: { 'r_reincarnation': this.state.realmUpgrades['r_reincarnation'] } // 保留转世等级
+        realmUpgrades: { 'r_reincarnation': this.state.realmUpgrades['r_reincarnation'] },
+        unlockedAchievements: JSON.parse(JSON.stringify(this.state.unlockedAchievements)), // 通常成就也保留
+        // 完全境界和击败数量永久保留
+        realmCount: this.state.realmCount,
+        battleWins: this.state.battleWins,
     };
     
     this.state = this.getInitialState();
-    this.state = { ...this.state, ...savedBoosts };
+    this.state = { ...this.state, ...keptData };
     
     this.log(`元神转世成功！当前挑战属性倍率：x${this.state.reincarnationMult}`, true);
     this.renderRealmUpgrades();
     ui.update();
+    ui.updateTabs()
     return;
 }
 
 const cost = Math.floor(upg.baseCost * Math.pow(upg.costMult, curLvl));
-if (this.state.realmCount >= cost) {
+// 击败1万名敌人后，完全境界锁定下限为1万——购买仍然有效，但扣减后不低于1万
+const realmFloor = (this.state.battleWins || 0) >= 10000 ? 10000 : 0;
+if (this.state.realmCount >= cost || this.state.realmCount >= realmFloor) {
+// 有足够的境界，或者虽然不够但下限保护允许购买（境界≥1万时免扣下限以下部分）
+const canAfford = this.state.realmCount >= cost;
+const protectedBuy = realmFloor > 0 && this.state.realmCount >= realmFloor;
+if (!canAfford && !protectedBuy) {
+this.log("完全境界不足！", true); return;
+}
 this.state.realmCount -= cost;
+// 锁底：不低于1万
+if (realmFloor > 0) this.state.realmCount = Math.max(realmFloor, this.state.realmCount);
 this.state.realmUpgrades[id] = curLvl + 1;
 this.log(`境界提升：${upg.name} Lv.${curLvl+1}`, true);
 this.renderRealmUpgrades();
 ui.update();
+} else {
+this.log("完全境界不足！", true);
 }
 },
 toggleAutoBattle() {
@@ -1636,11 +2357,17 @@ this.log("自动挑战已关闭。", true);
 ui.update();
 },
 getAchievementMult() {
+const chalRestrict = this.getChallengeRestriction();
+if (chalRestrict.noAchMult) return 1;
 let mult = 1;
 this.state.unlockedAchievements.forEach(id => {
 const ach = CONFIG.achievements.find(a => a.id === id);
 if (ach) mult *= ach.rewardMult;
 });
+const upgs = this.state.ultimateUpgrades || {};
+if (upgs['u_ach_boost1']) mult *= 1.5;
+if (upgs['u_ach_boost2']) mult *= 2;
+if (chalRestrict.halfAchMult) return 1 + (mult - 1) * 0.5;
 return mult;
 },
 getRealmResourceMult(isT2 = false, isT3 = false) {
@@ -1651,15 +2378,81 @@ const rT3 = this.state.realmUpgrades['r_res_t3'] || 0;
 if (isT3) mult *= Math.pow(1.2, rT3);
 else if (isT2) mult *= Math.pow(1.1, rT2);
 else mult *= Math.pow(1.1, rT1);
+// Ultimate upgrade bonuses
+const upgs = this.state.ultimateUpgrades || {};
+// Time/resource bonuses
+if (!isT2 && !isT3) {
+  if (upgs['u_time1']) mult *= 1.5;
+  if (upgs['u_time1b']) mult *= 1.3;
+  if (upgs['u_time2']) mult *= 1.8;
+  if (upgs['u_volt_boost']) mult *= 2;
+  if (upgs['u_volt_boost2']) mult *= 3;
+  if (upgs['u_volt_boost3']) mult *= 5;
+  if (upgs['u_volt_boost4']) mult *= 10;
+  if (upgs['u_volt_boost5']) mult *= 20;
+}
+if (isT2) {
+  if (upgs['u_time1b']) mult *= 1.3;
+  if (upgs['u_time2']) mult *= 1.8;
+  if (upgs['u_mag_boost']) mult *= 2;
+  if (upgs['u_mag_boost2']) mult *= 3;
+  if (upgs['u_mag_boost3']) mult *= 5;
+  if (upgs['u_mag_boost4']) mult *= 10;
+  if (upgs['u_mag_boost5']) mult *= 20;
+}
+if (isT3 && upgs['u_time3']) mult *= 2;
+if (isT3 && upgs['u_skill_boost']) mult *= 2;
+// Shared bonuses
+if (upgs['u_res_a1']) mult *= 1.2;
+if (upgs['u_res_a2']) mult *= 1.4;
+if (upgs['u_res_a3']) mult *= 1.5;
+if (upgs['u_res_a4']) mult *= 1.5;
+if (upgs['u_res_a5']) mult *= 2;
+if (upgs['u_res_a6']) mult *= 3;
+if (upgs['u_res_a7']) mult *= 5;
+if (upgs['u_res_a8']) mult *= 10;
+if (upgs['u_res_a9']) mult *= 20;
+if (upgs['u_res_a10']) mult *= 50;
+if (upgs['u_all_boost']) mult *= 3;
+if (upgs['u_all_boost2']) mult *= 5;
+if (upgs['u_all_boost3']) mult *= 10;
+if (upgs['u_all_boost4']) mult *= 20;
+if (upgs['u_all_boost5']) mult *= 50;
+if (upgs['u_dimension']) mult *= 10;
+if (upgs['u_synergy_a3']) mult *= 1.5;
+if (upgs['u_synergy_a4']) mult *= 2;
+if (upgs['u_synergy_a5']) mult *= 5;
+if (upgs['u_synergy_a6']) mult *= 10;
+if (upgs['u_synergy_a7']) mult *= 20;
+if (upgs['u_synergy_a8']) mult *= 50;
+if (upgs['u_synergy_a9']) mult *= 100;
 return mult;
 },
 getRealmAtkMult() {
 const lvl = this.state.realmUpgrades['r_atk'] || 0;
-return Math.pow(1.2, lvl);
+let mult = Math.pow(1.2, lvl);
+const upgs = this.state.ultimateUpgrades || {};
+if (upgs['u_battle_a1']) mult *= 1e200;
+if (upgs['u_battle_a2']) mult *= 1.4;
+if (upgs['u_battle_a3']) mult *= 2;
+if (upgs['u_battle_a4']) mult *= 2;
+if (upgs['u_battle_a5']) mult *= 3;
+if (upgs['u_battle_a7']) mult *= 5;
+if (upgs['u_battle_power']) mult *= 2;
+return mult;
 },
 getRealmDefMult() {
 const lvl = this.state.realmUpgrades['r_def'] || 0;
-return Math.pow(1.2, lvl);
+let mult = Math.pow(1.2, lvl);
+const upgs = this.state.ultimateUpgrades || {};
+if (upgs['u_battle_a1']) mult *= 1e200;
+if (upgs['u_battle_a2']) mult *= 1.2;
+if (upgs['u_battle_a3']) mult *= 2;
+if (upgs['u_battle_a4']) mult *= 2;
+if (upgs['u_battle_a5']) mult *= 3;
+if (upgs['u_battle_a7']) mult *= 5;
+if (upgs['u_battle_power']) mult *= 2;
+return mult;
 },
 checkProgression() {
 if (this.state.tier === 1 && this.state.volt >= CONFIG.t1Breakthrough) {
@@ -1680,12 +2473,71 @@ btn.style.opacity = "1";
 btn.style.cursor = "pointer";
 }
 }
-if (this.state.tier === 3) {
+if (this.state.tier === 3 && !this.state.activeChallenge) {
 const allSkillsBought = CONFIG.skills.every(s => this.state.skills[s.id] === 1);
-if (allSkillsBought && this.state.horsePower >= CONFIG.finalCap) {
+if (allSkillsBought && this.state.horsePower >= CONFIG.finalCap && !this.state.tier4Unlocked) {
 this.enterFinal();
 }
 }
+// 里程碑提示：达到1兆力量
+if (this.state.tier4Unlocked && this.state.power >= 1e12 && !this.state._milestone_power_1e12) {
+this.state._milestone_power_1e12 = true;
+const el = document.getElementById('milestone-msg');
+if (el) { el.innerText = '🎉 恭喜你！成功达成一兆力量，迈入了终极强者的行列！！！'; el.style.display = 'block'; setTimeout(() => { el.style.display = 'none'; }, 12000); }
+this.log('🎉 恭喜你！成功达成一兆力量，迈入了终极强者的行列！！！', true);
+}
+// 里程碑提示：达到1亿流量
+if (this.state.flowUnlocked && this.state.flow >= 1e8 && !this.state._milestone_flow_1e8) {
+this.state._milestone_flow_1e8 = true;
+const el = document.getElementById('milestone-msg');
+if (el) { el.innerText = '🎉 恭喜你！成功达成一亿级流量，现在可以开始推进力量的提升了！！！'; el.style.display = 'block'; setTimeout(() => { el.style.display = 'none'; }, 12000); }
+this.log('🎉 恭喜你！成功达成一亿级流量，现在可以开始推进力量的提升了！！！', true);
+}
+// u_auto_all: 自动散功重修 & 自动苦修
+if (this.state.ultimateUpgrades && this.state.ultimateUpgrades['u_auto_all'] && !this.state.activeChallenge) {
+  // 自动散功重修
+  if (this.state.tier === 1 && this.state.volt >= this.getPrestigeCost()) {
+    const s = this.state;
+    s.prestigeCount++;
+    const keepAll = s.voltRetentionLevel >= 5;
+    const keepCount = s.voltRetentionLevel;
+    s.volt = 0;
+    if (!keepAll) {
+      if (keepCount < 1) { s.genCount = 0; s.genCost = 10; }
+      if (keepCount < 2) { s.capLvl = 0; s.capCost = 50; }
+      if (keepCount < 3) { s.transLvl = 0; s.transCost = 200; }
+      if (keepCount < 4) { s.superLvl = 0; s.superCost = 1000; }
+      if (keepCount < 5) { s.t1BoostLvl = 0; s.t1BoostCost = 100000; }
+    }
+    this.log(`[自动] 散功重修！伏特倍数：x${Math.pow(2, s.prestigeCount)}`, true);
+    if (s.voltRetentionLevel >= 5) {
+      const buyMax = (costVar, countVar, costMult) => { while (s.volt >= s[costVar]) { s.volt -= s[costVar]; s[countVar]++; s[costVar] = Math.floor(s[costVar] * costMult); } };
+      buyMax('genCost', 'genCount', 1.5);
+      buyMax('capCost', 'capLvl', 1.6);
+      buyMax('transCost', 'transLvl', 1.7);
+      buyMax('superCost', 'superLvl', 2.0);
+      while (s.t1BoostLvl < 3 && s.volt >= s.t1BoostCost) { s.volt -= s.t1BoostCost; s.t1BoostLvl++; s.t1BoostCost = Math.floor(s.t1BoostCost * 5.0); }
+    }
+    this.checkAchievements();
+  }
+  // 自动苦修（tier2）
+  if (this.state.tier >= 2 && this.state.tier < 3) {
+    const req = Math.floor(CONFIG.t2PrestigeReq * Math.pow(2.0, this.state.t2PrestigeCount));
+    if (this.state.horsePower >= req) {
+      this.state.t2PrestigeCount++;
+      this.state.horsePower = 0;
+      this.state.hpUpgLvl = 0; this.state.hpUpgCost = 100;
+      this.state.voltUpgLvl = 0; this.state.voltUpgCost = 500;
+      this.state.voltConvLvl = 0; this.state.voltConvCost = 50000;
+      this.state.autoHPLvl = 0; this.state.autoHPCost = 3000;
+      this.state.clickHPLvl = 0; this.state.clickHPCost = 1500;
+      this.state.t2BoostLvl = 0; this.state.t2BoostCost = 10000;
+      this.log(`[自动] 苦修！磁场倍数：x${Math.pow(2, this.state.t2PrestigeCount).toFixed(2)}`, true);
+      this.checkAchievements();
+    }
+  }
+}
+
 },
 enterTier2() {
 if (this.state.volt < CONFIG.t1Breakthrough) {
@@ -1696,11 +2548,19 @@ this.state.tier = 2;
 this.state.horsePower = 0;
 const cardT1 = document.getElementById('card-breakthrough-t1');
 if(cardT1) cardT1.style.display = 'none';
+// Show tier2 breakthrough card now
+const cardT2 = document.getElementById('card-breakthrough-t2');
+if(cardT2) cardT2.style.display = '';
+const btnBT2 = document.getElementById('btn-breakthrough-t2');
+if(btnBT2) { btnBT2.disabled = true; btnBT2.style.opacity='0.5'; btnBT2.innerText='进入磁场功法 (需 100,000 匹)'; }
 this.log("突破成功！进入真正力量：磁场转动。", true);
+alert("🎉 恭喜！你已解锁新层级：【磁场转动】\n现在你可以积累匹数，挑战更高的境界！");
 ui.unlockTab('tier2');
-ui.unlockTab('challenge');
+if (!this.state.activeChallenge) ui.unlockTab('challenge');
 ui.switchTab('tier2');
 this.checkAchievements();
+// Check challenge win
+if (this.state.activeChallenge) this.checkChallengeWin();
 ui.update();
 },
 enterTier3() {
@@ -1712,18 +2572,44 @@ this.state.tier = 3;
 const cardT2 = document.getElementById('card-breakthrough-t2');
 if(cardT2) cardT2.style.display = 'none';
 this.log("修行难进...进入磁场功法。", true);
+alert("🎉 恭喜！你已解锁新层级：【磁场功法】\n现在你可以学习历代强者的武学，精进自身！");
 ui.unlockTab('tier3');
 ui.switchTab('tier3');
 this.renderSkills();
 this.checkAchievements();
+// Check challenge win
+if (this.state.activeChallenge) this.checkChallengeWin();
 ui.update();
 },
 enterFinal() {
+if (this.state.tier4Unlocked) return; // only first time
 this.state.tier = 4;
+this.state.tier4Unlocked = true;
 const screen = document.getElementById('cinematic-screen');
 screen.style.display = 'flex';
 this.playCinematic();
 this.log("达到一百万匹！最终剧情开始！", true);
+},
+enterTier4World() {
+// Called after cinematic completes - unlock tier4 world
+const screen = document.getElementById('cinematic-screen');
+screen.style.display = 'none';
+// Unlock tier4 mechanics
+this.state.gameWon = true;
+// 奖励：解开第一层伏特资源上限（提升至600亿）
+this.state.voltCapUnlocked = true;
+CONFIG.voltHardCap = 60000000000; // 600亿
+this.log("🎁 解锁奖励：第一层伏特资源上限已解开（提升至600亿伏特）！", true);
+ui.unlockTab('tier4');
+ui.switchTab('tier4');
+// Show power display
+document.getElementById('power-display').style.display = 'inline';
+document.getElementById('btn-ultimate-reset-inline').style.display = 'inline';
+this.renderUltimateTree();
+this.renderUltimateChallenges();
+this.log("终极强者之境已解锁！力量开始积累，购买终极升级以增强力量产出。", true);
+alert("🎉 恭喜！你已解锁新层级：【终极强者】\n现在你可以积蓄力量，成为终极强者！");
+this.saveGame();
 },
 playCinematic() {
 const textEl = document.getElementById('cinematic-text');
@@ -1838,7 +2724,11 @@ if (u.id === 'r_reincarnation') {
     const div = document.createElement('div');
     div.className = 'upgrade-card';
     div.style.borderColor = canBuy ? 'var(--gold-color)' : '#444';
-    div.innerHTML = `<h3 class="gold">${u.name} <span style="font-size:0.8rem; color:#888">Lv.${lvl}/${u.maxLevel}</span></h3><p>${u.desc}<br><span style="color:${canBuy?'#0f0':'#f00'}">${canBuy ? '条件满足 (击败50人)' : `需击败 ${u.reqWins} 人`}</span></p><button class="btn-buy gold" onclick="game.buyRealmUpgrade('${u.id}')" ${!canBuy ? 'disabled' : ''}>元神转世 (免费)</button>`;
+    const rCosts = u.reincarnationCosts || [0];
+const rCost = lvl < rCosts.length ? rCosts[lvl] : Math.floor(rCosts[rCosts.length-1] * Math.pow(5, lvl - rCosts.length + 1));
+const rCostText = rCost > 0 ? `花费：${ui.formatNum(rCost)} 境界` : '免费';
+const rCanBuy = canBuy && (rCost === 0 || this.state.realmCount >= rCost);
+div.innerHTML = `<h3 class="gold">${u.name} <span style="font-size:0.8rem; color:#888">Lv.${lvl}/${u.maxLevel}</span></h3><p>${u.desc}<br><span style="color:${canBuy?'#0f0':'#f00'}">${canBuy ? '条件满足' : `需击败 ${u.reqWins} 人`}</span><br><span style="color:${rCost>0?(rCanBuy?'#ffaa44':'#ff4444'):'#aaa'}">${rCostText}</span></p><button class="btn-buy gold" onclick="game.buyRealmUpgrade('${u.id}')" ${!rCanBuy ? 'disabled' : ''}>元神转世 (${rCostText})</button>`;
     container.appendChild(div);
     return;
 }
@@ -1876,24 +2766,106 @@ area.prepend(div);
 if (area.children.length > 50) area.lastChild.remove();
 },
 saveGame(notify = false) {
-localStorage.setItem('magneticIncrementSave_v3', JSON.stringify(this.state));
+const s = this.state;
+// Always save the "real" tier4 data separately so it survives refreshes during challenges
+const tier4Backup = {
+ultimatePoints: s.ultimatePoints,
+ultimateUpgrades: s.ultimateUpgrades || {},
+completedChallenges: s.completedChallenges || [],
+bodyParts: s.bodyParts || [],
+bodyResetCount: s.bodyResetCount || 0,
+magneticBodyUnlocked: s.magneticBodyUnlocked || false,
+tier4Unlocked: s.tier4Unlocked || false,
+power: s.power || 0,
+challengeRewards: s.challengeRewards || {},
+activeChallenge: s.activeChallenge || null,
+challengeStartTime: s.challengeStartTime || null,
+flow: s.flow || 0,
+flowUpgrades: s.flowUpgrades || {},
+flowUpgLvl: s.flowUpgLvl || 0,
+flowUnlocked: s.flowUnlocked || false,
+// Save "pre-challenge" values for restoring on load during active challenge
+_preChalPower: s.challengeStartState ? s.challengeStartState.power : s.power,
+_preChalPoints: s.challengeStartState ? s.challengeStartState.ultimatePoints : s.ultimatePoints,
+_preChalUpgrades: s.challengeStartState ? s.challengeStartState.ultimateUpgrades : s.ultimateUpgrades,
+_preChalCompleted: s.challengeStartState ? s.challengeStartState.completedChallenges : s.completedChallenges,
+_preChalBodyParts: s.challengeStartState ? s.challengeStartState.bodyParts : s.bodyParts,
+_preChalBodyCount: s.challengeStartState ? s.challengeStartState.bodyResetCount : s.bodyResetCount,
+_preChalMagBody: s.challengeStartState ? s.challengeStartState.magneticBodyUnlocked : s.magneticBodyUnlocked,
+_preChalReincMult: s.challengeStartState ? s.challengeStartState.reincarnationMult : s.reincarnationMult,
+_preT1BoostLvl: s.challengeStartState ? s.challengeStartState.t1BoostLvl : s.t1BoostLvl,
+_preT1BoostCost: s.challengeStartState ? s.challengeStartState.t1BoostCost : s.t1BoostCost,
+_preT2BoostLvl: s.challengeStartState ? s.challengeStartState.t2BoostLvl : s.t2BoostLvl,
+_preT2BoostCost: s.challengeStartState ? s.challengeStartState.t2BoostCost : s.t2BoostCost,
+_preChalRewards: s.challengeStartState ? s.challengeStartState.challengeRewards : s.challengeRewards,
+};
+localStorage.setItem('magneticT4Backup_v4', JSON.stringify(tier4Backup));
+// Save game state (strip challengeStartState to reduce size)
+const toSave = { ...s };
+delete toSave.challengeStartState;
+localStorage.setItem('magneticIncrementSave_v4', JSON.stringify(toSave));
 if(notify) this.log("游戏进度已保存。", true);
 },
 loadGame() {
-const saved = localStorage.getItem('magneticIncrementSave_v3');
+const saved = localStorage.getItem('magneticIncrementSave_v4') || localStorage.getItem('magneticIncrementSave_v3');
+const t4Backup = localStorage.getItem('magneticT4Backup_v4');
 if (saved) {
 try {
 const parsed = JSON.parse(saved);
 const initial = this.getInitialState();
 this.state = { ...initial, ...parsed };
+// Restore tier4 backup data (overrides anything in main save to ensure consistency)
+if (t4Backup) {
+try {
+const t4 = JSON.parse(t4Backup);
+this.state.ultimatePoints = t4.ultimatePoints || 0;
+this.state.ultimateUpgrades = t4.ultimateUpgrades || {};
+this.state.completedChallenges = t4.completedChallenges || [];
+this.state.bodyParts = t4.bodyParts || [];
+this.state.bodyResetCount = t4.bodyResetCount || 0;
+this.state.magneticBodyUnlocked = t4.magneticBodyUnlocked || false;
+this.state.tier4Unlocked = t4.tier4Unlocked || false;
+this.state.power = t4.power || 0;
+this.state.challengeRewards = t4.challengeRewards || {};
+this.state.flow = t4.flow || 0;
+this.state.flowUpgrades = t4.flowUpgrades || {};
+this.state.flowUpgLvl = t4.flowUpgLvl || 0;
+this.state.flowUnlocked = t4.flowUnlocked || false;
+// If we were in a challenge when saved, restore challengeStartState from backup
+if (t4.activeChallenge) {
+this.state.activeChallenge = t4.activeChallenge;
+this.state.challengeStartTime = t4.challengeStartTime;
+this.state.challengeStartState = {
+power: t4._preChalPower || 0,
+ultimatePoints: t4._preChalPoints || 0,
+ultimateUpgrades: t4._preChalUpgrades || {},
+completedChallenges: t4._preChalCompleted || [],
+bodyParts: t4._preChalBodyParts || [],
+bodyResetCount: t4._preChalBodyCount || 0,
+magneticBodyUnlocked: t4._preChalMagBody || false,
+reincarnationMult: t4._preChalReincMult || 1,
+t1BoostLvl: t4._preT1BoostLvl || 0,
+t1BoostCost: t4._preT1BoostCost || 100000,
+t2BoostLvl: t4._preT2BoostLvl || 0,
+t2BoostCost: t4._preT2BoostCost || 10000,
+challengeRewards: t4._preChalRewards || {},
+tier4Unlocked: true,
+};
+}
+} catch(e2) { console.error("T4 backup error", e2); }
+}
 if (!Array.isArray(this.state.unlockedAchievements)) this.state.unlockedAchievements = [];
 if (this.state.autoBattleEnabled === undefined) this.state.autoBattleEnabled = false;
-if (this.state.reincarnationMult === undefined) this.state.reincarnationMult = 1; // 兼容旧存档
-if (this.state.tier >= 2) {
+if (this.state.reincarnationMult === undefined) this.state.reincarnationMult = 1;
+// 恢复伏特上限解锁
+if (this.state.voltCapUnlocked || this.state.tier4Unlocked) {
+  CONFIG.voltHardCap = 60000000000; // 600亿
+}
+if (this.state.tier >= 2 && !this.state.activeChallenge) {
 const cardT1 = document.getElementById('card-breakthrough-t1');
 if(cardT1) cardT1.style.display = 'none';
 }
-if (this.state.tier >= 3) {
+if (this.state.tier >= 3 && !this.state.activeChallenge) {
 const cardT2 = document.getElementById('card-breakthrough-t2');
 if(cardT2) cardT2.style.display = 'none';
 }
@@ -1918,20 +2890,993 @@ this.saveGame();
 location.reload();
 } else alert("无效存档");
 } catch (e) { alert("存档损坏"); }
+},
+// ========= TIER 4 NEW FUNCTIONS =========
+handlePassiveRegen() { /* regen is handled inside processAutoProduction */ },
+getPowerPerSec() {
+const s = this.state;
+if (!s.tier4Unlocked) return 0;
+const upgs = s.ultimateUpgrades || {};
+let rate = 1;
+// Core power chain
+if (upgs['u_root']) rate *= 1.5;
+if (upgs['u_power1']) rate *= 1.5;
+if (upgs['u_power1b']) rate *= 1.3;
+if (upgs['u_power2']) rate *= 2;
+if (upgs['u_power2b']) rate *= 1.5;
+if (upgs['u_power3']) rate *= 3;
+if (upgs['u_power4']) rate *= 5;
+if (upgs['u_power4b']) rate *= 2;
+if (upgs['u_power5']) rate *= 8;
+if (upgs['u_power6']) rate *= 15;
+if (upgs['u_power6b']) rate *= 3;
+if (upgs['u_power7']) rate *= 25;
+if (upgs['u_power8']) rate *= 50;
+if (upgs['u_power8b']) rate *= 5;
+if (upgs['u_power9']) rate *= 100;
+if (upgs['u_power10']) rate *= 200;
+if (upgs['u_power10b']) rate *= 10;
+if (upgs['u_power11']) rate *= 300;
+if (upgs['u_power12']) rate *= 500;
+if (upgs['u_power13']) rate *= 1000;
+if (upgs['u_power14']) rate *= 2000;
+if (upgs['u_power15']) rate *= 5000;
+if (upgs['u_final1']) rate *= 500;
+if (upgs['u_transcend']) rate *= 100;
+if (upgs['u_final_power']) rate *= 10000;
+if (upgs['u_godhood']) rate *= 50;
+if (upgs['u_godhood2']) rate *= 100;
+if (upgs['u_transcend_prep']) rate *= 100;
+if (upgs['u_ultimate_synergy']) {
+  const upgCount = Object.values(upgs).filter(v=>v).length;
+  rate *= Math.pow(1.5, Math.floor(upgCount/10));
 }
+// Speed chain
+if (upgs['u_speed1']) rate *= 1.2;
+if (upgs['u_speed1b']) rate *= 1.3;
+if (upgs['u_speed2']) rate *= 1.5;
+if (upgs['u_speed3']) rate *= 2;
+if (upgs['u_speed4']) rate *= 2.5;
+if (upgs['u_speed5']) rate *= 3;
+if (upgs['u_speed6']) rate *= 4;
+if (upgs['u_speed7']) rate *= 5;
+if (upgs['u_speed8']) rate *= 6;
+if (upgs['u_speed9']) rate *= 8;
+if (upgs['u_speed10']) rate *= 10;
+if (upgs['u_speed11']) rate *= 12;
+if (upgs['u_speed12']) rate *= 15;
+if (upgs['u_speed13']) rate *= 20;
+if (upgs['u_speed14']) rate *= 30;
+if (upgs['u_speed15']) rate *= 50;
+// Power field chain
+if (upgs['u_pow_a1']) rate *= 1.2;
+if (upgs['u_pow_a2']) rate *= 1.3;
+if (upgs['u_pow_a3']) rate *= 1.5;
+if (upgs['u_pow_a4']) rate *= 2;
+if (upgs['u_pow_a5']) rate *= 3;
+if (upgs['u_pow_a6']) rate *= 5;
+if (upgs['u_pow_a7']) rate *= 8;
+if (upgs['u_pow_a8']) rate *= 15;
+if (upgs['u_pow_a9']) rate *= 30;
+if (upgs['u_pow_a10']) rate *= 60;
+// Synergy chain
+if (upgs['u_synergy_a1']) rate *= 1.1;
+if (upgs['u_synergy_a2']) rate *= 1.2;
+if (upgs['u_synergy_a3']) rate *= 1.5;
+if (upgs['u_synergy_a4']) rate *= 2;
+if (upgs['u_synergy_a5']) rate *= 5;
+if (upgs['u_synergy_a6']) rate *= 10;
+if (upgs['u_synergy_a7']) rate *= 20;
+if (upgs['u_synergy_a8']) rate *= 50;
+if (upgs['u_synergy_a9']) { rate *= 100; rate *= 10; }
+// Achievement boost
+if (upgs['u_ach_boost1']) rate *= 1.5;
+if (upgs['u_ach_boost2']) rate *= 2;
+// Body synergy: +100% per owned body part
+const bodyCount = (s.bodyParts || []).length;
+if (upgs['u_body_synergy']) rate *= (1 + bodyCount);
+if (upgs['u_body_all']) rate *= 2;
+// All body parts owned bonus
+if (upgs['u_body5'] && bodyCount >= 5) rate *= 5;
+// Battle wins bonus
+if (upgs['u_battle_a8'] || upgs['u_battle_a9'] || upgs['u_battle_a10']) {
+  const winsBonus = Math.floor((s.battleWins || 0) / 100);
+  const bonusPerWin = upgs['u_battle_a10'] ? 0.5 : (upgs['u_battle_a9'] ? 0.2 : 0.1);
+  rate *= (1 + winsBonus * bonusPerWin);
+}
+// Volt/Mag boost series also boost power production (since tier 1-3 are already capped)
+if (upgs['u_volt_boost']) rate *= 1.5;
+if (upgs['u_volt_boost2']) rate *= 2;
+if (upgs['u_volt_boost3']) rate *= 3;
+if (upgs['u_volt_boost4']) rate *= 5;
+if (upgs['u_volt_boost5']) rate *= 8;
+if (upgs['u_mag_boost']) rate *= 1.5;
+if (upgs['u_mag_boost2']) rate *= 2;
+if (upgs['u_mag_boost3']) rate *= 3;
+if (upgs['u_mag_boost4']) rate *= 5;
+if (upgs['u_mag_boost5']) rate *= 8;
+// time/res series also redirect to power
+if (upgs['u_time1']) rate *= 1.3;
+if (upgs['u_time1b']) rate *= 1.3;
+if (upgs['u_time2']) rate *= 1.5;
+if (upgs['u_time3']) rate *= 2;
+if (upgs['u_res_a1']) rate *= 1.1;
+if (upgs['u_res_a2']) rate *= 1.2;
+if (upgs['u_res_a3']) rate *= 1.3;
+if (upgs['u_res_a4']) rate *= 1.5;
+if (upgs['u_res_a5']) rate *= 2;
+if (upgs['u_res_a6']) rate *= 3;
+if (upgs['u_res_a7']) rate *= 5;
+if (upgs['u_res_a8']) rate *= 8;
+if (upgs['u_res_a9']) rate *= 15;
+if (upgs['u_res_a10']) rate *= 30;
+// 完全境界加成: 每100境界+10%（叠加）
+const realmBonus = 1 + Math.floor((s.realmCount || 0) / 100) * 0.1;
+rate *= realmBonus;
+// 流量加成: 每1000流量+5%
+const flowBonus = 1 + Math.floor((s.flow || 0) / 1000) * 0.05;
+rate *= flowBonus;
+// 伏特加成：伏特越高，力量产出越快（极低倍率，上限10倍）
+// 600亿伏特时恰好达到10倍上限
+if ((s.volt || 0) > 0) {
+  const voltLog = Math.log10(s.volt + 1);
+  const voltBonusCap = 9; // +9 → total 10x
+  const k = Math.log10(6e10 + 1) / voltBonusCap; // normalizer
+  const voltBonus = 1 + Math.min(voltLog / k, voltBonusCap);
+  rate *= voltBonus;
+}
+// 击败强者加成（解锁终极强者后生效）：每击败100名敌人+1%力量产出，上限+10000%（100倍）
+if (s.tier4Unlocked) {
+  const rawBonus = Math.floor((s.battleWins || 0) / 100) * 0.01;
+  const battleBonus = 1 + Math.min(rawBonus, 100); // 上限 +10000%
+  rate *= battleBonus;
+}
+// 伏特加成：伏特越高，力量产出速度小幅提升（最多10倍）
+// 公式：1 + 9 * (log10(volt+1) / log10(voltHardCap))，上限10x
+if (s.volt > 0) {
+  const voltLog = Math.log10(Math.max(1, s.volt));
+  const voltCapLog = Math.log10(Math.max(1, CONFIG.voltHardCap));
+  const voltBonus = 1 + 9 * Math.min(1, voltLog / voltCapLog);
+  rate *= voltBonus;
+}
+return rate;
+},
+processPowerProduction() {
+const s = this.state;
+if (!s.tier4Unlocked || s.activeChallenge) return; // don't generate power during challenges
+const rate = this.getPowerPerSec();
+s.power = Math.min(s.power + rate, this.getCurrentPowerCap());
+},
+getCurrentPowerCap() {
+const completed = (this.state.completedChallenges || []).length;
+const caps = CONFIG.challengePowerCaps;
+return caps[Math.min(completed, caps.length - 1)];
+},
+getUltimateResetPreview(power) {
+// 换算公式：pts = floor(10^(log10(power) * exponent - 1))
+// 完成第一位强者挑战后，指数从 0.6 提升至 0.75，大幅增加获取量
+if (power <= 0) return 0;
+const logP = Math.log10(Math.max(1, power));
+if (logP < 2) return 0;
+const upgs = this.state.ultimateUpgrades || {};
+const rewards = this.state.challengeRewards || {};
+// c1挑战完成后：指数加成 0.6 → 0.75（每10力量量级约多得10倍点数）
+const exponent = rewards['c1'] ? 0.75 : 0.6;
+const pts = Math.floor(Math.pow(10, logP * exponent - 1));
+// 终极领悟III加成
+const mult = upgs['u_final3'] ? 2 : 1;
+return Math.max(0, pts * mult);
+},
+doUltimateReset() {
+const s = this.state;
+if (!s.tier4Unlocked) return;
+const pts = this.getUltimateResetPreview(s.power);
+if (pts <= 0) { this.log("力量不足！需要至少1000力量才能获取终极点数！", true); return; }
+// Apply challenge reward multipliers
+const mult1 = s.ultimateUpgrades && s.ultimateUpgrades['u_challenge_reward'] ? 3 : 1;
+const mult2 = s.ultimateUpgrades && s.ultimateUpgrades['u_ultra_reward'] ? 5 : 1;
+const finalPts = Math.floor(pts * mult1 * mult2);
+if (!confirm(`确定重置？当前力量 ${ui.formatPower(s.power)} 将转换为 ${ui.formatNum(finalPts)} 终极点数。\n前三层的进度（伏特、匹数、升级等）将保留！`)) return;
+s.ultimatePoints += finalPts;
+s.power = 0;
+// Do NOT reset tier1-3 - only reset power
+this.log(`重置完成！获得 ${ui.formatNum(finalPts)} 终极点数（基于力量对数换算）。前三层进度已保留。`, true);
+this.renderUltimateTree();
+this.renderUltimateChallenges();
+ui.update();
+},
+buyUltimateUpgrade(id) {
+const s = this.state;
+const upg = CONFIG.ultimateUpgrades.find(u => u.id === id);
+if (!upg || s.ultimateUpgrades[id]) return;
+if (upg.requires && !s.ultimateUpgrades[upg.requires]) {
+this.log("需要先购买前置升级！", true); return;
+}
+if (upg.reqChallenge && !(s.completedChallenges && s.completedChallenges.includes(upg.reqChallenge))) {
+const refCh = CONFIG.ultimateChallenges.find(c => c.id === upg.reqChallenge);
+this.log(`需要先完成挑战：${refCh ? refCh.name : upg.reqChallenge}！`, true); return;
+}
+if (s.ultimatePoints < upg.cost && upg.cost < Number.MAX_VALUE) {
+this.log("终极点数不足！", true); return;
+}
+if (upg.cost >= Number.MAX_VALUE && s.ultimatePoints < 1e300) {
+this.log("终极点数不足！需要约 1e300 点！", true); return;
+}
+s.ultimatePoints -= upg.cost;
+s.ultimateUpgrades[id] = true;
+this.log(`🔮 购买终极升级：${upg.name}`, true);
+// Check if this is the first ultimate upgrade - unlock flow page
+const upgCount = Object.values(s.ultimateUpgrades).filter(v=>v).length;
+if (upgCount === 1 && !s.flowUnlocked) {
+s.flowUnlocked = true;
+ui.unlockTab('flow');
+this.log('💧 【新解锁】挑战强者页面下方的「流量」已解锁！流量可通过充能获取，用于增强终极强者层力量产出。', true);
+// Show notification popup
+setTimeout(() => {
+alert('🌊 流量系统已解锁！\n\n在侧边栏「挑战强者」下方找到「流量」页面。\n流量可通过点击充能条积累，购买流量升级增加每次获取量。\n流量越多，终极强者层力量产出越高！');
+}, 200);
+}
+this.renderUltimateTree();
+this.renderUltimateChallenges();
+ui.update();
+},
+getChallengeRestriction() {
+const s = this.state;
+if (!s.activeChallenge) return {};
+const ch = CONFIG.ultimateChallenges.find(c => c.id === s.activeChallenge);
+return ch ? (ch.restriction || {}) : {};
+},
+startUltimateChallenge(id) {
+const s = this.state;
+const ch = CONFIG.ultimateChallenges.find(c => c.id === id);
+if (!ch) return;
+if (s.activeChallenge) { this.log("已在挑战中！", true); return; }
+if (s.completedChallenges.includes(id)) { this.log("已完成此挑战！", true); return; }
+// Check unlock requirement (separate challenge unlock upgrades)
+if (ch.reqUpg && !s.ultimateUpgrades[ch.reqUpg]) {
+this.log("需要先购买对应终极解锁升级！", true); return;
+}
+// Check previous challenge
+const idx = CONFIG.ultimateChallenges.findIndex(c => c.id === id);
+if (idx > 0) {
+const prevId = CONFIG.ultimateChallenges[idx - 1].id;
+if (!s.completedChallenges.includes(prevId)) {
+this.log("需要先完成上一个挑战！", true); return;
+}
+}
+// Check power requirement
+if (s.power < ch.powerReq) {
+this.log(`力量不足！挑战${ch.name}需要 ${ui.formatNum(ch.powerReq)} 力量。`, true); return;
+}
+// Check ultimate points requirement
+if (ch.pointReq && s.ultimatePoints < ch.pointReq) {
+this.log(`终极点数不足！挑战${ch.name}需要 ${ui.formatNum(ch.pointReq)} 终极点数。`, true); return;
+}
+if (!confirm(`开始挑战：${ch.name}？\n\n限制：${ch.desc}\n奖励：${ch.reward}\n\n游戏将从零开始！`)) return;
+// c1挑战：先播放剧情过场，完成后再实际开始挑战
+if (id === 'c1') {
+  this._pendingChallengeId = id;
+  this.playC1Cinematic();
+  return;
+}
+this._actuallyStartChallenge(id);
+},
+exitUltimateChallenge(forced = false) {
+const s = this.state;
+if (!s.activeChallenge) return;
+if (!forced && !confirm("确定放弃当前挑战？（进度不会保留，但也不会还原开始前的资源）")) return;
+this._restoreFromChallenge(false, null);
+},
+playC1Cinematic() {
+const screen = document.getElementById('cinematic-screen');
+const textEl = document.getElementById('cinematic-text');
+const restartBtn = document.getElementById('cinematic-restart-btn');
+const confirmBtn = document.getElementById('cinematic-confirm-btn');
+restartBtn.style.display = 'none';
+confirmBtn.style.display = 'none';
+screen.style.display = 'flex';
+// 已看过过场动画则显示简短确认画面
+if (this.state.c1CinematicSeen) {
+  textEl.classList.remove('visible');
+  setTimeout(() => {
+    textEl.innerText = '还要尝试挑战吗？';
+    textEl.classList.add('visible');
+    confirmBtn.style.display = 'block';
+  }, 800);
+  this._c1CinematicContinue = () => {
+    confirmBtn.style.display = 'none';
+    screen.style.display = 'none';
+    this._actuallyStartChallenge(this._pendingChallengeId);
+    this._pendingChallengeId = null;
+    this._c1CinematicContinue = null;
+  };
+  return;
+}
+// 首次播放完整过场
+this.state.c1CinematicSeen = true;
+const lines = [
+  "又一次，你又一次站到了这里。",
+  "纵使我拥有三师兄所给予的天眼，也无法看到这未来。",
+  "你真的准备好了？",
+];
+const linesAfterConfirm = [
+  "很好……",
+  "在你挑战他之前，就由我来给你第一次试炼。",
+  "而当你通过试炼后，我便将天眼交予你。",
+];
+const showLine = (text, onDone) => {
+  textEl.classList.remove('visible');
+  setTimeout(() => {
+    textEl.innerText = text;
+    textEl.classList.add('visible');
+    setTimeout(onDone, 3500);
+  }, 2000);
+};
+const playLines = (arr, startIdx, onAllDone) => {
+  if (startIdx >= arr.length) { onAllDone(); return; }
+  showLine(arr[startIdx], () => playLines(arr, startIdx + 1, onAllDone));
+};
+playLines(lines.slice(0, 2), 0, () => {
+  showLine(lines[2], () => {
+    confirmBtn.style.display = 'block';
+  });
+});
+this._c1CinematicContinue = () => {
+  confirmBtn.style.display = 'none';
+  playLines(linesAfterConfirm, 0, () => {
+    screen.style.display = 'none';
+    this._actuallyStartChallenge(this._pendingChallengeId);
+    this._pendingChallengeId = null;
+    this._c1CinematicContinue = null;
+  });
+};
+},
+cinematicConfirm() {
+if (this._c1CinematicContinue) this._c1CinematicContinue();
+},
+_actuallyStartChallenge(id) {
+const s = this.state;
+const ch = CONFIG.ultimateChallenges.find(c => c.id === id);
+if (!ch) return;
+// Save entire current tier4 state
+const tier4Save = {
+tier4Unlocked: s.tier4Unlocked,
+ultimatePoints: s.ultimatePoints,
+ultimateUpgrades: JSON.parse(JSON.stringify(s.ultimateUpgrades)),
+completedChallenges: [...s.completedChallenges],
+bodyParts: [...(s.bodyParts||[])],
+bodyResetCount: s.bodyResetCount || 0,
+magneticBodyUnlocked: s.magneticBodyUnlocked,
+reincarnationMult: s.reincarnationMult || 1,
+t1BoostLvl: s.t1BoostLvl, t1BoostCost: s.t1BoostCost,
+t2BoostLvl: s.t2BoostLvl, t2BoostCost: s.t2BoostCost,
+power: s.power,
+challengeRewards: JSON.parse(JSON.stringify(s.challengeRewards || {})),
+flow: s.flow || 0,
+flowMax: s.flowMax || 1e8,
+flowUpgrades: JSON.parse(JSON.stringify(s.flowUpgrades || {})),
+flowUpgLvl: s.flowUpgLvl || 0,
+flowUnlocked: s.flowUnlocked || false,
+// 成就系统 & 强者挑战页面 - 进出挑战均完整保留
+unlockedAchievements: [...(s.unlockedAchievements || [])],
+battleWins: s.battleWins || 0,
+realmCount: s.realmCount || 0,
+realmUpgrades: JSON.parse(JSON.stringify(s.realmUpgrades || {})),
+playerMaxHp: s.playerMaxHp || 100,
+playerCurHp: s.playerCurHp || 100,
+isInjured: s.isInjured || false,
+injuredUntil: s.injuredUntil || 0,
+hpRegenActive: s.hpRegenActive !== false,
+autoBattleEnabled: this.autoBattleEnabled || false,
+};
+// Full reset to initial state
+this.state = this.getInitialState();
+// Apply challenge state
+this.state.tier = 1;
+this.state.tier4Unlocked = true;
+this.state.ultimatePoints = tier4Save.ultimatePoints;
+this.state.ultimateUpgrades = tier4Save.ultimateUpgrades;
+this.state.completedChallenges = tier4Save.completedChallenges;
+this.state.bodyParts = tier4Save.bodyParts;
+this.state.bodyResetCount = tier4Save.bodyResetCount;
+this.state.magneticBodyUnlocked = tier4Save.magneticBodyUnlocked;
+this.state.reincarnationMult = tier4Save.reincarnationMult;
+this.state.t1BoostLvl = tier4Save.t1BoostLvl;
+this.state.t1BoostCost = tier4Save.t1BoostCost;
+this.state.t2BoostLvl = tier4Save.t2BoostLvl;
+this.state.t2BoostCost = tier4Save.t2BoostCost;
+this.state.power = 0; // power resets during challenge
+this.state.challengeRewards = tier4Save.challengeRewards || {};
+this.state.activeChallenge = id;
+this.state.challengeStartState = tier4Save;
+this.state.challengeStartTime = Date.now();
+// 完整保留：成就系统、强者挑战页面所有内容
+this.state.unlockedAchievements = [...(tier4Save.unlockedAchievements || [])];
+this.state.battleWins = tier4Save.battleWins || 0;
+this.state.realmCount = tier4Save.realmCount || 0;
+this.state.realmUpgrades = JSON.parse(JSON.stringify(tier4Save.realmUpgrades || {}));
+this.state.playerMaxHp = tier4Save.playerMaxHp || 100;
+this.state.playerCurHp = tier4Save.playerCurHp || 100;
+this.state.isInjured = tier4Save.isInjured || false;
+this.state.injuredUntil = tier4Save.injuredUntil || 0;
+this.state.hpRegenActive = tier4Save.hpRegenActive !== false;
+this.autoBattleEnabled = tier4Save.autoBattleEnabled || false;
+// 流量永不重置——进入挑战时完整保留
+this.state.flow = tier4Save.flow || 0;
+this.state.flowMax = tier4Save.flowMax || 1e8;
+this.state.flowUpgrades = JSON.parse(JSON.stringify(tier4Save.flowUpgrades || {}));
+this.state.flowUpgLvl = tier4Save.flowUpgLvl || 0;
+this.state.flowUnlocked = tier4Save.flowUnlocked || false;
+// Reset all navigation to locked state
+const navIds = ['tier2','tier3','challenge'];
+navIds.forEach(tabId => {
+const btn = document.getElementById(`nav-${tabId}`);
+if (btn) btn.classList.add('disabled');
+});
+// Restore breakthrough cards
+const cardT1 = document.getElementById('card-breakthrough-t1');
+if (cardT1) cardT1.style.display = '';
+const cardT2 = document.getElementById('card-breakthrough-t2');
+if (cardT2) cardT2.style.display = 'none';
+const btnBT = document.getElementById('btn-breakthrough');
+if (btnBT) { btnBT.disabled = true; btnBT.style.opacity='0.5'; btnBT.style.borderColor='#444'; btnBT.style.color='#444'; btnBT.innerText='突破至磁场转动 (需 500,000 V)'; }
+const btnBT2 = document.getElementById('btn-breakthrough-t2');
+if (btnBT2) { btnBT2.disabled = true; btnBT2.style.opacity='0.5'; btnBT2.innerText='进入磁场功法 (需 100,000 匹)'; }
+const banner = document.getElementById('challenge-mode-banner');
+banner.classList.add('active');
+document.getElementById('challenge-mode-name').innerText = ch.name;
+ui.switchTab('tier1');
+this.checkAchievements();
+this.renderRealmUpgrades();
+this.renderSkills();
+this.log(`⚔️ 挑战开始：${ch.name}`, true);
+this.log(`限制：${ch.desc}`, true);
+ui.update();
+},
+_restoreFromChallenge(won, ch) {
+const s = this.state;
+const saved = s.challengeStartState || {};
+// Build restored state from saved tier4 data
+const newState = this.getInitialState();
+// Restore tier4 permanent data from pre-challenge save
+newState.tier = 4;
+newState.tier4Unlocked = true;
+newState.ultimatePoints = (saved.ultimatePoints || 0) + (won && ch ? ch.pointReward : 0);
+newState.ultimateUpgrades = JSON.parse(JSON.stringify(saved.ultimateUpgrades || {}));
+newState.completedChallenges = won && ch
+  ? [...(saved.completedChallenges || []), ch.id]
+  : [...(saved.completedChallenges || [])];
+newState.bodyParts = [...(saved.bodyParts || [])];
+newState.bodyResetCount = saved.bodyResetCount || 0;
+newState.magneticBodyUnlocked = saved.magneticBodyUnlocked || false;
+newState.reincarnationMult = saved.reincarnationMult || 1;
+newState.t1BoostLvl = saved.t1BoostLvl || 0;
+newState.t1BoostCost = saved.t1BoostCost || 100000;
+newState.t2BoostLvl = saved.t2BoostLvl || 0;
+newState.t2BoostCost = saved.t2BoostCost || 10000;
+newState.power = saved.power || 0;
+newState.challengeRewards = JSON.parse(JSON.stringify(saved.challengeRewards || {}));
+// 流量永不重置——取进入挑战时保存的值与挑战中获取值的最大值
+newState.flow = Math.max(saved.flow || 0, this.state.flow || 0);
+newState.flowMax = Math.max(saved.flowMax || 1e8, this.state.flowMax || 1e8);
+newState.flowUpgrades = JSON.parse(JSON.stringify(saved.flowUpgrades || {}));
+newState.flowUpgLvl = saved.flowUpgLvl || 0;
+newState.flowUnlocked = saved.flowUnlocked || this.state.flowUnlocked || false;
+// 完整恢复：成就系统、强者挑战页面所有内容
+newState.realmCount = saved.realmCount || 0;
+newState.battleWins = saved.battleWins || 0;
+newState.unlockedAchievements = [...(saved.unlockedAchievements || [])];
+newState.realmUpgrades = JSON.parse(JSON.stringify(saved.realmUpgrades || {}));
+newState.playerMaxHp = saved.playerMaxHp || 100;
+newState.playerCurHp = saved.playerCurHp || 100;
+newState.isInjured = saved.isInjured || false;
+newState.injuredUntil = saved.injuredUntil || 0;
+newState.hpRegenActive = saved.hpRegenActive !== false;
+this.autoBattleEnabled = saved.autoBattleEnabled || false;
+// Handle first challenge win unlocking magnetic body
+if (won && ch && ch.id === 'c1') {
+newState.magneticBodyUnlocked = true;
+}
+// Store challenge-specific permanent rewards in challengeRewards
+if (won && ch) {
+if (!newState.challengeRewards) newState.challengeRewards = {};
+newState.challengeRewards[ch.id] = true;
+}
+this.state = newState;
+// Restore UI
+document.getElementById('challenge-mode-banner').classList.remove('active');
+// Restore tier2/tier3/challenge nav based on tier4 normal state (player has already passed these)
+// In tier4, tier2/tier3/challenge are always accessible
+['tier2','tier3','challenge'].forEach(tabId => {
+const btn = document.getElementById(`nav-${tabId}`);
+if (btn) { btn.classList.remove('disabled'); btn.classList.add('unlocked'); }
+});
+// Restore breakthrough card visibility
+const cardT1 = document.getElementById('card-breakthrough-t1');
+if (cardT1) cardT1.style.display = 'none'; // in tier4 normal, tier2 already passed
+const cardT2 = document.getElementById('card-breakthrough-t2');
+if (cardT2) cardT2.style.display = 'none';
+// Unlock tier4 tabs
+ui.unlockTab('tier4');
+if (this.state.magneticBodyUnlocked) ui.unlockTab('magnetic-body');
+if (this.state.flowUnlocked) { ui.unlockTab('flow'); this.renderFlowUpgrades(); }
+ui.switchTab('tier4');
+// Power display
+document.getElementById('power-display').style.display = 'inline';
+document.getElementById('btn-ultimate-reset-inline').style.display = 'inline';
+if (won && ch) {
+this.log(`🏆 挑战完成：${ch.name}！`, true);
+this.log(`奖励：${ch.reward} (+${ch.pointReward} 终极点数)`, true);
+if (ch.id === 'c1' && newState.magneticBodyUnlocked) this.log("磁场肉体层已解锁！", true);
+// 力量上限解锁提示
+const completedCount = (newState.completedChallenges || []).length;
+const caps = CONFIG.challengePowerCaps;
+const newCap = caps[Math.min(completedCount, caps.length - 1)];
+const prevCap = caps[Math.min(completedCount - 1, caps.length - 1)];
+if (newCap > prevCap) {
+  this.log(`🔓 力量上限已解锁！${ui.formatPower(prevCap)} → ${ui.formatPower(newCap)}`, true);
+}
+} else {
+this.log("放弃挑战。", true);
+}
+this.checkAchievements();
+this.renderUltimateTree();
+this.renderUltimateChallenges();
+this.renderBodyParts();
+this.renderRealmUpgrades();
+this.renderSkills();
+ui.update();
+},
+checkChallengeWin() {
+const s = this.state;
+if (!s.activeChallenge) return;
+const ch = CONFIG.ultimateChallenges.find(c => c.id === s.activeChallenge);
+if (!ch) return;
+const cond = ch.winCondition;
+let won = false;
+if (cond.tier !== undefined && s.tier >= cond.tier) won = true;
+if (cond.t2PrestigeCount !== undefined && s.t2PrestigeCount >= cond.t2PrestigeCount) won = true;
+if (cond.battleWins !== undefined && s.battleWins >= cond.battleWins) won = true;
+if (!won) return;
+// Calculate point reward, applying multipliers from upgrades
+let baseReward = ch.pointReward || 0;
+const mult1 = s.ultimateUpgrades && s.ultimateUpgrades['u_challenge_reward'] ? 3 : 1;
+const mult2 = s.ultimateUpgrades && s.ultimateUpgrades['u_ultra_reward'] ? 5 : 1;
+const mult3 = s.ultimateUpgrades && s.ultimateUpgrades['u_final3'] ? 10 : 1;
+const totalReward = Math.floor(baseReward * mult1 * mult2 * mult3);
+// Inject total reward into ch object temporarily
+const chWithReward = { ...ch, pointReward: totalReward };
+this._restoreFromChallenge(true, chWithReward);
+},
+checkChallengeTimeout() {
+const s = this.state;
+if (!s.activeChallenge || !s.challengeStartTime) return;
+const ch = CONFIG.ultimateChallenges.find(c => c.id === s.activeChallenge);
+if (!ch || !ch.restriction || !ch.restriction.timeLimit) return;
+const elapsed = (Date.now() - s.challengeStartTime) / 1000;
+const remaining = ch.restriction.timeLimit - elapsed;
+// Update timer display if in challenge
+const banner = document.getElementById('challenge-mode-banner');
+if (banner && banner.classList.contains('active')) {
+const timeEl = document.getElementById('challenge-timer');
+if (timeEl) {
+const mins = Math.floor(remaining / 60);
+const secs = Math.floor(remaining % 60);
+timeEl.innerText = remaining > 0 ? ` ⏱${mins}:${secs.toString().padStart(2,'0')}` : ' ⏱超时！';
+timeEl.style.color = remaining < 30 ? '#ff2200' : '#ffaa44';
+}
+}
+if (elapsed >= ch.restriction.timeLimit) {
+this.log("⏱ 挑战超时！自动退出。", true);
+this.exitUltimateChallenge(true);
+}
+},
+getBodyPartMult(effectType) {
+const s = this.state;
+let mult = 1;
+if (!s.bodyParts || !s.magneticBodyUnlocked) return mult;
+const extraBonus = s.ultimateUpgrades['u2'] ? 2 : 1; // u2 doubles body part bonuses
+CONFIG.bodyParts.forEach(bp => {
+if (s.bodyParts.includes(bp.id) && bp.effect === effectType) {
+mult *= (1 + (bp.value - 1) * extraBonus);
+}
+});
+return mult;
+},
+getBodyResetCost(count) {
+const costs = CONFIG.bodyResetCosts;
+const base = costs[Math.min(count, costs.length - 1)];
+const u7 = (this.state.ultimateUpgrades || {})['u7'] ? 0.5 : 1;
+const a3 = (this.state.ultimateUpgrades || {})['u_body_a3'] ? 0.8 : 1;
+const a4 = (this.state.ultimateUpgrades || {})['u_body_a4'] ? 0.7 : 1;
+return base * u7 * a3 * a4;
+},
+doBodyReset() {
+const s = this.state;
+if (!s.magneticBodyUnlocked) return;
+const actualNeed = this.getBodyResetCost(s.bodyResetCount);
+if (s.power < actualNeed) {
+this.log(`力量不足！需要 ${ui.formatNum(actualNeed)} 力量。`, true);
+return;
+}
+const allParts = CONFIG.bodyParts.map(b => b.id);
+const remaining = allParts.filter(id => !s.bodyParts.includes(id));
+if (remaining.length === 0) {
+this.log("已拥有全部磁场肉体！", true); return;
+}
+const nextPart = remaining[0];
+const bp = CONFIG.bodyParts.find(b => b.id === nextPart);
+if (!confirm(`消耗 ${ui.formatNum(actualNeed)} 力量获取磁场肉体：${bp.name}？`)) return;
+s.power -= actualNeed;
+s.bodyParts.push(nextPart);
+s.bodyResetCount++;
+this.log(`获取磁场肉体：${bp.name}！效果：${bp.desc}`, true);
+this.renderBodyParts();
+ui.update();
+},
+renderUltimateTree() {
+const container = document.getElementById('ultimate-tree');
+if (!container) return;
+container.innerHTML = '';
+const s = this.state;
+
+// 分类定义
+const categories = [
+  { key: 'power', label: '⚡ 力量', color: '#ff00ff', ids: ['u_root','u_power1','u_power1b','u_power2','u_power2b','u_power3','u_power4','u_power4b','u_power5','u_power6','u_power6b','u_power7','u_power8','u_power8b','u_power9','u_power10','u_power10b','u_power11','u_power12','u_power13','u_power14','u_power15','u_pow_a1','u_pow_a2','u_pow_a3','u_pow_a4','u_pow_a5','u_pow_a6','u_pow_a7','u_pow_a8','u_pow_a9','u_pow_a10','u_godhood','u_godhood2','u_transcend','u_final_power','u_transcend_prep','u_ultimate_synergy','u_final1','u_final2','u_final3'] },
+  { key: 'speed', label: '💨 速度', color: '#00ffff', ids: ['u_speed1','u_speed1b','u_speed2','u_speed3','u_speed4','u_speed5','u_speed6','u_speed7','u_speed8','u_speed9','u_speed10','u_speed11','u_speed12','u_speed13','u_speed14','u_speed15'] },
+  { key: 'resource', label: '🌊 资源', color: '#00ff88', ids: ['u_time1','u_time1b','u_time2','u_time3','u_volt_boost','u_volt_boost2','u_volt_boost3','u_volt_boost4','u_volt_boost5','u_mag_boost','u_mag_boost2','u_mag_boost3','u_mag_boost4','u_mag_boost5','u_res_a1','u_res_a2','u_res_a3','u_res_a4','u_res_a5','u_res_a6','u_res_a7','u_res_a8','u_res_a9','u_res_a10','u_all_boost','u_all_boost2','u_all_boost3','u_all_boost4','u_all_boost5','u_dimension','u_volt_cap','u_softcap_kill','u_t3_free','u_auto_all'] },
+  { key: 'battle', label: '⚔️ 战斗', color: '#ff4444', ids: ['u_battle_a1','u_battle_a2','u_battle_a3','u_battle_a4','u_battle_a5','u_battle_a6','u_battle_a7','u_battle_a8','u_battle_a9','u_battle_a10','u_battle_power','u_realm_boost','u_realm_boost2','u_realm_boost3','u_realm_auto','u_challenge_reward','u_ultra_reward','u_prestige_boost','u_t2prestige','u_realm_boost','u_realm_boost2'] },
+  { key: 'body', label: '💪 肉体', color: '#00ffaa', ids: ['u_body1b','u_body2','u_body3','u_body4','u_body5','u_body_regen','u_body_synergy','u_body_all','u_body_a1','u_body_a2','u_body_a3','u_body_a4','u_body_a5','u_body_a6','u_body_a7','u_body_a8'] },
+  { key: 'synergy', label: '✨ 共鸣', color: '#ffdd44', ids: ['u_synergy_a1','u_synergy_a2','u_synergy_a3','u_synergy_a4','u_synergy_a5','u_synergy_a6','u_synergy_a7','u_synergy_a8','u_synergy_a9','u_ach_boost1','u_ach_boost2','u_skill_boost','u_click1','u_click2','u_click3','u_click_boost','u_click_boost2','u_t2prestige'] },
+  { key: 'challenge', label: '🔓 挑战解锁', color: '#ff8800', ids: ['u_chal_unlock1','u_chal_unlock2','u_chal_unlock3','u_chal_unlock4','u_chal_unlock5'] },
+];
+
+// 收集所有已归类的id
+const categorized = new Set(categories.flatMap(c => c.ids));
+
+// 将剩余升级加入power类
+const allIds = CONFIG.ultimateUpgrades.map(u => u.id);
+const uncategorized = allIds.filter(id => !categorized.has(id));
+if (uncategorized.length > 0) categories[0].ids.push(...uncategorized);
+
+// 外层横向flex排列各分类列
+const wrapper = document.createElement('div');
+wrapper.style.cssText = 'display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;width:100%;';
+
+categories.forEach(cat => {
+  // 过滤出该分类实际存在的升级，并按费用从高到低排列
+  const upgrades = cat.ids
+    .map(id => CONFIG.ultimateUpgrades.find(u => u.id === id))
+    .filter(Boolean)
+    .filter((u, i, arr) => arr.findIndex(x => x.id === u.id) === i) // 去重
+    .sort((a, b) => a.cost - b.cost); // 费用从低到高排列
+
+  if (upgrades.length === 0) return;
+
+  const col = document.createElement('div');
+  col.style.cssText = `display:flex;flex-direction:column;gap:4px;min-width:150px;max-width:185px;flex:1;`;
+
+  // 分类标题
+  const title = document.createElement('div');
+  title.style.cssText = `color:${cat.color};font-family:var(--font-main);font-size:0.85rem;text-align:center;padding:4px;background:rgba(0,0,0,0.5);border:1px solid ${cat.color};margin-bottom:3px;letter-spacing:1px;`;
+  title.innerText = cat.label;
+  col.appendChild(title);
+
+  upgrades.forEach(u => {
+    const owned = s.ultimateUpgrades && s.ultimateUpgrades[u.id];
+    const reqMet = !u.requires || (s.ultimateUpgrades && s.ultimateUpgrades[u.requires]);
+    const chalMet = !u.reqChallenge || (s.completedChallenges && s.completedChallenges.includes(u.reqChallenge));
+    const canAfford = s.ultimatePoints >= u.cost;
+    const available = reqMet && chalMet;
+
+    const node = document.createElement('div');
+    node.style.cssText = `
+      padding:5px 7px;
+      border:1px solid ${owned ? cat.color : (available ? '#443344' : '#221122')};
+      background:${owned ? `rgba(${cat.color === '#ff00ff' ? '255,0,255' : cat.color === '#00ffff' ? '0,255,255' : cat.color === '#00ff88' ? '0,255,136' : cat.color === '#ff4444' ? '255,68,68' : cat.color === '#00ffaa' ? '0,255,170' : cat.color === '#ffdd44' ? '255,221,68' : '255,136,0'},0.15)` : (available ? '#1a0a1a' : '#0d000d')};
+      opacity:${owned ? '1' : (available ? '0.9' : '0.45')};
+      cursor:${owned ? 'default' : (available && canAfford ? 'pointer' : 'not-allowed')};
+      transition:border-color 0.15s;
+      position:relative;
+    `;
+    // 可购买的升级加发光动画
+    if (!owned && available && canAfford) {
+      node.classList.add('ult-node-affordable');
+    }
+
+    let statusIcon = owned ? '✓' : (available ? (canAfford ? '◉' : '○') : '✗');
+    let statusColor = owned ? cat.color : (available ? (canAfford ? '#ffffff' : '#666') : '#440044');
+
+    node.innerHTML = `
+      <div style="display:flex;align-items:center;gap:4px;">
+        <span style="color:${statusColor};font-size:0.85rem;flex-shrink:0;">${statusIcon}</span>
+        <span style="color:${owned ? cat.color : (available ? '#ddc8ff' : '#554455')};font-size:0.82rem;font-family:var(--font-main);line-height:1.2;">${u.name}</span>
+      </div>
+      <div style="color:#888;font-size:0.72rem;margin-left:15px;line-height:1.3;">${u.desc}</div>
+      <div style="color:#aa66cc;font-size:0.72rem;margin-left:15px;margin-top:1px;">${owned ? '✓ 已购买' : '💎 ' + ui.formatUltPoints(u.cost) + '点'}</div>
+    `;
+
+    if (!owned && available && canAfford) {
+      node.onclick = () => game.buyUltimateUpgrade(u.id);
+      node.addEventListener('mouseover', () => { node.style.borderColor = cat.color; });
+      node.addEventListener('mouseout', () => { node.style.borderColor = '#443344'; });
+    } else if (!owned) {
+      node.title = !available ? '需要前置升级' : '终极点数不足';
+    }
+
+    col.appendChild(node);
+  });
+
+  wrapper.appendChild(col);
+});
+
+container.appendChild(wrapper);
+},
+renderUltimateChallenges() {
+const container = document.getElementById('ultimate-challenges-list');
+if (!container) return;
+container.innerHTML = '';
+const s = this.state;
+CONFIG.ultimateChallenges.forEach((ch, idx) => {
+const completed = s.completedChallenges && s.completedChallenges.includes(ch.id);
+const isActive = s.activeChallenge === ch.id;
+const prevDone = idx === 0 || (s.completedChallenges && s.completedChallenges.includes(CONFIG.ultimateChallenges[idx-1].id));
+if (!prevDone && !isActive && !completed) {
+            return; // 直接跳过，不生成该挑战的卡片
+        }
+
+        const reqMet = !ch.reqUpg || (s.ultimateUpgrades && s.ultimateUpgrades[ch.reqUpg]);
+        const hasPower = s.power >= ch.powerReq;
+        const hasPoints = !ch.pointReq || s.ultimatePoints >= ch.pointReq;
+        const canStart = prevDone && reqMet && hasPower && hasPoints && !completed && !s.activeChallenge;
+
+        const div = document.createElement('div');
+        div.className = `ult-challenge-card${completed?' completed':''}${isActive?' active-challenge':''}`;
+        const diffStars = '★'.repeat(ch.difficulty) + '☆'.repeat(10 - ch.difficulty);
+        
+        div.innerHTML = `
+        <h4>${ch.name}</h4>
+        <div style="color:#886644;font-size:0.8rem;letter-spacing:2px;margin-bottom:8px;">${diffStars}</div>
+        <p style="color:#ccc;font-size:0.9rem;margin:5px 0;">${ch.desc}</p>
+        <p style="color:#ffaa44;font-size:0.85rem;margin:5px 0;"> 🏆  奖励：${ch.reward}</p>
+        <p style="color:${hasPower?'#44ff44':'#ff4444'};font-size:0.85rem;"> ⚡  需要力量：${ui.formatNum(ch.powerReq)}${hasPower?'  ✓ ':' (不足)'}</p>
+        ${ch.pointReq ? `<p style="color:${hasPoints?'#44ff44':'#ff4444'};font-size:0.85rem;"> 💎  需要终极点数：${ui.formatUltPoints(ch.pointReq)}${hasPoints?'  ✓ ':' (不足)'}</p>` : ''}
+        ${ch.reqUpg ? `<p style="color:${reqMet?'#44ff44':'#ff4444'};font-size:0.8rem;"> 🔓  前提升级：${reqMet?' ✓  已解锁':'需购买对应升级'}</p>` : ''}
+<p style="color:${prevDone?'#44ff44':'#ff6644'};font-size:0.8rem;">${prevDone?'✓ 前置已完成':'需完成上一挑战'}</p>
+${completed ? '<div style="color:#00ff66;font-family:var(--font-main);font-size:1.1rem;">★ 已完成</div>' :
+  isActive ? '<div style="color:#ff4400;font-family:var(--font-main);">⚔ 进行中...</div>' :
+  `<button onclick="game.startUltimateChallenge('${ch.id}')" ${canStart?'':'disabled'} style="background:#2a1000;border:2px solid #ff4400;color:#ff8844;padding:8px 15px;cursor:pointer;font-family:var(--font-main);margin-top:10px;${canStart?'':'opacity:0.4;cursor:not-allowed;'}">⚔ 开始挑战</button>`
+}`;
+container.appendChild(div);
+});
+},
+renderBodyParts() {
+const container = document.getElementById('body-parts-list');
+if (!container) return;
+container.innerHTML = '';
+const s = this.state;
+const neededPower = game.getBodyResetCost(s.bodyResetCount || 0);
+const nextCostEl = document.getElementById('next-body-cost');
+if (nextCostEl) nextCostEl.innerText = ui.formatNum(neededPower);
+const partsCountEl = document.getElementById('body-parts-count');
+if (partsCountEl) partsCountEl.innerText = s.bodyParts ? s.bodyParts.length : 0;
+const resetBtn = document.getElementById('btn-body-reset');
+if (resetBtn) {
+const allOwned = s.bodyParts && s.bodyParts.length >= CONFIG.bodyParts.length;
+resetBtn.disabled = allOwned || (s.power < neededPower);
+resetBtn.innerText = allOwned ? '全部拥有' : `获取磁场肉体 (需${ui.formatNum(neededPower)}力量)`;
+}
+CONFIG.bodyParts.forEach(bp => {
+const owned = s.bodyParts && s.bodyParts.includes(bp.id);
+const div = document.createElement('div');
+div.className = `body-part-card${owned ? ' owned' : ''}`;
+div.innerHTML = `<h4>${bp.name}</h4><p style="color:#88ffcc;font-size:0.9rem;">${bp.desc}</p><div style="color:${owned?'#00ffaa':'#446655'};font-size:0.85rem;">${owned ? '✓ 已获取' : '未获取'}</div>`;
+container.appendChild(div);
+});
+},
+// ========= 流量系统 =========
+processFlowCharge() {
+const s = this.state;
+if (!s.flowUnlocked || s.flowChargeActive) return;
+// 只有购买了自动充能升级才自动重启
+const hasAutoCharge = (s.flowUpgrades || {})['fl_auto'] >= 1;
+if (hasAutoCharge && s.flow < s.flowMax) {
+s.flowChargeActive = true;
+s.flowChargeProgress = 0;
+}
+},
+tickFlowCharge(dt) {
+// Called from requestAnimationFrame loop (dt in seconds)
+const s = this.state;
+if (!s.flowUnlocked || !s.flowChargeActive) return;
+const totalTime = this.getFlowChargeTime();
+    
+    // 进度增加 = 帧时间 / 总时间
+    s.flowChargeProgress = Math.min(1, s.flowChargeProgress + dt / totalTime);
+    
+    if (s.flowChargeProgress >= 1) {
+        // 计算获取量逻辑保持不变
+        const upgs = s.flowUpgrades || {};
+        let amount = 1;
+amount += (upgs['fl_amount1'] || 0) * 4;
+amount += (upgs['fl_amount2'] || 0) * 10;
+amount += (upgs['fl_amount3'] || 0) * 40;
+amount += (upgs['fl_amount4'] || 0) * 200;
+amount += (upgs['fl_amount5'] || 0) * 1000;
+amount += (upgs['fl_amount6'] || 0) * 1000;
+amount += (upgs['fl_amount7'] || 0) * 2000;
+amount += (upgs['fl_amount8'] || 0) * 4000;
+amount += (upgs['fl_amount9'] || 0) * 20000;
+amount += (upgs['fl_amount10'] || 0) * 40000;
+amount += (upgs['fl_amount11'] || 0) * 100000;
+amount += (upgs['fl_amount16'] || 0) * 4000000;
+amount += (upgs['fl_amount17'] || 0) * 6000000;
+amount += (upgs['fl_amount18'] || 0) * 8000000;
+amount += (upgs['fl_amount19'] || 0) * 10000000;
+amount += (upgs['fl_amount20'] || 0) * 20000000;
+s.flow = Math.min(s.flowMax, s.flow + amount);
+s.flowChargeProgress = 0;
+// 只有购买了自动充能升级才自动重启
+const hasAutoCharge = (s.flowUpgrades || {})['fl_auto'] >= 1;
+if (hasAutoCharge && s.flow < s.flowMax) {
+s.flowChargeActive = true;
+} else {
+s.flowChargeActive = false;
+}
+ui.updateFlowBar(); 
+}
+},
+startFlowCharge() {
+const s = this.state;
+if (!s.flowUnlocked) return;
+if (s.flow >= s.flowMax) { this.log("流量已满！", true); return; }
+if (s.flowChargeActive) { this.log("正在充能中...", true); return; }
+s.flowChargeActive = true;
+s.flowChargeProgress = 0;
+this.log("开始充能流量！", true);
+ui.update();
+},
+getFlowChargeTime() {
+    const s = this.state;
+    let baseTime = 2.5; // 基础2.5秒（已减半）
+    if (!s.flowUpgrades) return baseTime;
+    
+    // 遍历所有 speed 类型的升级，计算减免比例
+    // 注意：这里采用乘法叠加 (例如减少10%后，再减少10%，即 0.9 * 0.9)，避免减到0或负数
+    CONFIG.flowUpgrades.forEach(upg => {
+        if (upg.type === 'speed') {
+            const lvl = s.flowUpgrades[upg.id] || 0;
+            for (let i = 0; i < lvl; i++) {
+                baseTime *= (1 - upg.value); 
+            }
+        }
+    });
+    
+    // 设置最低下限，例如最快不能低于 0.1秒，防止除零错误或过于离谱
+    return Math.max(0.1, baseTime);
+},
+buyFlowUpgrade(idx) {
+const s = this.state;
+if (!s.flowUnlocked) return;
+const upg = CONFIG.flowUpgrades[idx];
+if (!upg) return;
+const bought = s.flowUpgrades || {};
+const lvl = bought[upg.id] || 0;
+if (lvl >= upg.maxLevel) { this.log("已达上限！", true); return; }
+// 自动充能需要1万流量总量（totalFlow）或当前流量
+if (upg.id === 'fl_auto') {
+  if (s.flow < 10000) { this.log("需要拥有1万流量才能解锁自动充能！", true); return; }
+}
+const cost = Math.floor(upg.baseCost * Math.pow(upg.costMult, lvl));
+if (s.flow < cost) { this.log("流量不足！", true); return; }
+s.flow -= cost;
+if (!s.flowUpgrades) s.flowUpgrades = {};
+s.flowUpgrades[upg.id] = lvl + 1;
+// Recalculate total flowUpgLvl from all flow upgrades
+s.flowUpgLvl = Object.entries(s.flowUpgrades).reduce((sum, [id, level]) => {
+const ug = CONFIG.flowUpgrades.find(u => u.id === id);
+if (!ug || ug.type !== 'amount') return sum;
+return sum + level;
+}, 0);
+this.log(`🌊 购买流量升级：${upg.name}`, true);
+game.renderFlowUpgrades();
+ui.update();
+ui.updateFlowBar(); 
+ui.renderFlowUpgrades(); // 如果有升级列表也需要刷新
+},
+renderFlowUpgrades() {
+const container = document.getElementById('flow-upg-list');
+if (!container) return;
+container.innerHTML = '';
+const s = this.state;
+CONFIG.flowUpgrades.forEach((upg, idx) => {
+const bought = s.flowUpgrades || {};
+const lvl = bought[upg.id] || 0;
+const cost = Math.floor(upg.baseCost * Math.pow(upg.costMult, lvl));
+const maxed = lvl >= upg.maxLevel;
+// 自动充能特殊处理
+if (upg.id === 'fl_auto') {
+  const locked = s.flow < 10000;
+  const div = document.createElement('div');
+  div.className = 'upgrade-card';
+  div.style.borderColor = maxed ? '#00ffaa' : (locked ? '#333' : '#0099ff');
+  div.style.borderTopColor = maxed ? '#00ffaa' : (locked ? '#333' : '#0099ff');
+  div.style.gridColumn = '1 / -1'; // 跨整行
+  div.innerHTML = `
+    <h3 style="color:${maxed ? '#00ffaa' : (locked ? '#555' : '#44aaff')};font-size:1rem;">
+      ⚙️ 自动充能
+      ${maxed ? '<span style="color:#00ffaa;font-size:0.8rem;"> ✓ 已激活</span>' : ''}
+    </h3>
+    <p style="font-size:0.85rem;color:${locked ? '#555' : '#88aaff'};">${upg.desc}</p>
+    ${locked ? `<p style="color:#ff6644;font-size:0.8rem;">🔒 需要当前拥有 1万 流量才能解锁（当前：${ui.formatNum(s.flow)}）</p>` : ''}
+    <button class="btn-buy" style="border-color:${maxed ? '#555' : '#0099ff'};color:${maxed ? '#555' : '#0099ff'};" 
+      onclick="game.buyFlowUpgrade(${idx})" 
+      ${maxed || locked ? 'disabled' : ''}>
+      ${maxed ? '已激活' : (locked ? `🔒 需要1万流量` : `激活 (花费: ${ui.formatNum(cost)} 流量)`)}
+    </button>`;
+  container.appendChild(div);
+  return;
+}
+const div = document.createElement('div');
+div.className = 'upgrade-card';
+div.style.borderColor = '#0066ff';
+div.style.borderTopColor = '#0099ff';
+div.innerHTML = `<h3 style="color:#44aaff;font-size:1rem;">${upg.name} <span style="color:#666;font-size:0.8rem">Lv.${lvl}/${upg.maxLevel}</span></h3><p style="font-size:0.85rem;color:#88aaff;">${upg.desc}</p><button class="btn-buy" style="border-color:#0099ff;color:#0099ff;" onclick="game.buyFlowUpgrade(${idx})" ${maxed ? 'disabled' : ''} ${s.flow < cost && !maxed ? 'disabled' : ''}>${maxed ? '已满级' : `升级 (花费: ${ui.formatNum(cost)} 流量)`}</button>`;
+container.appendChild(div);
+});
+},
 };
 
 const ui = {
 init() {
+const s = game.state;
+if (s.activeChallenge) {
+// Restoring mid-challenge: show tier1, with tier2/3 possibly unlocked based on tier
 this.switchTab('tier1');
-if (game.state.tier >= 2) {
+// Unlock tier2 nav if challenge already reached tier2
+if (s.tier >= 2) {
+this.unlockTab('tier2');
+const cardT1 = document.getElementById('card-breakthrough-t1');
+if(cardT1) cardT1.style.display = 'none';
+const cardT2 = document.getElementById('card-breakthrough-t2');
+if(cardT2) cardT2.style.display = s.tier >= 2 ? '' : 'none';
+}
+if (s.tier >= 3) {
+this.unlockTab('tier3');
+const cardT2 = document.getElementById('card-breakthrough-t2');
+if(cardT2) cardT2.style.display = 'none';
+}
+const ch = CONFIG.ultimateChallenges.find(c => c.id === s.activeChallenge);
+const banner = document.getElementById('challenge-mode-banner');
+banner.classList.add('active');
+document.getElementById('challenge-mode-name').innerText = ch ? ch.name : '-';
+// Tier4 nav stays locked during challenge
+if (s.tier4Unlocked) this.unlockTab('tier4');
+if (s.magneticBodyUnlocked) this.unlockTab('magnetic-body');
+if (s.flowUnlocked) { this.unlockTab('flow'); game.renderFlowUpgrades(); }
+} else {
+this.switchTab(s.tier4Unlocked ? 'tier4' : 'tier1');
+if (s.tier >= 2) {
 this.unlockTab('tier2');
 this.unlockTab('challenge');
 document.getElementById('card-breakthrough-t1').style.display = 'none';
 }
-if (game.state.tier >= 3) {
+if (s.tier >= 3) {
 this.unlockTab('tier3');
 document.getElementById('card-breakthrough-t2').style.display = 'none';
+}
+if (s.tier4Unlocked) {
+this.unlockTab('tier4');
+document.getElementById('power-display').style.display = 'inline';
+document.getElementById('btn-ultimate-reset-inline').style.display = 'inline';
+}
+if (s.magneticBodyUnlocked) {
+this.unlockTab('magnetic-body');
+}
+if (s.flowUnlocked) {
+this.unlockTab('flow');
+game.renderFlowUpgrades();
+}
 }
 this.update();
 },
@@ -1950,7 +3895,38 @@ unlockTab(tabId) {
 const btn = document.getElementById(`nav-${tabId}`);
 if (btn) btn.classList.remove('disabled');
 },
+formatPower(num) {
+// 万进制格式：万、亿、兆、万兆（只显示这四个单位）
+if (!isFinite(num)) return '∞';
+if (num < 0) return '-' + this.formatPower(-num);
+if (num === 0) return '0';
+if (num >= 1e16) return (num/1e16).toFixed(2) + '万兆';
+if (num >= 1e12) return (num/1e12).toFixed(2) + '兆';
+if (num >= 1e8) return (num/1e8).toFixed(2) + '亿';
+if (num >= 1e4) return (num/1e4).toFixed(2) + '万';
+return Math.floor(num).toLocaleString();
+},
+formatUltPoints(num) {
+// 终极点数用科学计数法
+if (num >= Number.MAX_VALUE || !isFinite(num)) return '1.80e308';
+if (num === 0) return '0';
+if (num < 1000) return Math.floor(num).toString();
+const exp = Math.floor(Math.log10(num));
+const mantissa = num / Math.pow(10, exp);
+return mantissa.toFixed(2) + 'e' + exp;
+},
 formatNum(num) {
+if (!isFinite(num)) return '∞';
+if (num < 0) return '-' + this.formatNum(-num);
+if (num === 0) return '0';
+// Ultra large numbers: use e-notation with magnitude names
+if (num >= 1e100) {
+const exp = Math.floor(Math.log10(num));
+const mantissa = num / Math.pow(10, exp);
+return mantissa.toFixed(2) + 'e' + exp;
+}
+if (num >= 1e16) return (num/1e16).toFixed(2) + '京';
+if (num >= 1e12) return (num/1e12).toFixed(2) + '兆';
 if (num >= 1e8) return (num/1e8).toFixed(2) + '亿';
 if (num >= 1e4) return (num/1e4).toFixed(2) + '万';
 if (num >= 1e3) return (num/1e3).toFixed(1) + 'k';
@@ -1989,16 +3965,196 @@ if (lvl < u.maxLevel) {
 document.getElementById('dot-challenge').style.display = (canChallenge || realmBuyable) ? 'block' : 'none';
 }
 },
+applyC1CrackStyle(enable) {
+// 需要应用红色裂痕的点击类升级卡片（通过按钮找到父卡片）
+const crackSelectors = [
+  '#view-tier1 button[onclick="game.clickAction()"]',   // 推动（点击获取伏特）
+  '#btn-buy-cap',                                        // 超级感知（点击升级）
+  '#btn-buy-t1-boost',                                   // 本源加速（电流）
+  '#view-tier2 button[onclick="game.clickActionHP()"]', // 激发（点击获取匹数）
+  '#btn-buy-hp-upg',                                    // 磁场马力（点击威力升级）
+  '#btn-buy-click-hp',                                  // 情绪推动（点击匹数升级）
+];
+crackSelectors.forEach(sel => {
+  const btn = document.querySelector(sel);
+  if (!btn) return;
+  // 找到最近的 upgrade-card 父元素
+  const card = btn.closest('.upgrade-card');
+  const target = card || btn;
+  if (enable) {
+    target.classList.add('card-cracked');
+    btn.disabled = true;
+  } else {
+    target.classList.remove('card-cracked');
+    btn.disabled = false;
+  }
+});
+},
+updateAllButtons() {
+// 无论当前页面是哪个，始终刷新所有按钮的可用状态
+const s = game.state;
+// === 第一层按钮 ===
+const chalRestrict = game.getChallengeRestriction();
+const isC1 = !!chalRestrict.noClick;
+// c1挑战中点击类按钮应用裂痕样式
+this.applyC1CrackStyle(isC1);
+const btnGen = document.getElementById('btn-buy-gen');
+if (btnGen) btnGen.disabled = s.volt < s.genCost;
+const btnCap = document.getElementById('btn-buy-cap');
+if (btnCap) btnCap.disabled = (!isC1) && (s.volt < s.capCost);
+const btnTrans = document.getElementById('btn-buy-trans');
+if (btnTrans) btnTrans.disabled = s.volt < s.transCost;
+const btnSuper = document.getElementById('btn-buy-super');
+if (btnSuper) btnSuper.disabled = s.volt < s.superCost;
+const btnT1Boost = document.getElementById('btn-buy-t1-boost');
+if (btnT1Boost) btnT1Boost.disabled = s.volt < s.t1BoostCost || s.t1BoostLvl >= 3 || !!chalRestrict.noT1Boost;
+const btnPrestige = document.getElementById('btn-prestige');
+if (btnPrestige) btnPrestige.disabled = s.volt < game.getPrestigeCost();
+const btnBT = document.getElementById('btn-breakthrough');
+if (btnBT) btnBT.disabled = !(s.volt >= CONFIG.t1Breakthrough && s.tier === 1);
+// === 第二层按钮 ===
+const btnHpUpg = document.getElementById('btn-buy-hp-upg');
+if (btnHpUpg) btnHpUpg.disabled = (!isC1) && (s.horsePower < s.hpUpgCost);
+const btnVoltUpg = document.getElementById('btn-buy-volt-upg');
+if (btnVoltUpg) btnVoltUpg.disabled = s.horsePower < s.voltUpgCost;
+const btnVoltConv = document.getElementById('btn-buy-volt-conv');
+if (btnVoltConv) btnVoltConv.disabled = s.horsePower < s.voltConvCost || s.voltConvLvl >= 2;
+const btnAutoHp = document.getElementById('btn-buy-auto-hp');
+if (btnAutoHp) btnAutoHp.disabled = s.horsePower < s.autoHPCost;
+const btnClickHp = document.getElementById('btn-buy-click-hp');
+if (btnClickHp) btnClickHp.disabled = (!isC1) && (s.horsePower < s.clickHPCost);
+const btnT2Boost = document.getElementById('btn-buy-t2-boost');
+if (btnT2Boost) btnT2Boost.disabled = s.horsePower < s.t2BoostCost || s.t2BoostLvl >= 3;
+const t2Req = Math.floor(CONFIG.t2PrestigeReq * Math.pow(2.0, s.t2PrestigeCount));
+const btnT2Prestige = document.getElementById('btn-t2-prestige');
+if (btnT2Prestige) btnT2Prestige.disabled = s.horsePower < t2Req;
+const btnBT2 = document.getElementById('btn-breakthrough-t2');
+if (btnBT2) btnBT2.disabled = !(s.horsePower >= CONFIG.t2Breakthrough && s.tier === 2);
+// === 挑战/境界按钮 ===
+const rButtons = document.querySelectorAll('#realm-upgrades button');
+let rIdx = 0;
+CONFIG.realmUpgrades.forEach(u => {
+if (s.tier < (u.reqTier||1)) return;
+const lvl = s.realmUpgrades[u.id] || 0;
+if (lvl >= u.maxLevel) return;
+if (u.id === 'r_reincarbonation') return;
+const cost = Math.floor(u.baseCost * Math.pow(u.costMult, lvl));
+if (rButtons[rIdx]) rButtons[rIdx].disabled = s.realmCount < cost;
+rIdx++;
+});
+// === 终极层按钮 ===
+if (s.magneticBodyUnlocked) {
+const neededPower = game.getBodyResetCost(s.bodyResetCount || 0);
+const resetBtn = document.getElementById('btn-body-reset');
+if (resetBtn) {
+const allOwned = s.bodyParts && s.bodyParts.length >= CONFIG.bodyParts.length;
+resetBtn.disabled = allOwned || (s.power < neededPower);
+}
+}
+// === 流量升级按钮 ===
+if (s.flowUnlocked) {
+const allFlowBtns = document.querySelectorAll('#flow-upg-list button');
+allFlowBtns.forEach(btn => {
+const onclick = btn.getAttribute('onclick') || '';
+const match = onclick.match(/buyFlowUpgrade\((\d+)\)/);
+if (!match) return;
+const idx = parseInt(match[1]);
+const upg = CONFIG.flowUpgrades[idx];
+if (!upg) return;
+const lvl = (s.flowUpgrades || {})[upg.id] || 0;
+if (lvl >= upg.maxLevel) { btn.disabled = true; return; }
+if (upg.id === 'fl_auto') { btn.disabled = s.flow < 10000; return; }
+const cost = Math.floor(upg.baseCost * Math.pow(upg.costMult, lvl));
+btn.disabled = s.flow < cost;
+});
+}
+},
 update() {
 const s = game.state;
+// 每次 update 都更新所有按钮状态（无论当前在哪个页面）
+this.updateAllButtons();
 const achMult = game.getAchievementMult();
 const realmMult = game.getRealmResourceMult();
 const activeTab = document.querySelector('.panel-view.active').id;
 let resName = "电流", resVal = s.volt, resUnit = "伏特";
 let resColor = "var(--accent-color)";
 const cap = game.getCurrentHPCap();
+// Update power display
+if (s.tier4Unlocked) {
+document.getElementById('power-display').style.display = 'inline';
+document.getElementById('btn-ultimate-reset-inline').style.display = 'inline';
+document.getElementById('power-val').innerText = ui.formatPower(s.power);
+const t4PowerDisp = document.getElementById('t4-power-display');
+const t4PpsDisp = document.getElementById('t4-pps-display');
+if(t4PowerDisp) t4PowerDisp.innerText = ui.formatPower(s.power);
+if(t4PpsDisp) t4PpsDisp.innerText = ui.formatPower(game.getPowerPerSec());
+const preview = game.getUltimateResetPreview(s.power);
+document.getElementById('ultimate-reset-preview').innerText = ui.formatUltPoints(preview);
+const t4previewEl = document.getElementById('ultimate-reset-preview-t4');
+if (t4previewEl) t4previewEl.innerText = ui.formatUltPoints(preview);
+// 显示公式强化状态
+const formulaEl = document.getElementById('ultimate-formula-status');
+if (formulaEl) {
+  const hasC1 = (s.challengeRewards || {})['c1'];
+  formulaEl.innerHTML = hasC1
+    ? '<span style="color:#00ffaa;font-size:0.8rem;">✓ 终极点数公式已强化（指数 0.60→0.75）</span>'
+    : '<span style="color:#886688;font-size:0.8rem;">💡 完成「第一位强者」挑战可强化获取公式</span>';
+}
+if (t4previewEl) t4previewEl.innerText = ui.formatUltPoints(preview);
+const ppsEl = document.getElementById('power-per-sec');
+if (ppsEl) ppsEl.innerText = ui.formatPower(game.getPowerPerSec());
+const voltBonusEl = document.getElementById('volt-power-bonus');
+if (voltBonusEl && s.tier4Unlocked) {
+  const voltLog = Math.log10(Math.max(1, s.volt));
+  const voltCapLog = Math.log10(Math.max(1, CONFIG.voltHardCap));
+  const voltBonus = 1 + 9 * Math.min(1, voltLog / voltCapLog);
+  voltBonusEl.innerText = 'x' + voltBonus.toFixed(2);
+}
+const ultUpgEl = document.getElementById('ult-upg-count');
+if (ultUpgEl) ultUpgEl.innerText = Object.keys(s.ultimateUpgrades).filter(k=>s.ultimateUpgrades[k]).length;
+const ultPtsEl = document.getElementById('ultimate-points-disp');
+if (ultPtsEl) ultPtsEl.innerText = ui.formatUltPoints(s.ultimatePoints);
+// Power cap display
+const powerCapEl = document.getElementById('power-cap-display');
+const powerCapHintEl = document.getElementById('power-cap-unlock-hint');
+if (powerCapEl) {
+  const currentCap = game.getCurrentPowerCap();
+  const completed = (s.completedChallenges || []).length;
+  const maxCaps = CONFIG.challengePowerCaps.length;
+  powerCapEl.innerText = ui.formatPower(currentCap);
+  if (powerCapHintEl) {
+    if (completed < maxCaps - 1) {
+      powerCapHintEl.innerText = `（完成挑战可解锁更高上限）`;
+    } else {
+      powerCapHintEl.innerText = `（已达最高上限）`;
+    }
+  }
+}
+}
+// Update body parts reset button
+if (s.magneticBodyUnlocked) {
+const neededPower = game.getBodyResetCost(s.bodyResetCount || 0);
+const resetBtn = document.getElementById('btn-body-reset');
+if (resetBtn) {
+const allOwned = s.bodyParts && s.bodyParts.length >= CONFIG.bodyParts.length;
+resetBtn.disabled = allOwned || (s.power < neededPower);
+}
+const nextCostEl = document.getElementById('next-body-cost');
+if (nextCostEl) nextCostEl.innerText = ui.formatNum(neededPower);
+}
 if (activeTab === 'view-tier1') {
 resName = "电流"; resVal = s.volt; resUnit = "伏特";
+// 更新伏特上限说明
+const voltCapInfoEl = document.getElementById('volt-cap-info');
+if (voltCapInfoEl) {
+  if (s.voltCapUnlocked || s.tier4Unlocked) {
+    voltCapInfoEl.style.color = '#ff00ff';
+    voltCapInfoEl.innerText = '🎁 终极强者奖励：上限已扩展至600亿！';
+  } else {
+    voltCapInfoEl.style.color = 'var(--accent-color)';
+    voltCapInfoEl.innerText = '上限锁定为60亿。';
+  }
+}
 const pMult = Math.pow(2, s.prestigeCount);
 const superEff = 1 + (s.superLvl * 0.2);
 const boostMult = Math.pow(1.5, s.t1BoostLvl);
@@ -2115,17 +4271,43 @@ resVal = s.horsePower;
 }
 }
 }
+const displayVal = (s.tier === 4 && !s.activeChallenge && activeTab !== 'view-tier1' && activeTab !== 'view-tier2' && activeTab !== 'view-tier3' && activeTab !== 'view-challenge' && activeTab !== 'view-achievements') ? "" : this.formatNum(resVal);
+// Hide resource display entirely when on pure tier4 tabs
+const resDisplayEl = document.querySelector('#top-bar .resource-display');
+const isTier4Tab = s.tier4Unlocked && !s.activeChallenge && (activeTab === 'view-tier4' || activeTab === 'view-magnetic-body'|| activeTab === 'view-flow');
+if (resDisplayEl) {
+resDisplayEl.style.display = isTier4Tab ? 'none' : '';
+}
 document.getElementById('res-name').innerText = resName;
 document.getElementById('res-name').style.color = resColor;
-const displayVal = (s.tier === 4 && activeTab !== 'view-tier1') ? "一百万" : this.formatNum(resVal);
+if (!isTier4Tab) {
 document.getElementById('res-val').innerText = displayVal;
 document.getElementById('res-unit').innerText = resUnit;
+}
 document.getElementById('total-mult').innerText = (achMult * realmMult).toFixed(2);
 document.getElementById('ach-mult').innerText = achMult.toFixed(2);
 document.getElementById('realm-mult').innerText = realmMult.toFixed(2);
 if (activeTab === 'view-challenge' && s.tier >= 2) {
 const winsDisplay = s.battleWins >= 20000 ? "你打倒了他妈的整个世界！" : s.battleWins;
 document.getElementById('challenge-wins-count').innerText = winsDisplay;
+// 显示敌人上限解除状态
+const capStatusEl = document.getElementById('battle-cap-status');
+if (capStatusEl) capStatusEl.style.display = (s.battleWins >= 10000) ? 'block' : 'none';
+const realmLockEl = document.getElementById('realm-lock-status');
+if (realmLockEl) realmLockEl.style.display = (s.battleWins >= 10000) ? 'block' : 'none';
+// 显示击败强者对力量产出的加成（解锁终极层后）
+const powerBonusEl = document.getElementById('battle-power-bonus');
+if (powerBonusEl) {
+  if (s.tier4Unlocked) {
+    const rawBonus = Math.floor((s.battleWins || 0) / 100);
+    const cappedBonus = Math.min(rawBonus, 10000);
+    const isCapped = rawBonus >= 10000;
+    powerBonusEl.style.display = 'block';
+    powerBonusEl.innerText = `⚡ 击败强者加成：+${cappedBonus}% 力量产出速度（每击败100名+1%，上限+10000%）${isCapped ? ' ✓ 已达上限' : ''}`;
+  } else {
+    powerBonusEl.style.display = 'none';
+  }
+}
 const stats = game.getBattleStats();
 s.playerAtkCache = stats.pAtk;
 document.getElementById('player-atk').innerText = this.formatNum(stats.pAtk);
@@ -2199,6 +4381,59 @@ if (rButtons[rIdx]) rButtons[rIdx].disabled = s.realmCount < cost;
 rIdx++;
 });
 }
+},
+updateFlowBar() {
+const s = game.state;
+if (!s.flowUnlocked) return;
+const bar = document.getElementById('flow-charge-bar');
+const text = document.getElementById('flow-charge-text');
+if (!bar || !text) return;
+const pct = (s.flowChargeProgress || 0) * 100;
+bar.style.width = pct + '%';
+const currentTime = game.getFlowChargeTime();
+const timeText = document.getElementById('flow-time-text');
+if (timeText) {
+timeText.innerText = currentTime.toFixed(1);
+}
+if (s.flow >= s.flowMax) {
+text.innerText = '流量已满！';
+} else if (s.flowChargeActive) {
+text.innerText = `充能中... ${pct.toFixed(0)}%`;
+} else {
+const hasAutoCharge = (s.flowUpgrades || {})['fl_auto'] >= 1;
+text.innerText = hasAutoCharge ? '⚙️ 自动充能中...' : '👆 点击开始充能';
+}
+// Update flow value
+const flowValEl = document.getElementById('flow-val');
+if (flowValEl) flowValEl.innerText = this.formatNum(s.flow);
+// Update amount per charge
+const amtEl = document.getElementById('flow-amount-per-charge');
+if (amtEl) {
+const upgs = s.flowUpgrades || {};
+let amount = 1;
+amount += (upgs['fl_amount1'] || 0) * 4;
+amount += (upgs['fl_amount2'] || 0) * 10;
+amount += (upgs['fl_amount3'] || 0) * 40;
+amount += (upgs['fl_amount4'] || 0) * 200;
+amount += (upgs['fl_amount5'] || 0) * 1000;
+amount += (upgs['fl_amount6'] || 0) * 1000;
+        amount += (upgs['fl_amount7'] || 0) * 2000;
+        amount += (upgs['fl_amount8'] || 0) * 4000;
+        amount += (upgs['fl_amount9'] || 0) * 20000;
+        amount += (upgs['fl_amount10'] || 0) * 40000;
+        amount += (upgs['fl_amount11'] || 0) * 100000;
+                                        amount += (upgs['fl_amount16'] || 0) * 4000000;
+        amount += (upgs['fl_amount17'] || 0) * 6000000;
+        amount += (upgs['fl_amount18'] || 0) * 8000000;
+        amount += (upgs['fl_amount19'] || 0) * 10000000;
+        amount += (upgs['fl_amount20'] || 0) * 20000000;
+amtEl.innerText = this.formatNum(amount);
+}
+// Bonuses display
+const realmBonusEl = document.getElementById('flow-realm-bonus');
+if (realmBonusEl) realmBonusEl.innerText = '+' + (Math.floor((s.realmCount || 0) / 100) * 10).toFixed(0) + '%';
+const flowBonusEl = document.getElementById('flow-power-bonus');
+if (flowBonusEl) flowBonusEl.innerText = '+' + (Math.floor((s.flow || 0) / 1000) * 5).toFixed(0) + '%';
 },
 updateBattleUI(inBattle) {
 this.update();
