@@ -864,7 +864,76 @@ from { box-shadow: inset 0 0 10px rgba(255,255,255,0.08); border-left-color: #88
 to   { box-shadow: inset 0 0 30px rgba(255,255,255,0.22); border-left-color: #ffffff; text-shadow: 0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.45); }
 }
 
-/* === 黑洞吸入覆盖层 === */
+/* === 暗帝扫雷 === */
+.ankdi-cell {
+  width: 42px;
+  height: 42px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-main);
+  font-size: 1.1rem;
+  font-weight: 900;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s, border-color 0.1s;
+  position: relative;
+  box-sizing: border-box;
+}
+.ankdi-cell:hover:not(.ankdi-open):not(.ankdi-flagged) {
+  background: #2a2a2a;
+  border-color: #666;
+}
+.ankdi-cell.ankdi-open {
+  background: #000;
+  border-color: #222;
+  cursor: default;
+}
+.ankdi-cell.ankdi-flagged {
+  background: #111;
+  border-color: #555;
+}
+.ankdi-cell.ankdi-mine-hit {
+  background: #1a0000;
+  border-color: #ff2200;
+  animation: mineFlash 0.4s ease-out;
+}
+.ankdi-cell.ankdi-mine-reveal {
+  background: #0a0a0a;
+  border-color: #333;
+}
+@keyframes mineFlash {
+  0%   { background: #ff2200; }
+  100% { background: #1a0000; }
+}
+/* 数字颜色 */
+.ankdi-n1 { color: #4499ff; }
+.ankdi-n2 { color: #44ff88; }
+.ankdi-n3 { color: #ff4444; }
+.ankdi-n4 { color: #aa44ff; }
+.ankdi-n5 { color: #ff8844; }
+.ankdi-n6 { color: #44ffff; }
+.ankdi-n7 { color: #ffffff; }
+.ankdi-n8 { color: #888888; }
+/* 胜利/失败遮罩 */
+#ankdi-result-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.75);
+  font-family: var(--font-main);
+  font-size: 2rem;
+  letter-spacing: 6px;
+  pointer-events: none;
+  z-index: 10;
+}
+#ankdi-result-overlay.win  { color: #ffffff; text-shadow: 0 0 20px rgba(255,255,255,0.8); }
+#ankdi-result-overlay.lose { color: #ff2200; text-shadow: 0 0 20px rgba(255,34,0,0.8); }
+#ankdi-result-overlay.active { display: flex; }
 #blackhole-overlay {
 position: fixed;
 top: 0; left: 0; width: 100%; height: 100%;
@@ -1364,7 +1433,7 @@ body.darkspace-mode .challenge-mode-banner button {
 <h2 class="danger">挑战强者</h2>
 <p style="color:#888; font-size: 1.1rem;">通过战斗获取“完全境界”（单位：级），用于购买 终极强化。<br><span style="color:#aaa">敌人强度随击败次数动态调整，但绝不超过玩家属性的1.5倍。无冷却时间。<br>购买"自动挑战"升级后，按钮将显示自动状态，胜利后自动继续，失败后自动停止。</span></p>
 <div class="info-row">已击败强者数量：<span id="challenge-wins-count">0</span></div>
-<div id="battle-cap-status" style="margin:4px 0;font-size:0.85rem;color:#ff6644;display:none;">⚠️ 已击败10000名敌人——敌人属性上限已解除！需购买终极升级提升属性才能继续胜利。<br><span style="color:#00ffaa;">🔒 额外解锁：完全境界永久锁定下限为1万（消费不会低于此值），击败数量永不重置。</span></div>
+<div id="battle-cap-status" style="margin:4px 0;font-size:0.85rem;color:#ff6644;display:none;">⚠️ 已击败20000名敌人——敌人属性上限已解除！需购买终极升级提升属性才能继续胜利。<br><span style="color:#00ffaa;">🔒 额外解锁：完全境界永久锁定下限为1万（消费不会低于此值），击败数量永不重置。</span></div>
 <div id="battle-power-bonus" style="margin:4px 0;font-size:0.85rem;color:#aa44ff;display:none;"></div>
 <div id="realm-lock-status" style="margin:4px 0;font-size:0.85rem;color:#00ffaa;display:none;">🔒 完全境界与击败数量已永久锁定，不会因重置或购买扣至零。</div>
 <div class="battle-stats">
@@ -1527,10 +1596,47 @@ body.darkspace-mode .challenge-mode-banner button {
 </div>
 </div>
 </div>
-<!-- 仁者暗帝 面板（占位） -->
-<div id="view-ankdi" class="panel-view" style="background:rgba(0,0,0,0.95);border-color:#333;">
-<h2 style="color:#ffffff;border-color:#555;text-shadow:0 0 20px rgba(255,255,255,0.6);">仁者暗帝</h2>
-<p style="color:#666;font-size:1.2rem;text-align:center;margin-top:60px;letter-spacing:4px;">— 此层级建设中 —</p>
+<!-- 仁者暗帝 面板 -->
+<div id="view-ankdi" class="panel-view" style="background:rgba(0,0,0,0.97);border-color:#333;">
+  <h2 style="color:#ffffff;border-color:#555;text-shadow:0 0 20px rgba(255,255,255,0.5);font-size:2rem;letter-spacing:6px;">仁者暗帝</h2>
+  <p style="color:#666;font-size:0.9rem;margin:-8px 0 18px;font-family:var(--font-main);letter-spacing:2px;">以元神感知混沌，控制大能力量。避开黑洞，掌握虚空。</p>
+
+  <!-- 资源栏 -->
+  <div style="display:flex;align-items:center;gap:30px;background:linear-gradient(135deg,#050505,#000);border:2px solid #333;padding:14px 24px;margin-bottom:18px;flex-wrap:wrap;">
+    <div>
+      <div style="font-family:var(--font-main);font-size:0.9rem;color:#666;text-transform:uppercase;letter-spacing:2px;">大能力量</div>
+      <div style="font-family:var(--font-main);font-size:2.2rem;color:#ffffff;text-shadow:0 0 15px rgba(255,255,255,0.6);" id="ankdi-power-val">0</div>
+    </div>
+    <div style="height:40px;width:1px;background:#222;"></div>
+    <div>
+      <div style="font-family:var(--font-main);font-size:0.9rem;color:#666;text-transform:uppercase;letter-spacing:2px;">本局获取</div>
+      <div style="font-family:var(--font-main);font-size:1.6rem;color:#aaa;" id="ankdi-session-val">0</div>
+    </div>
+    <div style="height:40px;width:1px;background:#222;"></div>
+    <div>
+      <div style="font-family:var(--font-main);font-size:0.9rem;color:#666;text-transform:uppercase;letter-spacing:2px;">安全格</div>
+      <div style="font-family:var(--font-main);font-size:1.6rem;color:#888;" id="ankdi-safe-remaining">71</div>
+    </div>
+  </div>
+
+  <!-- 状态信息 -->
+  <div id="ankdi-status-bar" style="font-family:var(--font-main);font-size:1.1rem;letter-spacing:3px;min-height:32px;margin-bottom:14px;color:#888;text-align:center;"></div>
+
+  <!-- 扫雷棋盘 -->
+  <div style="display:flex;justify-content:center;margin-bottom:18px;">
+    <div id="ankdi-board" style="display:inline-grid;grid-template-columns:repeat(9,42px);gap:3px;background:#111;padding:10px;border:2px solid #333;position:relative;">
+      <div id="ankdi-result-overlay"></div>
+    </div>
+  </div>
+
+  <!-- 控制按钮 -->
+  <div style="text-align:center;">
+    <button id="ankdi-new-game-btn" onclick="game.ankdiSweeper.newGame()" style="background:transparent;border:2px solid #555;color:#888;padding:12px 40px;font-family:var(--font-main);font-size:1rem;letter-spacing:4px;cursor:pointer;text-transform:uppercase;transition:all 0.2s;"
+      onmouseover="this.style.borderColor='#fff';this.style.color='#fff';"
+      onmouseout="this.style.borderColor='#555';this.style.color='#888';">
+      新的一局
+    </button>
+  </div>
 </div>
 <div id="log-container"></div>
 </div>
@@ -2561,6 +2667,8 @@ flowUnlocked: false, // 是否已解锁流量页面
 // 时间力量（终极海虎专属，不受外部倍率影响）
 timePower: 0,
 haihuUpgrades: {}, haihuInfUpgrades: {},
+// 大能力量（仁者暗帝专属）
+darkPower: 0,
 };
 },
 init() {
@@ -3382,31 +3490,16 @@ if (!isFinite(difficultyCurve) || difficultyCurve > 1e200) difficultyCurve = 1e2
 let rawEAtk = Math.floor(Math.min(1e200, 1500 * resourceFactor * difficultyCurve * 0.12));
     
     // 5. 敌人属性上限
-    // 击败一万名敌人后解除硬上限，但改为平滑增长，防止突变成1e200
-    const hardCapRemoved = (this.state.battleWins || 0) >= 10000;
+    // 击败两万名敌人后解除硬上限，敌人属性继续自然增长（玩家需购买终极升级才能继续胜利）
+    const hardCapRemoved = (this.state.battleWins || 0) >= 20000;
     const capMultiplier = 1.5;
     const maxEAtk = pAtk * capMultiplier;
     let eAtk = rawEAtk;
-    if (!hardCapRemoved) {
-      if (eAtk > maxEAtk) eAtk = maxEAtk;
-    } else {
-      // 解除硬上限后：上限随胜场平滑线性增长，玩家需持续强化才能继续
-      // 每额外1000胜 → 上限增加 pAtk × 0.5，确保可追赶
-      const extraWins = (this.state.battleWins || 0) - 10000;
-      const growingCapMult = capMultiplier + extraWins / 2000;
-      const softCap = pAtk * growingCapMult;
-      eAtk = Math.min(rawEAtk, softCap);
-    }
+    if (!hardCapRemoved && eAtk > maxEAtk) eAtk = maxEAtk;
     let eMaxHp = Math.floor(eAtk * 3.5);
     let eDef = Math.floor(1500 * resourceFactor * difficultyCurve * 0.04);
     const maxEDef = pDef * capMultiplier;
-    if (!hardCapRemoved) {
-      if (eDef > maxEDef) eDef = maxEDef;
-    } else {
-      const extraWins = (this.state.battleWins || 0) - 10000;
-      const growingDefCapMult = capMultiplier + extraWins / 2000;
-      eDef = Math.min(eDef, pDef * growingDefCapMult);
-    }
+    if (!hardCapRemoved && eDef > maxEDef) eDef = maxEDef;
     if (!hardCapRemoved && wave > 100) {
         const stageAtkCap = Math.min(7000000, maxEAtk);
         if (eAtk > stageAtkCap) { eAtk = stageAtkCap; eMaxHp = Math.floor(eAtk * 3.5); }
@@ -3556,8 +3649,8 @@ if (id === 'r_reincarnation') {
     const costText = reincCost > 0 ? `\n费用：${ui.formatNum(reincCost)} 完全境界` : "";
     if (!confirm("确定进行元神转世？这将重置游戏所有内容（除本源加速、终极强者、磁场肉体及流量进度外），但永久翻倍挑战属性倍率！" + costText)) return;
     if (reincCost > 0) this.state.realmCount -= reincCost;
-    // 安全锁底：击败1万敌人后，完全境界永不低于1万
-    if ((this.state.battleWins || 0) >= 10000) {
+    // 安全锁底：击败2万敌人后，完全境界永不低于1万
+    if ((this.state.battleWins || 0) >= 20000) {
       this.state.realmCount = Math.max(10000, this.state.realmCount);
     }
     
@@ -3610,8 +3703,8 @@ if (id === 'r_reincarnation') {
 }
 
 const cost = Math.floor(upg.baseCost * Math.pow(upg.costMult, curLvl));
-// 击败1万名敌人后，完全境界锁定下限为1万——购买仍然有效，但扣减后不低于1万
-const realmFloor = (this.state.battleWins || 0) >= 10000 ? 10000 : 0;
+// 击败2万名敌人后，完全境界锁定下限为1万——购买仍然有效，但扣减后不低于1万
+const realmFloor = (this.state.battleWins || 0) >= 20000 ? 10000 : 0;
 if (this.state.realmCount >= cost || this.state.realmCount >= realmFloor) {
 // 有足够的境界，或者虽然不够但下限保护允许购买（境界≥1万时免扣下限以下部分）
 const canAfford = this.state.realmCount >= cost;
@@ -4435,6 +4528,7 @@ flowUpgLvl: s.flowUpgLvl || 0,
 flowUnlocked: s.flowUnlocked || false,
 timePower: s.timePower || 0,
 haihuUpgrades: s.haihuUpgrades || {}, haihuInfUpgrades: s.haihuInfUpgrades || {},
+darkPower: s.darkPower || 0,
 // Save "pre-challenge" values for restoring on load during active challenge
 _preChalPower: s.challengeStartState ? s.challengeStartState.power : s.power,
 _preChalPoints: s.challengeStartState ? s.challengeStartState.ultimatePoints : s.ultimatePoints,
@@ -4484,6 +4578,7 @@ this.state.flowUpgLvl = t4.flowUpgLvl || 0;
 this.state.flowUnlocked = t4.flowUnlocked || false;
 this.state.timePower = t4.timePower || this.state.timePower || 0;
 this.state.haihuUpgrades = t4.haihuUpgrades || this.state.haihuUpgrades || {}; this.state.haihuInfUpgrades = t4.haihuInfUpgrades || this.state.haihuInfUpgrades || {};
+this.state.darkPower = t4.darkPower || this.state.darkPower || 0;
 // If we were in a challenge when saved, restore challengeStartState from backup
 if (t4.activeChallenge) {
 this.state.activeChallenge = t4.activeChallenge;
@@ -7126,6 +7221,181 @@ div.innerHTML = `<h3 style="color:#44aaff;font-size:1rem;">${upg.name} <span sty
 container.appendChild(div);
 });
 },
+// =========================================================
+// 仁者暗帝 扫雷
+// =========================================================
+ankdiSweeper: {
+  ROWS: 9, COLS: 9, MINES: 10,
+  board: [],
+  gameState: 'idle',
+  sessionGain: 0,
+  firstClick: true,
+
+  newGame() {
+    this.board = [];
+    this.gameState = 'playing';
+    this.sessionGain = 0;
+    this.firstClick = true;
+    for (let i = 0; i < this.ROWS * this.COLS; i++) {
+      this.board.push({ mine: false, revealed: false, flagged: false, adj: 0 });
+    }
+    this._render();
+    this._updateStatus('以元神感知混沌……');
+    document.getElementById('ankdi-session-val').innerText = '0';
+    document.getElementById('ankdi-safe-remaining').innerText = String(this.ROWS * this.COLS - this.MINES);
+    const overlay = document.getElementById('ankdi-result-overlay');
+    if (overlay) { overlay.className = ''; overlay.innerText = ''; }
+  },
+
+  _placeMines(safeIdx) {
+    const safeCells = new Set();
+    safeCells.add(safeIdx);
+    const sr = Math.floor(safeIdx / this.COLS), sc = safeIdx % this.COLS;
+    for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+      const nr = sr + dr, nc = sc + dc;
+      if (nr >= 0 && nr < this.ROWS && nc >= 0 && nc < this.COLS)
+        safeCells.add(nr * this.COLS + nc);
+    }
+    const candidates = [];
+    for (let i = 0; i < this.ROWS * this.COLS; i++) if (!safeCells.has(i)) candidates.push(i);
+    for (let i = candidates.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+    }
+    for (let m = 0; m < this.MINES; m++) this.board[candidates[m]].mine = true;
+    for (let r = 0; r < this.ROWS; r++) for (let c = 0; c < this.COLS; c++) {
+      if (this.board[r * this.COLS + c].mine) continue;
+      let cnt = 0;
+      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < this.ROWS && nc >= 0 && nc < this.COLS && this.board[nr * this.COLS + nc].mine) cnt++;
+      }
+      this.board[r * this.COLS + c].adj = cnt;
+    }
+  },
+
+  click(idx) {
+    if (this.gameState !== 'playing') return;
+    const cell = this.board[idx];
+    if (cell.revealed || cell.flagged) return;
+    if (this.firstClick) {
+      this.firstClick = false;
+      this._placeMines(idx);
+    }
+    if (cell.mine) {
+      cell.revealed = true;
+      this._render();
+      this._lose(idx);
+      return;
+    }
+    const opened = this._flood(idx);
+    this.sessionGain += opened;
+    game.state.darkPower = (game.state.darkPower || 0) + opened;
+    game.saveGame();
+    document.getElementById('ankdi-session-val').innerText = String(this.sessionGain);
+    document.getElementById('ankdi-power-val').innerText = ui.formatNum(game.state.darkPower);
+    const safeLeft = this.board.filter(c => !c.mine && !c.revealed).length;
+    document.getElementById('ankdi-safe-remaining').innerText = String(safeLeft);
+    this._render();
+    if (safeLeft === 0) { this._win(); return; }
+    this._updateStatus('');
+  },
+
+  rightClick(idx, e) {
+    e.preventDefault();
+    if (this.gameState !== 'playing') return;
+    const cell = this.board[idx];
+    if (cell.revealed) return;
+    cell.flagged = !cell.flagged;
+    this._render();
+  },
+
+  _flood(startIdx) {
+    const queue = [startIdx];
+    const visited = new Set();
+    let opened = 0;
+    while (queue.length) {
+      const idx = queue.shift();
+      if (visited.has(idx)) continue;
+      visited.add(idx);
+      const cell = this.board[idx];
+      if (cell.revealed || cell.mine) continue;
+      cell.revealed = true;
+      opened++;
+      if (cell.adj === 0) {
+        const r = Math.floor(idx / this.COLS), c = idx % this.COLS;
+        for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < this.ROWS && nc >= 0 && nc < this.COLS) {
+            const ni = nr * this.COLS + nc;
+            if (!this.board[ni].revealed && !this.board[ni].mine && !visited.has(ni)) queue.push(ni);
+          }
+        }
+      }
+    }
+    return opened;
+  },
+
+  _win() {
+    this.gameState = 'won';
+    const bonus = this.sessionGain;
+    game.state.darkPower = (game.state.darkPower || 0) + bonus;
+    game.saveGame();
+    document.getElementById('ankdi-power-val').innerText = ui.formatNum(game.state.darkPower);
+    this._updateStatus('🌌 元神贯穿虚空！获得奖励 +' + bonus + ' 大能力量');
+    const overlay = document.getElementById('ankdi-result-overlay');
+    if (overlay) { overlay.className = 'win active'; overlay.innerText = '虚空已定'; }
+    this.board.forEach(cell => { if (cell.mine) cell.flagged = true; });
+    this._render();
+  },
+
+  _lose(hitIdx) {
+    this.gameState = 'lost';
+    this.board.forEach(cell => { if (cell.mine) cell.revealed = true; });
+    this._render();
+    const cells = document.getElementById('ankdi-board').querySelectorAll('.ankdi-cell');
+    if (cells[hitIdx]) cells[hitIdx].classList.add('ankdi-mine-hit');
+    this._updateStatus('💀 元神触碰黑洞，感知崩溃');
+    const overlay = document.getElementById('ankdi-result-overlay');
+    if (overlay) { overlay.className = 'lose active'; overlay.innerText = '黑洞吞噬'; }
+  },
+
+  _updateStatus(msg) {
+    const el = document.getElementById('ankdi-status-bar');
+    if (el) el.innerText = msg;
+  },
+
+  _render() {
+    const boardEl = document.getElementById('ankdi-board');
+    if (!boardEl) return;
+    Array.from(boardEl.children).forEach(el => { if (!el.id) el.remove(); });
+    const fragment = document.createDocumentFragment();
+    this.board.forEach((cell, idx) => {
+      const div = document.createElement('div');
+      div.className = 'ankdi-cell';
+      if (cell.revealed) {
+        div.classList.add(cell.mine ? 'ankdi-mine-reveal' : 'ankdi-open');
+        if (cell.mine) {
+          div.innerText = '🕳️';
+          div.style.fontSize = '1.4rem';
+        } else if (cell.adj > 0) {
+          div.innerText = cell.adj;
+          div.classList.add('ankdi-n' + cell.adj);
+        }
+      } else if (cell.flagged) {
+        div.classList.add('ankdi-flagged');
+        div.innerText = '⚑';
+        div.style.color = '#888';
+      } else {
+        div.onclick = () => game.ankdiSweeper.click(idx);
+        div.oncontextmenu = (e) => game.ankdiSweeper.rightClick(idx, e);
+      }
+      fragment.appendChild(div);
+    });
+    boardEl.insertBefore(fragment, boardEl.firstChild);
+  },
+},
 };
 
 const ui = {
@@ -7148,6 +7418,10 @@ if (s.activeChallenge === 'c7') {
   if (ankdiBtn) { ankdiBtn.style.display = 'block'; ankdiBtn.classList.add('active'); }
   document.body.classList.add('darkspace-mode');
   this.switchTab('ankdi');
+  // 更新大能力量显示并开始新局
+  const dpEl = document.getElementById('ankdi-power-val');
+  if (dpEl) dpEl.innerText = ui.formatNum(game.state.darkPower || 0);
+  if (game.ankdiSweeper && game.ankdiSweeper.gameState === 'idle') game.ankdiSweeper.newGame();
 } else {
   this.switchTab('tier1');
 }
@@ -7231,6 +7505,13 @@ if (tabId === 'haihu') {
   if (game.rhythm && game.rhythm.active) game.rhythm.pause();
   const log = document.getElementById('log-container');
   if (log) log.style.display = 'none';
+  // 若棋盘是空的，自动开始新局
+  if (game.ankdiSweeper && game.ankdiSweeper.gameState === 'idle') {
+    game.ankdiSweeper.newGame();
+  }
+  // 更新大能力量显示
+  const dpEl = document.getElementById('ankdi-power-val');
+  if (dpEl) dpEl.innerText = ui.formatNum(game.state.darkPower || 0);
 } else {
   if (game.rhythm.active) game.rhythm.pause();
   const log = document.getElementById('log-container');
@@ -7829,9 +8110,9 @@ const winsDisplay = s.battleWins >= 20000 ? "你打倒了他妈的整个世界�
 document.getElementById('challenge-wins-count').innerText = winsDisplay;
 // 显示敌人上限解除状态
 const capStatusEl = document.getElementById('battle-cap-status');
-if (capStatusEl) capStatusEl.style.display = (s.battleWins >= 10000) ? 'block' : 'none';
+if (capStatusEl) capStatusEl.style.display = (s.battleWins >= 20000) ? 'block' : 'none';
 const realmLockEl = document.getElementById('realm-lock-status');
-if (realmLockEl) realmLockEl.style.display = (s.battleWins >= 10000) ? 'block' : 'none';
+if (realmLockEl) realmLockEl.style.display = (s.battleWins >= 20000) ? 'block' : 'none';
 // 显示击败强者对力量产出的加成（解锁终极层后）
 const powerBonusEl = document.getElementById('battle-power-bonus');
 if (powerBonusEl) {
