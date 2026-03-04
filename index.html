@@ -709,13 +709,11 @@ margin-left: 8px;
 .haihu-stat.combo span { color: var(--gold-color); text-shadow: 0 0 8px var(--gold-glow); }
 #rhythm-track-wrap {
 position: relative;
-width: 100%;
-max-width: 520px;
-margin: 0 auto 0;
+width: 480px;
+flex-shrink: 0;
 }
 #rhythm-canvas {
 display: block;
-width: 100%;
 background: #050000;
 border: 2px solid #330000;
 border-bottom: none;
@@ -742,9 +740,8 @@ white-space: nowrap;
 }
 #rhythm-lane-btns {
 display: flex;
-width: 100%;
-max-width: 520px;
-margin: 0 auto 16px;
+width: 480px;
+margin: 0 0 16px;
 }
 .rhythm-lane-btn {
 flex: 1;
@@ -770,7 +767,8 @@ transform: scaleY(0.88);
 }
 #rhythm-toggle-btn {
 display: block;
-margin: 0 auto 0;
+width: 480px;
+margin: 0 0 0;
 background: transparent;
 border: 2px solid var(--accent-color);
 color: var(--accent-color);
@@ -837,6 +835,73 @@ z-index: 2400;
 pointer-events: none;
 display: none;
 }
+/* === 仁者暗帝 专属导航按钮 === */
+#nav-ankdi {
+display: none;
+background: linear-gradient(135deg, #000000 0%, #080808 100%);
+border: none;
+border-left: 5px solid #ffffff;
+color: #eeeeee;
+padding: 28px 15px;
+text-align: left;
+cursor: pointer;
+font-family: var(--font-main);
+font-size: 1.25rem;
+text-transform: uppercase;
+letter-spacing: 3px;
+width: 100%;
+box-sizing: border-box;
+text-shadow: 0 0 12px rgba(255,255,255,0.7), 0 0 28px rgba(255,255,255,0.3);
+animation: ankhdi-pulse 1.5s infinite alternate;
+position: relative;
+}
+#nav-ankdi.active {
+background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+transform: scale(1.05);
+}
+@keyframes ankhdi-pulse {
+from { box-shadow: inset 0 0 10px rgba(255,255,255,0.08); border-left-color: #888888; }
+to   { box-shadow: inset 0 0 30px rgba(255,255,255,0.22); border-left-color: #ffffff; text-shadow: 0 0 22px rgba(255,255,255,0.95), 0 0 48px rgba(255,255,255,0.45); }
+}
+
+/* === 黑洞吸入覆盖层 === */
+#blackhole-overlay {
+position: fixed;
+top: 0; left: 0; width: 100%; height: 100%;
+z-index: 2700;
+display: none;
+pointer-events: none;
+background: transparent;
+}
+#blackhole-canvas {
+position: absolute;
+top: 0; left: 0; width: 100%; height: 100%;
+}
+@keyframes suckIn {
+0%   { opacity: 1; transform: translate(0, 0) scale(1) rotate(0deg); }
+60%  { opacity: 0.6; }
+100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0) rotate(720deg); }
+}
+.being-sucked {
+animation: suckIn 1.0s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+pointer-events: none !important;
+}
+
+/* === 暗帝模式 === */
+body.darkspace-mode {
+background-color: #000000 !important;
+background-image: none !important;
+border-color: #ffffff !important;
+}
+body.darkspace-mode #nav-sidebar {
+background: #000;
+border-right-color: #444;
+}
+body.darkspace-mode #top-bar {
+background: linear-gradient(180deg, #000 0%, #050505 100%);
+border-bottom-color: #333;
+}
+
 /* === 终极海虎 专属导航按钮 === */
 #nav-haihu {
 display: none;
@@ -961,8 +1026,21 @@ background: linear-gradient(135deg, #1a001a, #0d000d);
   font-size: 1.1rem;
   margin-bottom: 15px;
   display: none;
+  position: relative;
+  z-index: 200;
+  flex-shrink: 0;
 }
 .challenge-mode-banner.active { display: block; }
+/* 暗帝模式下确保 banner 可见 */
+body.darkspace-mode .challenge-mode-banner {
+  background: linear-gradient(90deg, #0a0a0a, #111);
+  border-color: #888;
+  color: #ccc;
+}
+body.darkspace-mode .challenge-mode-banner button {
+  border-color: #888 !important;
+  color: #aaa !important;
+}
 /* --- 手机端适配样式 --- */
 @media screen and (max-width: 768px) {
     /* 改变主体布局方向为垂直 */
@@ -1125,6 +1203,7 @@ background: linear-gradient(135deg, #1a001a, #0d000d);
 <button class="nav-btn disabled" onclick="ui.switchTab('tier2')" id="nav-tier2">磁场转动 <div class="red-dot" id="dot-tier2"></div></button>
 <button class="nav-btn disabled" onclick="ui.switchTab('tier3')" id="nav-tier3">磁场功法 <div class="red-dot" id="dot-tier3"></div></button>
 <button id="nav-haihu" onclick="ui.switchTab('haihu')">终极海虎</button>
+<button id="nav-ankdi" onclick="ui.switchTab('ankdi')">仁者暗帝</button>
 <div style="flex:1"></div>
 <button class="nav-btn disabled" onclick="ui.switchTab('tier4')" id="nav-tier4" style="color: #ff00ff; border-left-color: #ff00ff;">终极强者 <div class="red-dot" id="dot-tier4"></div></button>
 <button class="nav-btn disabled" onclick="ui.switchTab('magnetic-body')" id="nav-magnetic-body" style="color: #00ffaa;">磁场肉体</button>
@@ -1157,7 +1236,7 @@ background: linear-gradient(135deg, #1a001a, #0d000d);
 <h2>起源：电流推动</h2>
 <p style="color:#888; margin-bottom: 10px; font-size: 1rem;">积累伏特。<span id="volt-cap-info" style="color:var(--accent-color);">上限锁定为60亿。</span><span style="color:var(--accent-color); font-weight:bold"> 提示：即使进入高层，仍可在此点击或升级。</span></p>
 <div style="margin-bottom:10px;">
-  <button id="btn-auto-t1" onclick="game.toggleAutoUpg('tier1')" style="padding:6px 14px;font-size:0.85rem;border:1px solid #555;background:#111;color:#aaa;cursor:pointer;border-radius:3px;">⚙️ 自动购买：<span id="auto-t1-status">开</span></button>
+  <button id="btn-auto-t1" onclick="game.toggleAutoUpg('tier1')" style="display:none;padding:6px 14px;font-size:0.85rem;border:1px solid #555;background:#111;color:#aaa;cursor:pointer;border-radius:3px;">⚙️ 自动购买：<span id="auto-t1-status">开</span></button>
 </div>
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:15px;">
 <div class="upgrade-card" style="padding:12px;">
@@ -1216,7 +1295,7 @@ background: linear-gradient(135deg, #1a001a, #0d000d);
 <h2 style="color: var(--danger-color)">磁场转动</h2>
 <p style="color:#888; margin-bottom: 10px; font-size: 1rem;">此处积累<strong>匹数</strong>。伏特已保留（可切换标签查看/升级）。目标：100,000 匹。<span style="color:var(--danger-color); font-weight:bold"> 超过10万匹后获取难度急剧上升，必须进入第三层！</span></p>
 <div style="margin-bottom:10px;">
-  <button id="btn-auto-t2" onclick="game.toggleAutoUpg('tier2')" style="padding:6px 14px;font-size:0.85rem;border:1px solid #555;background:#111;color:#aaa;cursor:pointer;border-radius:3px;">⚙️ 自动购买：<span id="auto-t2-status">开</span></button>
+  <button id="btn-auto-t2" onclick="game.toggleAutoUpg('tier2')" style="display:none;padding:6px 14px;font-size:0.85rem;border:1px solid #555;background:#111;color:#aaa;cursor:pointer;border-radius:3px;">⚙️ 自动购买：<span id="auto-t2-status">开</span></button>
 </div>
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:15px;">
 <div class="upgrade-card" style="padding:12px;">
@@ -1275,7 +1354,7 @@ background: linear-gradient(135deg, #1a001a, #0d000d);
 <h2 class="danger">磁场功法</h2>
 <p style="color:#888; margin-bottom: 20px; font-size: 1.1rem;">磁场异变，提升极度困难。唯有学习神功可提升匹数。<br><span style="color:#aaa">提示：必须击败足够多的强者才能购买功法。这是强者的世界！</span></p>
 <div style="margin-bottom:10px;">
-  <button id="btn-auto-t3" onclick="game.toggleAutoUpg('tier3')" style="padding:6px 14px;font-size:0.85rem;border:1px solid #555;background:#111;color:#aaa;cursor:pointer;border-radius:3px;">⚙️ 天眼自动购买功法：<span id="auto-t3-status">开</span></button>
+  <button id="btn-auto-t3" onclick="game.toggleAutoUpg('tier3')" style="display:none;padding:6px 14px;font-size:0.85rem;border:1px solid #555;background:#111;color:#aaa;cursor:pointer;border-radius:3px;">⚙️ 天眼自动购买功法：<span id="auto-t3-status">开</span></button>
 </div>
 <div class="info-row">已击败强者数量：<span id="t3-wins-count">0</span> </div>
 <div id="skill-list" class="stat-grid"></div>
@@ -1414,21 +1493,31 @@ background: linear-gradient(135deg, #1a001a, #0d000d);
   <div class="haihu-stat" style="color:#555;">MISS<span id="rhythm-miss-count" style="color:#666;">0</span></div>
 </div>
 
-<!-- 节拍轨道 -->
-<div id="rhythm-track-wrap">
-  <canvas id="rhythm-canvas" height="420"></canvas>
-  <div id="rhythm-feedback"></div>
+<!-- 节拍轨道 + 右侧连击显示 -->
+<div style="display:flex;flex-direction:row;align-items:flex-start;gap:16px;justify-content:center;">
+  <div style="flex-shrink:0;">
+    <div id="rhythm-track-wrap">
+      <canvas id="rhythm-canvas" height="420" onclick="if(!game.rhythm.active)game.rhythm.start()" style="cursor:pointer;"></canvas>
+      <div id="rhythm-feedback"></div>
+    </div>
+    <div id="rhythm-lane-btns">
+      <button class="rhythm-lane-btn" id="rlb-0" onpointerdown="game.rhythm.hitLane(0)">D</button>
+      <button class="rhythm-lane-btn" id="rlb-1" onpointerdown="game.rhythm.hitLane(1)">F</button>
+      <button class="rhythm-lane-btn" id="rlb-2" onpointerdown="game.rhythm.hitLane(2)">J</button>
+      <button class="rhythm-lane-btn" id="rlb-3" onpointerdown="game.rhythm.hitLane(3)">K</button>
+    </div>
+    <button id="rhythm-toggle-btn" onclick="game.rhythm.toggle()">▶ 开始节拍</button>
+  </div>
+  <div id="rhythm-combo-panel" style="width:75px;display:flex;flex-direction:column;align-items:center;padding-top:20px;flex-shrink:0;">
+    <div style="color:#555;font-size:0.75rem;font-family:var(--font-main);letter-spacing:2px;margin-bottom:4px;">连击</div>
+    <div id="combo-big" style="font-family:var(--font-main);font-size:3rem;color:#ff4444;text-shadow:0 0 20px #ff0000,0 0 40px #ff0000;line-height:1;transition:transform 0.1s;">0</div>
+    <div style="color:#444;font-size:0.7rem;margin-top:8px;font-family:var(--font-main);">×倍率</div>
+    <div id="combo-mult-big" style="font-family:var(--font-main);font-size:1.6rem;color:#888;margin-top:2px;">×1</div>
+    <div style="margin-top:20px;color:#333;font-size:0.65rem;font-family:var(--font-main);line-height:1.8;text-align:center;">
+      20连 ×2<br>40连 ×4<br>60连 ×8<br>80连 ×16<br>100连 ×32
+    </div>
+  </div>
 </div>
-
-<!-- 按键区 -->
-<div id="rhythm-lane-btns">
-  <button class="rhythm-lane-btn" id="rlb-0" onpointerdown="game.rhythm.hitLane(0)">D</button>
-  <button class="rhythm-lane-btn" id="rlb-1" onpointerdown="game.rhythm.hitLane(1)">F</button>
-  <button class="rhythm-lane-btn" id="rlb-2" onpointerdown="game.rhythm.hitLane(2)">J</button>
-  <button class="rhythm-lane-btn" id="rlb-3" onpointerdown="game.rhythm.hitLane(3)">K</button>
-</div>
-
-<button id="rhythm-toggle-btn" onclick="game.rhythm.toggle()">▶ 开始节拍</button>
 
 <!-- 时间力量升级 -->
 <div style="margin-top:28px;border-top:2px solid #330000;padding-top:20px;">
@@ -1438,6 +1527,11 @@ background: linear-gradient(135deg, #1a001a, #0d000d);
 </div>
 </div>
 </div>
+<!-- 仁者暗帝 面板（占位） -->
+<div id="view-ankdi" class="panel-view" style="background:rgba(0,0,0,0.95);border-color:#333;">
+<h2 style="color:#ffffff;border-color:#555;text-shadow:0 0 20px rgba(255,255,255,0.6);">仁者暗帝</h2>
+<p style="color:#666;font-size:1.2rem;text-align:center;margin-top:60px;letter-spacing:4px;">— 此层级建设中 —</p>
+</div>
 <div id="log-container"></div>
 </div>
 <!-- Cinematic Ending Screen -->
@@ -1445,6 +1539,10 @@ background: linear-gradient(135deg, #1a001a, #0d000d);
 <div id="cinematic-text"></div>
 <button id="cinematic-restart-btn" onclick="game.enterTier4World()">进入终极强者之境</button>
 <button id="cinematic-confirm-btn" onclick="game.cinematicConfirm()" style="display:none;margin-top:30px;padding:16px 48px;font-size:1.2rem;background:transparent;border:2px solid var(--gold-color);color:var(--gold-color);cursor:pointer;font-family:var(--font-main);text-transform:uppercase;letter-spacing:3px;transition:all 0.3s;">是的</button>
+</div>
+<!-- 黑洞吸入覆盖层 -->
+<div id="blackhole-overlay">
+<canvas id="blackhole-canvas"></canvas>
 </div>
 <script>
 // --- 游戏逻辑部分 ---
@@ -1680,7 +1778,7 @@ ultimateChallenges: [
   { id: 'c7', name: '第七位强者：海虎·白军浪',
     desc: '禁用第一层所有升级，成就加成减半。从零完成全部三层突破。',
     reward: '终极点数 +1e13 & 终极点数获取公式强化（指数 0.78 → 0.81）', pointReward: 1e13, reqUpg: 'u_chal_unlock3', pointReq: 5e11, powerReq: 5e17, difficulty: 7,
-    restriction: { noT1Upgrades: true, halfAchMult: true }, winCondition: { tier: 3 } },
+    restriction: { noT1Upgrades: true, halfAchMult: true }, winCondition: { haihuUpg: 'hu_3000' } },
   { id: 'c8', name: '第八位强者：仁者暗帝·刹暗天',
     desc: '挑战强者属性x3倍。从零击败150位强者。',
     reward: '终极点数 +1e18 & 终极点数获取公式强化（指数 0.81 → 0.84）', pointReward: 1e18, reqUpg: 'u_chal_unlock4', pointReq: 5e12, powerReq: 9e17, difficulty: 8,
@@ -1835,14 +1933,24 @@ rhythm: {
   _hasUpg(id) { return !!(this._upgs()[id]); },
   _timePowerMult() {
     let m = 1;
-    if (this._hasUpg('hu_double1')) m *= 2;
-    if (this._hasUpg('hu_double2')) m *= 2;
-    if (this._hasUpg('hu_double3')) m *= 2;
+    if (this._hasUpg('hu_hold'))  m *= 2;
+    if (this._hasUpg('hu_6lane')) m *= 2;
+    if (this._hasUpg('hu_tall'))  m *= 2;
+    // 无限升级：时间强化
+    const infPow = (game.state.haihuInfUpgrades || {})['hu_inf_pow'] || 0;
+    if (infPow > 0) m *= Math.pow(2, infPow);
+    // 连击倍率：每20连击翻倍，上限×32；寻找弱点额外×1.5
+    const comboTier = Math.min(5, Math.floor(this.stats.combo / 20));
+    if (comboTier > 0) {
+      let comboMult = Math.pow(2, comboTier);
+      if (this._hasUpg('hu_6lane')) comboMult *= 1.5;
+      m *= comboMult;
+    }
     return m;
   },
 
   _applyConfig() {
-    const has6 = this._hasUpg('hu_6lane');
+    const has6 = false; // 寻找弱点不再扩展通道
     const hasTall = this._hasUpg('hu_tall');
     this.LANE_COUNT = has6 ? 6 : 4;
     this.LANE_KEYS  = has6 ? ['s','d','f','j','k','l'] : ['d','f','j','k'];
@@ -1850,12 +1958,16 @@ rhythm: {
     this.LANE_COLORS= has6
       ? ['#ff3333','#ff6633','#ff9933','#ff9933','#ff6633','#ff3333']
       : ['#ff3333','#ff7733','#ff7733','#ff3333'];
-    const baseH = hasTall ? 840 : 420;
-    this.HIT_Y = Math.round(baseH * 0.857);
+    const baseH = 600;
     if (this.canvas) {
-      this.canvas.height = baseH;
+      const uiOverhead = 260;
+      const maxH = Math.max(200, window.innerHeight - uiOverhead);
+      const canvasH = Math.min(baseH, maxH);
+      this.canvas.height = canvasH;
+      this.HIT_Y = Math.round(canvasH * 0.875);
+      this.FALL_SPEED = Math.round(290 * canvasH / 600);
       const w = this.canvas.width;
-      this.NOTE_R = Math.max(14, Math.floor(w / this.LANE_COUNT * 0.32));
+      this.NOTE_R = Math.min(28, Math.max(14, Math.floor(w / this.LANE_COUNT * 0.28)));
     }
     // rebuild lane buttons
     const btns = document.getElementById('rhythm-lane-btns');
@@ -1879,13 +1991,13 @@ rhythm: {
   init() {
     this.canvas = document.getElementById('rhythm-canvas');
     if (!this.canvas) return;
-    const wrap = document.getElementById('rhythm-track-wrap');
-    const w = Math.min(wrap ? wrap.clientWidth : 480, 520);
+    const w = 480;
     this.canvas.width = w;
     this._applyConfig();
     this.ctx = this.canvas.getContext('2d');
     if (!this._keyBound) {
       this._keyDownHandler = (e) => {
+        if (e.repeat) return;  // 忽略键盘长按产生的重复事件
         if (!document.getElementById('view-haihu').classList.contains('active')) return;
         const lane = this.LANE_KEYS.indexOf(e.key.toLowerCase());
         if (lane !== -1) { e.preventDefault(); this.pressLane(lane); }
@@ -1933,25 +2045,57 @@ rhythm: {
     if (!this.active) return;
     const dt = Math.min((ts - this.lastTimestamp) / 1000, 0.1);
     this.lastTimestamp = ts;
-    // Move notes
+    // Move notes — when hold is active, freeze head at HIT_Y; only tail moves
     for (const n of this.notes) {
-      if (!n.removed) n.y += this.FALL_SPEED * dt;
-      if (n.hold && n.holdActive) n.holdEndY += this.FALL_SPEED * dt;
+      if (!n.removed) {
+        if (n.hold && n.holdActive && !n.holdDone) {
+          // Head frozen, tail falls toward hit line
+          n.holdEndY += this.FALL_SPEED * dt;
+        } else if (!n.holdDone) {
+          n.y += this.FALL_SPEED * dt;
+          if (n.hold && !n.missed) n.holdEndY += this.FALL_SPEED * dt;
+        }
+      }
     }
-    // Hold note: tick held lanes
+    // Hold note: complete when tail crosses hit line while player is holding
     for (const [laneStr, held] of Object.entries(this._heldLanes)) {
-      const lane = parseInt(laneStr);
       const n = held.note;
       if (n && !n.holdDone && n.holdActive) {
-        const now = ts;
-        const elapsed = (now - held.startTime) / 1000;
-        const needed = n.holdDuration;
-        n.holdProgress = Math.min(1, elapsed / needed);
-        if (n.holdProgress >= 1) {
+        const holdLen = n.holdDuration * this.FALL_SPEED;
+        const startTailY = n.y - holdLen;
+        n.holdProgress = holdLen > 0
+          ? Math.min(1, (n.holdEndY - startTailY) / holdLen)
+          : 1;
+        // 转换长按：到达切换点时，切换通道，玩家必须松开旧键按新键
+        if (n.switchHold && !n.switched && n.holdProgress >= n.switchAt) {
+          n.switched = true;
+          const oldLane = parseInt(laneStr);
+          const newLane = n.switchLane;
+          n.lane = newLane;
+          n.holdActive = false;  // 解冻，宽限期内音符继续下落
+          delete this._heldLanes[laneStr];
+          n._switchGrace = performance.now() + 900;
+          n._pendingSwitch = true;
+          this._showFeedback('→ 切换!', '#ffdd44');
+          break;
+        }
+        if (n.holdEndY >= this.HIT_Y) {
           n.holdDone = true;
           n.hit = true;
           this._scoreHold(n);
           delete this._heldLanes[laneStr];
+        }
+      }
+    }
+    // 转换长按宽限期检查
+    for (const n of this.notes) {
+      if (n._pendingSwitch && !n.holdDone && !n.missed) {
+        if (performance.now() > n._switchGrace) {
+          // 超时未按新键 → miss，同时解冻 y 让音符正常滚出屏幕
+          n.missed = true; n._pendingSwitch = false;
+          n.holdActive = false;  // 解冻 y，音符会继续下落被清除
+          this.stats.miss++; this.stats.combo = 0;
+          this._showFeedback('MISS', '#555'); this._updateStatEls();
         }
       }
     }
@@ -1969,7 +2113,9 @@ rhythm: {
         const pastMiss = n.y > this.HIT_Y + this.HIT_ZONE_HALF + 15;
         if (pastMiss) {
           if (n.hold && n.holdActive) {
-            // missed hold start
+            // 正在被按住的 hold 不在此 miss，由松键时处理
+          } else if (n.hold && !n.holdActive) {
+            // 未按下，head 已过线 → miss
             n.missed = true; this.stats.miss++; this.stats.combo = 0;
             this._showFeedback('MISS', '#555'); this._updateStatEls();
           } else if (!n.hold) {
@@ -1992,17 +2138,55 @@ rhythm: {
 
   _spawnNote() {
     const hasHold = this._hasUpg('hu_hold');
-    const lane = Math.floor(Math.random() * this.LANE_COUNT);
+    // 找出所有有进行中 hold 音符的通道（不允许在这些通道生成任何音符）
+    const holdLanes = new Set(this.notes
+      .filter(n => n.hold && !n.holdDone && !n.missed)
+      .flatMap(n => n.switchHold && n.switchLane !== -1 ? [n.lane, n.switchLane] : [n.lane]));
+    // 主音符通道：排除有 hold 进行中的通道
+    const freeLanes = [];
+    for (let i = 0; i < this.LANE_COUNT; i++) {
+      if (!holdLanes.has(i)) freeLanes.push(i);
+    }
+    if (freeLanes.length === 0) return; // 全部通道都有 hold，跳过本次生成
+    const lane = freeLanes[Math.floor(Math.random() * freeLanes.length)];
     const isHold = hasHold && Math.random() < 0.22;
-    const holdDur = isHold ? (0.6 + Math.random() * 0.8) : 0;
+    const hasSwitchHold = this._hasUpg('hu_tall');
+    const isSwitchHold = hasHold && hasSwitchHold && !isHold && freeLanes.length >= 2 && Math.random() < 0.18;
+    // 滑动音符长度翻倍
+    const baseDur = (0.8 + Math.random() * 0.7);
+    const holdDur = (isHold || isSwitchHold) ? (isSwitchHold ? baseDur * 2 : baseDur) : 0;
     const holdLen = holdDur * this.FALL_SPEED;
+    let switchLane = -1, switchAt = 0;
+    if (isSwitchHold) {
+      const adjacent = [];
+      if (lane > 0 && !holdLanes.has(lane - 1)) adjacent.push(lane - 1);
+      if (lane < this.LANE_COUNT - 1 && !holdLanes.has(lane + 1)) adjacent.push(lane + 1);
+      if (adjacent.length === 0) { /* 无可用相邻通道，降级为普通音符 */ }
+      else {
+        switchLane = adjacent[Math.floor(Math.random() * adjacent.length)];
+        switchAt = 0.5; // 固定在中间切换
+      }
+    }
+    const actualSwitchHold = isSwitchHold && switchLane !== -1;
+    // cornerOffset: 激活时折角距 HIT_Y 的固定距离 = 半条长
+    const cornerOffset = actualSwitchHold ? holdLen * 0.5 : 0;
     this.notes.push({ lane, y: -this.NOTE_R, hit: false, missed: false, hitAnim: 0,
-      hold: isHold, holdDuration: holdDur, holdActive: false, holdProgress: 0, holdDone: false,
-      holdEndY: -this.NOTE_R - holdLen });
+      hold: isHold || actualSwitchHold, holdDuration: holdDur, holdActive: false, holdProgress: 0, holdDone: false,
+      holdEndY: -this.NOTE_R - holdLen,
+      switchHold: actualSwitchHold, switchLane, switchAt, switched: false, originLane: lane,
+      cornerOffset });
+    // 15% 概率同时生成第二个 tap 音符，同样不能落在 hold 通道
     if (Math.random() < 0.15) {
-      let l2; do { l2 = Math.floor(Math.random() * this.LANE_COUNT); } while (l2 === lane);
-      this.notes.push({ lane: l2, y: -this.NOTE_R, hit: false, missed: false, hitAnim: 0,
-        hold: false, holdDuration: 0, holdActive: false, holdProgress: 0, holdDone: false, holdEndY: 0 });
+      holdLanes.add(lane); // 也排除刚生成的通道
+      const available = [];
+      for (let i = 0; i < this.LANE_COUNT; i++) {
+        if (!holdLanes.has(i)) available.push(i);
+      }
+      if (available.length > 0) {
+        const l2 = available[Math.floor(Math.random() * available.length)];
+        this.notes.push({ lane: l2, y: -this.NOTE_R, hit: false, missed: false, hitAnim: 0,
+          hold: false, holdDuration: 0, holdActive: false, holdProgress: 0, holdDone: false, holdEndY: 0 });
+      }
     }
   },
 
@@ -2010,12 +2194,32 @@ rhythm: {
     const btn = document.getElementById(`rlb-${lane}`);
     if (btn) { btn.classList.add('pressed'); }
     if (!this.active) return;
+    // 如果该通道已在长按中，忽略重复触发
+    if (this._heldLanes[lane]) return;
+    // 检查是否有等待切换到此通道的转换长按
+    const switchPending = this.notes.find(n =>
+      n._pendingSwitch && n.switchLane === lane && !n.missed && !n.holdDone
+    );
+    if (switchPending) {
+      switchPending._pendingSwitch = false;
+      switchPending.holdActive = true;  // 重新冻结头部，继续收缩
+      this._heldLanes[lane] = { note: switchPending };
+      this._showFeedback('切换成功!', '#ffdd44');
+      return;
+    }
     // Check for hold note in range
     const holdPool = this.notes.filter(n => !n.hit && !n.missed && n.lane === lane && n.hold && !n.holdActive);
     const tapPool  = this.notes.filter(n => !n.hit && !n.missed && n.lane === lane && !n.hold);
     const allPool  = [...holdPool, ...tapPool];
+    // 如果当前有滑动音符正在进行（holdActive 且未完成），忽略其他通道的误触
+    const hasActiveSwitchHold = this.notes.some(n =>
+      n.switchHold && n.holdActive && !n.holdDone && !n.missed
+    );
     if (!allPool.length) {
-      this.stats.combo = 0; this._updateStatEls(); return;
+      if (!hasActiveSwitchHold) {
+        this.stats.combo = 0; this._updateStatEls();
+      }
+      return;
     }
     const n = allPool.reduce((a, b) => Math.abs(a.y - this.HIT_Y) < Math.abs(b.y - this.HIT_Y) ? a : b);
     const dist = Math.abs(n.y - this.HIT_Y);
@@ -2028,7 +2232,7 @@ rhythm: {
       // Start hold
       n.holdActive = true;
       n.holdHit = dist <= this.PERFECT_HALF ? 'PERFECT' : 'GOOD';
-      this._heldLanes[lane] = { note: n, startTime: performance.now() };
+      this._heldLanes[lane] = { note: n };
     } else {
       if (dist <= this.PERFECT_HALF) this._scoreHit(n, 'PERFECT', '#ff4444');
       else this._scoreHit(n, 'GOOD', '#ff9944');
@@ -2052,9 +2256,14 @@ rhythm: {
 
   hitLane(lane) { this.pressLane(lane); },  // backward compat
 
+  _comboGain() {
+    const infCombo = (game.state.haihuInfUpgrades || {})['hu_inf_combo'] || 0;
+    return Math.pow(2, infCombo);
+  },
+
   _scoreHit(n, label, color) {
     n.hit = true; n.hitAnim = 1.0;
-    this.stats.combo++;
+    this.stats.combo += this._comboGain();
     if (this.stats.combo > this.stats.maxCombo) this.stats.maxCombo = this.stats.combo;
     this.stats.session++;
     if (label === 'PERFECT') this.stats.perfect++; else this.stats.good++;
@@ -2064,20 +2273,22 @@ rhythm: {
     this._updateStatEls();
     const el = document.getElementById('time-power-val');
     if (el) el.innerText = ui.formatNum(game.state.timePower);
+    game.refreshHaihuUpgradeStates();
   },
 
   _scoreHold(n) {
     n.hitAnim = 1.0;
-    this.stats.combo++;
+    this.stats.combo += this._comboGain();
     if (this.stats.combo > this.stats.maxCombo) this.stats.maxCombo = this.stats.combo;
     this.stats.session++;
     this.stats.perfect++;
-    const gain = this._timePowerMult() * 3;  // hold notes worth 3x
+    const gain = this._timePowerMult() * 3;
     game.state.timePower = (game.state.timePower || 0) + gain;
     this._showFeedback(`HOLD!  +${gain}`, '#ff88ff');
     this._updateStatEls();
     const el = document.getElementById('time-power-val');
     if (el) el.innerText = ui.formatNum(game.state.timePower);
+    game.refreshHaihuUpgradeStates();
   },
 
   _showFeedback(text, color) {
@@ -2096,6 +2307,23 @@ rhythm: {
     set('rhythm-perfect-count',this.stats.perfect);
     set('rhythm-good-count',   this.stats.good);
     set('rhythm-miss-count',   this.stats.miss);
+    // 右侧大连击显示
+    const comboBig = document.getElementById('combo-big');
+    if (comboBig) {
+      comboBig.innerText = this.stats.combo;
+      const tier = Math.floor(this.stats.combo / 20);
+      comboBig.style.color = tier >= 3 ? '#ff88ff' : tier >= 2 ? '#ffaa44' : tier >= 1 ? '#ff6644' : '#ff4444';
+      comboBig.style.textShadow = tier >= 1 ? `0 0 30px currentColor, 0 0 60px currentColor` : '0 0 20px #ff0000';
+      comboBig.style.transform = this.stats.combo > 0 && this.stats.combo % 20 === 0 ? 'scale(1.3)' : 'scale(1)';
+      setTimeout(() => { if (comboBig) comboBig.style.transform = 'scale(1)'; }, 150);
+    }
+    const multBig = document.getElementById('combo-mult-big');
+    if (multBig) {
+      const tier = Math.min(5, Math.floor(this.stats.combo / 20));
+      const mult = tier > 0 ? Math.pow(2, tier) : 1;
+      multBig.innerText = `×${mult}`;
+      multBig.style.color = tier >= 3 ? '#ff88ff' : tier >= 2 ? '#ffaa44' : tier >= 1 ? '#ff6644' : '#888';
+    }
   },
 
   draw() {
@@ -2127,30 +2355,132 @@ rhythm: {
       const col = this.LANE_COLORS[n.lane % this.LANE_COLORS.length];
 
       if (n.hold && !n.hit && !n.missed) {
-        // Draw hold body (tail→head)
-        const headY = n.y;
+        const headY = n.holdActive ? HY : n.y;
         const tailY = n.holdEndY;
+        if (tailY >= headY) continue;
         const bw = NR * 1.2;
         const prog = n.holdProgress || 0;
-        const fillTop = tailY + (headY - tailY) * prog;
+        const isSW = n.switchHold;
 
-        // tail bar fill (cleared portion gray, remaining red)
-        ctx.fillStyle = 'rgba(80,0,0,0.5)';
-        ctx.fillRect(x - bw/2, tailY, bw, headY - tailY);
-        ctx.fillStyle = n.holdActive ? '#ff44ff' : col;
-        ctx.fillRect(x - bw/2, fillTop, bw, headY - fillTop);
-        ctx.strokeStyle = n.holdActive ? '#ff88ff' : 'rgba(255,255,255,0.4)';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(x - bw/2, tailY, bw, headY - tailY);
-        // head circle
-        const proximity = Math.max(0, 1 - Math.abs(headY - HY) / 130);
-        ctx.beginPath(); ctx.arc(x, headY, NR, 0, Math.PI*2);
-        ctx.fillStyle = n.holdActive ? '#ff44ff' : col; ctx.fill();
-        ctx.strokeStyle = `rgba(255,255,255,${0.5+proximity*0.5})`; ctx.lineWidth=2; ctx.stroke();
-        // hold progress arc
-        if (n.holdActive) {
-          ctx.strokeStyle = '#ff88ff'; ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.arc(x, headY, NR+5, -Math.PI/2, -Math.PI/2 + Math.PI*2*prog); ctx.stroke();
+        if (isSW) {
+          const originX = (n.originLane ?? n.lane) * LW + LW / 2;
+          const switchX = n.switchLane * LW + LW / 2;
+          const activated = n.holdActive;
+          const switched  = n.switched;
+          // 切换后头部移到目标通道
+          const hx = (activated && switched) ? switchX : originX;
+          const hy = activated ? HY : headY;
+          const tx2 = switchX;
+          const ty2 = tailY;
+
+          const col0 = activated ? (switched ? '#ffdd44' : '#cc44ff') : '#aa33dd';
+          const col1 = activated ? (switched ? '#ffaa00' : '#ff66ff') : '#ff44ff';
+
+          ctx.save();
+
+          // 平滑斜向色带（平行四边形）：上沿在起始通道，下沿在目标通道
+          const grad = ctx.createLinearGradient(0, hy, 0, ty2);
+          grad.addColorStop(0, col0);
+          grad.addColorStop(1, col1);
+
+          ctx.beginPath();
+          ctx.moveTo(hx - bw, hy);
+          ctx.lineTo(hx + bw, hy);
+          ctx.lineTo(tx2 + bw, ty2);
+          ctx.lineTo(tx2 - bw, ty2);
+          ctx.closePath();
+          ctx.fillStyle = grad;
+          ctx.globalAlpha = activated ? 0.92 : 0.82;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+
+          // 切换指示线：激活前随色带中点移动，激活后从固定位置向判定线匀速下落
+          if (!switched) {
+            let indY;
+            if (!activated) {
+              // 未激活：在色带中间（随色带整体下落）
+              indY = hy + (ty2 - hy) * n.switchAt;
+            } else {
+              // 激活后：从 HY-cornerOffset 随进度向 HY 移动，到达 HY = 切换时机
+              const co = n.cornerOffset || 0;
+              indY = HY - co + (prog / (n.switchAt || 0.5)) * co;
+              indY = Math.min(indY, HY);
+            }
+            const t = n.switchAt || 0.5;
+            const indX1 = hx - bw + (tx2 - hx) * t;
+            const indX2 = hx + bw + (tx2 - hx) * t;
+            const dir = tx2 > hx ? 1 : -1;
+            const flash = 0.7 + 0.3 * Math.sin(Date.now() / 150);
+            const lineColor = `rgba(255,220,60,${activated ? flash : 0.9})`;
+
+            ctx.save();
+            ctx.strokeStyle = lineColor;
+            ctx.lineWidth = activated ? 3.5 : 2.5;
+            ctx.beginPath();
+            ctx.moveTo(indX1 - 4, indY);
+            ctx.lineTo(indX2 + 4, indY);
+            ctx.stroke();
+            // 箭头
+            ctx.fillStyle = lineColor;
+            ctx.beginPath();
+            ctx.moveTo(indX2 + 4,          indY);
+            ctx.lineTo(indX2 + 4 + dir*9,  indY - 5);
+            ctx.lineTo(indX2 + 4 + dir*9,  indY + 5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+          }
+
+          // 中轴亮线增强立体感
+          ctx.beginPath();
+          ctx.moveTo(hx, hy);
+          ctx.lineTo(tx2, ty2);
+          ctx.strokeStyle = activated ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)';
+          ctx.lineWidth = bw * 0.5;
+          ctx.stroke();
+
+          ctx.restore();
+
+          // 宽限期闪烁
+          if (n._pendingSwitch) {
+            ctx.globalAlpha = 0.3 + 0.3 * Math.sin(Date.now() / 100);
+            ctx.fillStyle = '#ffdd44';
+            ctx.beginPath(); ctx.arc(switchX, HY, NR * 1.6, 0, Math.PI * 2); ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = '#ffdd44'; ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.arc(switchX, HY, NR * 1.6, 0, Math.PI * 2); ctx.stroke();
+          }
+
+          // 头部圆圈
+          const proximity = Math.max(0, 1 - Math.abs(hy - HY) / 130);
+          ctx.beginPath(); ctx.arc(hx, hy, NR, 0, Math.PI * 2);
+          ctx.fillStyle = col0; ctx.fill();
+          ctx.strokeStyle = `rgba(255,255,255,${0.5 + proximity * 0.5})`; ctx.lineWidth = 2; ctx.stroke();
+          // 尾部小圆
+          ctx.beginPath(); ctx.arc(tx2, ty2, NR * 0.65, 0, Math.PI * 2);
+          ctx.fillStyle = col1; ctx.fill();
+          if (activated) {
+            ctx.strokeStyle = switched ? '#ffeeaa' : '#ee88ff'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.arc(hx, hy, NR + 5, -Math.PI/2, -Math.PI/2 + Math.PI*2*prog); ctx.stroke();
+          }
+        } else {
+          // 普通长按
+          const barCol = n.holdActive ? '#ff44ff' : col;
+          ctx.fillStyle = 'rgba(80,0,0,0.5)';
+          ctx.fillRect(x - bw/2, tailY, bw, headY - tailY);
+          ctx.fillStyle = barCol;
+          ctx.fillRect(x - bw/2, tailY, bw, headY - tailY);
+          ctx.strokeStyle = n.holdActive ? '#ff88ff' : 'rgba(255,255,255,0.4)';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(x - bw/2, tailY, bw, headY - tailY);
+          const proximity = Math.max(0, 1 - Math.abs(headY - HY) / 130);
+          ctx.beginPath(); ctx.arc(x, headY, NR, 0, Math.PI*2);
+          ctx.fillStyle = barCol; ctx.fill();
+          ctx.strokeStyle = `rgba(255,255,255,${0.5+proximity*0.5})`; ctx.lineWidth=2; ctx.stroke();
+          if (n.holdActive) {
+            ctx.strokeStyle = '#ff88ff'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.arc(x, headY, NR+5, -Math.PI/2, -Math.PI/2 + Math.PI*2*prog); ctx.stroke();
+          }
         }
       } else if (n.hit && !n.hold) {
         if (n.hitAnim <= 0) continue;
@@ -2230,7 +2560,7 @@ flowChargeActive: false, // 是否正在充能
 flowUnlocked: false, // 是否已解锁流量页面
 // 时间力量（终极海虎专属，不受外部倍率影响）
 timePower: 0,
-haihuUpgrades: {},
+haihuUpgrades: {}, haihuInfUpgrades: {},
 };
 },
 init() {
@@ -2243,6 +2573,11 @@ this.renderRealmUpgrades();
 this.renderSkills();
 this.renderAchievements();
 this.renderHaihuUpgrades();
+// 时间领悟升级：事件委托，防止 DOM 重建时 onclick 丢失
+document.getElementById('haihu-upg-list').addEventListener('click', e => {
+  const btn = e.target.closest('[data-haihu-upg]');
+  if (btn && !btn.disabled) game.buyHaihuUpgrade(btn.dataset.haihuUpg);
+});
 this.renderVoltRetention();
 this.renderUltimateTree();
 this.renderUltimateChallenges();
@@ -3047,16 +3382,31 @@ if (!isFinite(difficultyCurve) || difficultyCurve > 1e200) difficultyCurve = 1e2
 let rawEAtk = Math.floor(Math.min(1e200, 1500 * resourceFactor * difficultyCurve * 0.12));
     
     // 5. 敌人属性上限
-    // 击败一万名敌人后解除硬上限，敌人属性继续自然增长（玩家需购买终极升级才能继续胜利）
+    // 击败一万名敌人后解除硬上限，但改为平滑增长，防止突变成1e200
     const hardCapRemoved = (this.state.battleWins || 0) >= 10000;
     const capMultiplier = 1.5;
     const maxEAtk = pAtk * capMultiplier;
     let eAtk = rawEAtk;
-    if (!hardCapRemoved && eAtk > maxEAtk) eAtk = maxEAtk;
+    if (!hardCapRemoved) {
+      if (eAtk > maxEAtk) eAtk = maxEAtk;
+    } else {
+      // 解除硬上限后：上限随胜场平滑线性增长，玩家需持续强化才能继续
+      // 每额外1000胜 → 上限增加 pAtk × 0.5，确保可追赶
+      const extraWins = (this.state.battleWins || 0) - 10000;
+      const growingCapMult = capMultiplier + extraWins / 2000;
+      const softCap = pAtk * growingCapMult;
+      eAtk = Math.min(rawEAtk, softCap);
+    }
     let eMaxHp = Math.floor(eAtk * 3.5);
     let eDef = Math.floor(1500 * resourceFactor * difficultyCurve * 0.04);
     const maxEDef = pDef * capMultiplier;
-    if (!hardCapRemoved && eDef > maxEDef) eDef = maxEDef;
+    if (!hardCapRemoved) {
+      if (eDef > maxEDef) eDef = maxEDef;
+    } else {
+      const extraWins = (this.state.battleWins || 0) - 10000;
+      const growingDefCapMult = capMultiplier + extraWins / 2000;
+      eDef = Math.min(eDef, pDef * growingDefCapMult);
+    }
     if (!hardCapRemoved && wave > 100) {
         const stageAtkCap = Math.min(7000000, maxEAtk);
         if (eAtk > stageAtkCap) { eAtk = stageAtkCap; eMaxHp = Math.floor(eAtk * 3.5); }
@@ -3813,53 +4163,188 @@ container.appendChild(div);
 });
 if (container.innerHTML === '') container.innerHTML = '<p style="color:#666; grid-column: 1/-1;">暂无可购买的境界升级</p>';
 },
+refreshHaihuUpgradeStates() {
+const s = this.state;
+const tp = s.timePower || 0;
+const upgs = s.haihuUpgrades || {};
+const inf = s.haihuInfUpgrades || {};
+const COSTS = { hu_hold: 50, hu_6lane: 200, hu_tall: 800, hu_finale: 94600000000, hu_3000: 94600000000 };
+const INF_BASE = { hu_inf_pow: 1000, hu_inf_combo: 10000 };
+const INF_MULT = { hu_inf_pow: 2.5, hu_inf_combo: 3 };
+const INF_COLOR = { hu_inf_pow: '#ff6644', hu_inf_combo: '#44aaff' };
+// one-time upgrades
+for (const [id, cost] of Object.entries(COSTS)) {
+  const btn = document.querySelector(`[data-haihu-upg="${id}"]`);
+  if (!btn) continue;
+  if (upgs[id]) { btn.disabled = true; continue; }
+  const can = tp >= cost;
+  btn.disabled = !can;
+  btn.style.borderColor = can ? (id === 'hu_3000' ? '#ccaa00' : '#ff4400') : (id === 'hu_3000' ? '#443300' : '#330000');
+  btn.style.color = can ? (id === 'hu_3000' ? '#ffee44' : '#ff8844') : (id === 'hu_3000' ? '#665500' : '#444');
+  btn.style.background = can ? (id === 'hu_3000' ? '#1a1400' : '#1a0000') : (id === 'hu_3000' ? '#0a0800' : '#0a0000');
+  btn.style.cursor = can ? 'pointer' : 'not-allowed';
+  // update cost number
+  const card = btn.closest('div[style*="padding:18px"]') || btn.parentElement?.parentElement?.parentElement;
+  if (card) {
+    const costEl = card.querySelector('div[style*="font-size:1.4rem"]');
+    if (costEl) {
+      costEl.style.color = can ? (id === 'hu_3000' ? '#ffee99' : '#cccccc') : '#555';
+      costEl.style.textShadow = can ? '0 0 8px #999' : '';
+    }
+    const cardDiv = card.parentElement;
+    if (cardDiv) {
+      cardDiv.style.borderColor = can ? (id === 'hu_3000' ? '#886600' : '#aa2200') : '#330000';
+      cardDiv.style.borderTopColor = can ? (id === 'hu_3000' ? '#ffee44' : '#ff4400') : '#440000';
+    }
+  }
+}
+// infinite upgrades — also update card border + button style
+for (const [id, base] of Object.entries(INF_BASE)) {
+  const btn = document.querySelector(`[data-haihu-upg="${id}"]`);
+  if (!btn) continue;
+  const lvl = inf[id] || 0;
+  const cost = Math.ceil(base * Math.pow(INF_MULT[id], lvl));
+  const can = tp >= cost;
+  const accent = INF_COLOR[id];
+  btn.disabled = !can;
+  btn.style.borderColor = can ? accent : '#224466';
+  btn.style.color = can ? accent : '#446688';
+  btn.style.background = can ? '#001a2a' : '#000a14';
+  btn.style.cursor = can ? 'pointer' : 'not-allowed';
+  // update card border via data attribute
+  const card = document.querySelector(`[data-haihu-card="${id}"]`);
+  if (card) {
+    card.style.border = `2px solid ${can ? '#224466' : '#112233'}`;
+    card.style.borderTop = `3px solid ${can ? accent : '#223344'}`;
+    const costEl = card.querySelector('div[style*="font-size:1.4rem"]');
+    if (costEl) {
+      costEl.style.color = can ? '#cccccc' : '#555';
+      costEl.style.textShadow = can ? '0 0 8px #999' : '';
+    }
+  }
+  // update name color
+  const nameEl = card?.querySelector('div[style*="font-size:1.3rem"]');
+  if (nameEl) nameEl.style.color = can ? accent : '#446688';
+}
+},
 renderHaihuUpgrades() {
 const container = document.getElementById('haihu-upg-list');
 if (!container) return;
 const s = this.state;
 const upgs = s.haihuUpgrades || {};
+const inf = s.haihuInfUpgrades || {};
 const UPGRADES = [
   { id: 'hu_hold',    name: '初悟时间',   cost: 50,
     desc: '你获得的时间力量翻倍。节拍中将出现需长按的紫色条形音符，成功完成获得 ×3 时间力量。',
     flavor: '时间……原来也有形状。' },
   { id: 'hu_6lane',   name: '寻找弱点',   cost: 200,
-    desc: '你获得的时间力量翻倍。音符通道从 4 格扩展为 6 格（S D F J K L）。',
+    desc: '你获得的时间力量翻倍。连击奖励倍率额外提升 ×1.5。',
     flavor: '破绽，就在那里。' },
   { id: 'hu_tall',    name: '一瞬千年',   cost: 800,
-    desc: '你获得的时间力量翻倍。音符通道高度翻倍，给你更长的准备时间。',
+    desc: '你获得的时间力量翻倍。增加新的转换长按音符（紫色→金色），需要在消除途中切换到另一通道继续按住。',
     flavor: '一秒，也可以是永恒。' },
+  { id: 'hu_3000',    name: '时停三千年', cost: 94600000000,
+    desc: '三千年时间，足以让你找寻到海虎的致命弱点。',
+    flavor: '……' },
+];
+const INF_UPGRADES = [
+  { id: 'hu_inf_pow',  name: '时间强化',
+    desc: lvl => `时间力量获取翻倍。（当前已购买 ${lvl} 次，效果 ×${Math.pow(2,lvl)}）`,
+    flavor: '力量，永无止境。',
+    baseCost: 1000, costMult: 2.5,
+    color: '#ff6644' },
+  { id: 'hu_inf_combo', name: '连击强化',
+    desc: lvl => `每次判定获得的连击数翻倍。（当前已购买 ${lvl} 次，效果 ×${Math.pow(2,lvl)}）`,
+    flavor: '节奏，亦可倍增。',
+    baseCost: 10000, costMult: 3,
+    color: '#44aaff' },
 ];
 container.innerHTML = '';
 UPGRADES.forEach(u => {
   const owned = !!upgs[u.id];
   const canAfford = (s.timePower || 0) >= u.cost;
+  const isFinale = !!u.isFinale;
   const div = document.createElement('div');
+  if (isFinale) {
+    div.style.cssText = `
+      background:linear-gradient(135deg,${owned?'#0a0800':'#1a1400'},#000);
+      border:2px solid ${owned?'#886600':canAfford?'#ccaa00':'#443300'};
+      border-top:3px solid ${owned?'#bbaa00':canAfford?'#ffee44':'#665500'};
+      padding:20px 22px; margin-bottom:12px; position:relative; overflow:hidden;
+      ${canAfford&&!owned?'box-shadow:0 0 24px rgba(255,220,0,0.25);':''}
+    `;
+  } else {
+    div.style.cssText = `
+      background:linear-gradient(135deg,${owned?'#0a0a0a':'#140000'},#000);
+      border:2px solid ${owned?'#550000':canAfford?'#aa2200':'#330000'};
+      border-top:3px solid ${owned?'#880000':canAfford?'#ff4400':'#440000'};
+      padding:18px 20px; margin-bottom:12px; position:relative; overflow:hidden;
+    `;
+  }
+  const nameColor = isFinale
+    ? (owned ? '#886600' : canAfford ? '#ffee44' : '#665500')
+    : (owned ? '#884444' : canAfford ? '#ff6644' : '#cc4444');
+  const costColor = isFinale
+    ? (owned ? '#444' : canAfford ? '#ffee99' : '#555')
+    : (owned ? '#444' : canAfford ? '#cccccc' : '#555');
+  const btnLabel = isFinale ? '时停' : '领悟';
+  const ownedLabel = isFinale ? '已凝固' : '已领悟';
+  div.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:180px;">
+        <div style="font-family:var(--font-main);font-size:${isFinale?'1.5':'1.3'}rem;color:${nameColor};letter-spacing:${isFinale?'4':'3'}px;margin-bottom:6px;${canAfford&&isFinale&&!owned?'text-shadow:0 0 12px rgba(255,220,0,0.6);':''}">
+          ${owned?'✓ ':''}<span>${u.name}</span>
+        </div>
+        <div style="font-size:0.88rem;color:${owned?'#555':'#aaa'};line-height:1.5;">${u.desc}</div>
+        <div style="font-size:0.8rem;color:${isFinale?'#665500':'#444'};margin-top:6px;font-style:italic;">"${u.flavor}"</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-family:var(--font-main);font-size:0.85rem;color:#666;margin-bottom:6px;">费用</div>
+        <div style="font-family:var(--font-main);font-size:1.4rem;color:${costColor};text-shadow:${canAfford&&!owned?'0 0 8px #999':''}">${ui.formatNum(u.cost)}</div>
+        ${owned
+          ? `<div style="color:${isFinale?'#886600':'#550000'};font-family:var(--font-main);font-size:0.85rem;margin-top:8px;letter-spacing:2px;">${ownedLabel}</div>`
+          : `<button data-haihu-upg="${u.id}" ${canAfford?'':'disabled'}
+              style="margin-top:8px;padding:${isFinale?'10px 24px':'8px 20px'};background:${canAfford?(isFinale?'#1a1400':'#1a0000'):(isFinale?'#0a0800':'#0a0000')};
+              border:1px solid ${canAfford?(isFinale?'#ccaa00':'#ff4400'):(isFinale?'#443300':'#330000')};
+              color:${canAfford?(isFinale?'#ffee44':'#ff8844'):(isFinale?'#665500':'#444')};
+              font-family:var(--font-main);font-size:0.95rem;letter-spacing:2px;cursor:${canAfford?'pointer':'not-allowed'};
+              transition:all 0.15s;">${btnLabel}</button>`
+        }
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+});
+// 无限升级
+INF_UPGRADES.forEach(u => {
+  const lvl = inf[u.id] || 0;
+  const cost = Math.ceil(u.baseCost * Math.pow(u.costMult, lvl));
+  const canAfford = (s.timePower || 0) >= cost;
+  const div = document.createElement('div');
+  div.dataset.haihuCard = u.id;
   div.style.cssText = `
-    background:linear-gradient(135deg,${owned?'#0a0a0a':'#140000'},#000);
-    border:2px solid ${owned?'#550000':canAfford?'#aa2200':'#330000'};
-    border-top:3px solid ${owned?'#880000':canAfford?'#ff4400':'#440000'};
-    padding:18px 20px; margin-bottom:12px; position:relative; overflow:hidden;
+    background:linear-gradient(135deg,#000a14,#000);
+    border:2px solid ${canAfford?'#224466':'#112233'};
+    border-top:3px solid ${canAfford?u.color:'#223344'};
+    padding:18px 20px; margin-bottom:12px;
   `;
   div.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
       <div style="flex:1;min-width:180px;">
-        <div style="font-family:var(--font-main);font-size:1.3rem;color:${owned?'#884444':canAfford?'#ff6644':'#cc4444'};letter-spacing:3px;margin-bottom:6px;">
-          ${owned?'✓ ':''}<span>${u.name}</span>
+        <div style="font-family:var(--font-main);font-size:1.3rem;color:${canAfford?u.color:'#446688'};letter-spacing:3px;margin-bottom:6px;">
+          <span>${u.name}</span> <span style="font-size:0.85rem;color:#558899;">Lv.${lvl}</span>
         </div>
-        <div style="font-size:0.88rem;color:${owned?'#555':'#aaa'};line-height:1.5;">${u.desc}</div>
+        <div style="font-size:0.88rem;color:#aaa;line-height:1.5;">${u.desc(lvl)}</div>
         <div style="font-size:0.8rem;color:#444;margin-top:6px;font-style:italic;">"${u.flavor}"</div>
       </div>
       <div style="text-align:right;flex-shrink:0;">
         <div style="font-family:var(--font-main);font-size:0.85rem;color:#666;margin-bottom:6px;">费用</div>
-        <div style="font-family:var(--font-main);font-size:1.4rem;color:${owned?'#444':canAfford?'#cccccc':'#555'};text-shadow:${canAfford&&!owned?'0 0 8px #999':''}">${ui.formatNum(u.cost)}</div>
-        ${owned
-          ? `<div style="color:#550000;font-family:var(--font-main);font-size:0.85rem;margin-top:8px;letter-spacing:2px;">已领悟</div>`
-          : `<button onclick="game.buyHaihuUpgrade('${u.id}')" ${canAfford?'':'disabled'}
-              style="margin-top:8px;padding:8px 20px;background:${canAfford?'#1a0000':'#0a0000'};
-              border:1px solid ${canAfford?'#ff4400':'#330000'};color:${canAfford?'#ff8844':'#444'};
-              font-family:var(--font-main);font-size:0.95rem;letter-spacing:2px;cursor:${canAfford?'pointer':'not-allowed'};
-              transition:all 0.15s;">领悟</button>`
-        }
+        <div style="font-family:var(--font-main);font-size:1.4rem;color:${canAfford?'#cccccc':'#555'};text-shadow:${canAfford?'0 0 8px #999':''}">${ui.formatNum(cost)}</div>
+        <button data-haihu-upg="${u.id}" ${canAfford?'':'disabled'}
+          style="margin-top:8px;padding:8px 20px;background:${canAfford?'#001a2a':'#000a14'};
+          border:1px solid ${canAfford?u.color:'#224466'};color:${canAfford?u.color:'#446688'};
+          font-family:var(--font-main);font-size:0.95rem;letter-spacing:2px;cursor:${canAfford?'pointer':'not-allowed'};
+          transition:all 0.15s;">强化</button>
       </div>
     </div>
   `;
@@ -3867,21 +4352,43 @@ UPGRADES.forEach(u => {
 });
 },
 buyHaihuUpgrade(id) {
-const COSTS = { hu_hold: 50, hu_6lane: 200, hu_tall: 800 };
+const COSTS = { hu_hold: 50, hu_6lane: 200, hu_tall: 800, hu_finale: 94600000000, hu_3000: 94600000000 };
+const INF = {
+  hu_inf_pow:   { baseCost: 1000,  costMult: 2.5, name: '时间强化' },
+  hu_inf_combo: { baseCost: 10000, costMult: 3,   name: '连击强化' },
+};
+const s = this.state;
+if (!s.haihuUpgrades) s.haihuUpgrades = {};
+if (!s.haihuInfUpgrades) s.haihuInfUpgrades = {};
+
+if (INF[id]) {
+  const u = INF[id];
+  const lvl = s.haihuInfUpgrades[id] || 0;
+  const cost = Math.ceil(u.baseCost * Math.pow(u.costMult, lvl));
+  if ((s.timePower || 0) < cost) { this.log('时间力量不足！', true); return; }
+  s.timePower -= cost;
+  s.haihuInfUpgrades[id] = lvl + 1;
+  this.log(`${u.name} 强化至 Lv.${lvl + 1}`, true);
+  this.renderHaihuUpgrades();
+  const el = document.getElementById('time-power-val');
+  if (el) el.innerText = ui.formatNum(s.timePower);
+  return;
+}
+
 const cost = COSTS[id];
 if (!cost) return;
-const s = this.state;
-if ((s.haihuUpgrades || {})[id]) { this.log('已领悟此升级。', true); return; }
+if (s.haihuUpgrades[id]) { this.log('已领悟此升级。', true); return; }
 if ((s.timePower || 0) < cost) { this.log('时间力量不足！', true); return; }
 s.timePower -= cost;
-if (!s.haihuUpgrades) s.haihuUpgrades = {};
 s.haihuUpgrades[id] = 1;
-this.log(`领悟：${id === 'hu_hold' ? '初悟时间' : id === 'hu_6lane' ? '寻找弱点' : '一瞬千年'}`, true);
-// Re-apply rhythm config if currently on haihu tab
+const nameMap = { hu_hold: '初悟时间', hu_6lane: '寻找弱点', hu_tall: '一瞬千年', hu_finale: '时停三千年', hu_3000: '时停三千年' };
+this.log(`领悟：${nameMap[id] || id}`, true);
 if (game.rhythm.canvas) { game.rhythm._applyConfig(); }
 this.renderHaihuUpgrades();
 const el = document.getElementById('time-power-val');
 if (el) el.innerText = ui.formatNum(s.timePower);
+// 检查挑战通关条件
+if (s.activeChallenge) this.checkChallengeWin();
 },
 renderAchievements() {
 const container = document.getElementById('achievement-list');
@@ -3927,7 +4434,7 @@ flowUpgrades: s.flowUpgrades || {},
 flowUpgLvl: s.flowUpgLvl || 0,
 flowUnlocked: s.flowUnlocked || false,
 timePower: s.timePower || 0,
-haihuUpgrades: s.haihuUpgrades || {},
+haihuUpgrades: s.haihuUpgrades || {}, haihuInfUpgrades: s.haihuInfUpgrades || {},
 // Save "pre-challenge" values for restoring on load during active challenge
 _preChalPower: s.challengeStartState ? s.challengeStartState.power : s.power,
 _preChalPoints: s.challengeStartState ? s.challengeStartState.ultimatePoints : s.ultimatePoints,
@@ -3976,7 +4483,7 @@ this.state.flowUpgrades = t4.flowUpgrades || {};
 this.state.flowUpgLvl = t4.flowUpgLvl || 0;
 this.state.flowUnlocked = t4.flowUnlocked || false;
 this.state.timePower = t4.timePower || this.state.timePower || 0;
-this.state.haihuUpgrades = t4.haihuUpgrades || this.state.haihuUpgrades || {};
+this.state.haihuUpgrades = t4.haihuUpgrades || this.state.haihuUpgrades || {}; this.state.haihuInfUpgrades = t4.haihuInfUpgrades || this.state.haihuInfUpgrades || {};
 // If we were in a challenge when saved, restore challengeStartState from backup
 if (t4.activeChallenge) {
 this.state.activeChallenge = t4.activeChallenge;
@@ -4474,6 +4981,12 @@ if (id === 'c7') {
   this.playC7Cinematic();
   return;
 }
+// c8挑战：先播放剧情过场
+if (id === 'c8') {
+  this._pendingChallengeId = id;
+  this.playC8Cinematic();
+  return;
+}
 this._actuallyStartChallenge(id);
 },
 exitUltimateChallenge(forced = false) {
@@ -4560,6 +5073,8 @@ if (this._c5WinCinematicContinue) this._c5WinCinematicContinue();
 if (this._c6CinematicContinue) this._c6CinematicContinue();
 if (this._c6WinCinematicContinue) this._c6WinCinematicContinue();
 if (this._c7CinematicContinue) this._c7CinematicContinue();
+if (this._c7WinCinematicContinue) this._c7WinCinematicContinue();
+if (this._c8CinematicContinue) this._c8CinematicContinue();
 },
 playC2Cinematic() {
 const screen = document.getElementById('cinematic-screen');
@@ -4710,7 +5225,7 @@ flowUpgrades: JSON.parse(JSON.stringify(s.flowUpgrades || {})),
 flowUpgLvl: s.flowUpgLvl || 0,
 flowUnlocked: s.flowUnlocked || false,
 timePower: s.timePower || 0,
-haihuUpgrades: JSON.parse(JSON.stringify(s.haihuUpgrades || {})),
+haihuUpgrades: JSON.parse(JSON.stringify(s.haihuUpgrades || {})), haihuInfUpgrades: JSON.parse(JSON.stringify(s.haihuInfUpgrades || {})),
 unlockedAchievements: [...(s.unlockedAchievements || [])],
 battleWins: s.battleWins || 0,
 realmCount: s.realmCount || 0,
@@ -4729,6 +5244,7 @@ c4CinematicSeen: s.c4CinematicSeen || false,
 c5CinematicSeen: s.c5CinematicSeen || false,
 c6CinematicSeen: s.c6CinematicSeen || false,
 c7CinematicSeen: s.c7CinematicSeen || false,
+c8CinematicSeen: s.c8CinematicSeen || false,
 _c1WinCinematicSeen: s._c1WinCinematicSeen || false,
 _c2WinCinematicSeen: s._c2WinCinematicSeen || false,
 _c3WinCinematicSeen: s._c3WinCinematicSeen || false,
@@ -4804,7 +5320,7 @@ this.state.flowUpgrades = JSON.parse(JSON.stringify(tier4Save.flowUpgrades || {}
 this.state.flowUpgLvl = tier4Save.flowUpgLvl || 0;
 this.state.flowUnlocked = tier4Save.flowUnlocked || false;
 this.state.timePower = tier4Save.timePower || 0;
-this.state.haihuUpgrades = JSON.parse(JSON.stringify(tier4Save.haihuUpgrades || {})); //进入挑战时保留，防止挑战中重复弹出
+this.state.haihuUpgrades = JSON.parse(JSON.stringify(tier4Save.haihuUpgrades || {})); this.state.haihuInfUpgrades = JSON.parse(JSON.stringify(tier4Save.haihuInfUpgrades || {})); // 进入挑战时保留，防止挑战中重复弹出
 this.state._milestone_power_1e12 = tier4Save._milestone_power_1e12 || false;
 this.state._milestone_flow_1e8 = tier4Save._milestone_flow_1e8 || false;
 // 剧情动画已播放标志——进入挑战时保留，防止放弃重进后重播完整过场
@@ -4815,6 +5331,7 @@ this.state.c4CinematicSeen = tier4Save.c4CinematicSeen || false;
 this.state.c5CinematicSeen = tier4Save.c5CinematicSeen || false;
 this.state.c6CinematicSeen = tier4Save.c6CinematicSeen || false;
 this.state.c7CinematicSeen = tier4Save.c7CinematicSeen || false;
+this.state.c8CinematicSeen = tier4Save.c8CinematicSeen || false;
 this.state._c1WinCinematicSeen = tier4Save._c1WinCinematicSeen || false;
 this.state._c2WinCinematicSeen = tier4Save._c2WinCinematicSeen || false;
 this.state._c3WinCinematicSeen = tier4Save._c3WinCinematicSeen || false;
@@ -4871,6 +5388,9 @@ if (id === 'c5') {
 } else if (id === 'c7') {
   // c7挑战：切换到终极海虎页面（导航已由拳头动画处理）
   ui.switchTab('haihu');
+} else if (id === 'c8') {
+  // c8挑战：切换到仁者暗帝页面（导航已由黑洞动画处理）
+  ui.switchTab('ankdi');
 } else {
   ui.switchTab('tier1');
 }
@@ -4911,7 +5431,7 @@ newState.flowUpgrades = JSON.parse(JSON.stringify(saved.flowUpgrades || {}));
 newState.flowUpgLvl = saved.flowUpgLvl || 0;
 newState.flowUnlocked = saved.flowUnlocked || this.state.flowUnlocked || false;
 newState.timePower = saved.timePower || 0;
-newState.haihuUpgrades = JSON.parse(JSON.stringify(saved.haihuUpgrades || {}));
+newState.haihuUpgrades = JSON.parse(JSON.stringify(saved.haihuUpgrades || {})); newState.haihuInfUpgrades = JSON.parse(JSON.stringify(saved.haihuInfUpgrades || {}));
 // 里程碑提示标志——退出挑战时恢复，并根据实际资源值强制设为已显示，防止重复弹出
 newState._milestone_power_1e12 = saved._milestone_power_1e12 || this.state._milestone_power_1e12 || (newState.power >= 1e12) || false;
 newState._milestone_flow_1e8 = saved._milestone_flow_1e8 || this.state._milestone_flow_1e8 || (newState.flow >= 1e8) || false;
@@ -4923,12 +5443,14 @@ newState.c4CinematicSeen = saved.c4CinematicSeen || this.state.c4CinematicSeen |
 newState.c5CinematicSeen = saved.c5CinematicSeen || this.state.c5CinematicSeen || false;
 newState.c6CinematicSeen = saved.c6CinematicSeen || this.state.c6CinematicSeen || false;
 newState.c7CinematicSeen = saved.c7CinematicSeen || this.state.c7CinematicSeen || false;
+newState.c8CinematicSeen = saved.c8CinematicSeen || this.state.c8CinematicSeen || false;
 newState._c1WinCinematicSeen = saved._c1WinCinematicSeen || this.state._c1WinCinematicSeen || false;
 newState._c2WinCinematicSeen = saved._c2WinCinematicSeen || this.state._c2WinCinematicSeen || false;
 newState._c3WinCinematicSeen = saved._c3WinCinematicSeen || this.state._c3WinCinematicSeen || false;
 newState._c4WinCinematicSeen = saved._c4WinCinematicSeen || this.state._c4WinCinematicSeen || false;
 newState._c5WinCinematicSeen = saved._c5WinCinematicSeen || this.state._c5WinCinematicSeen || false;
 newState._c6WinCinematicSeen = saved._c6WinCinematicSeen || this.state._c6WinCinematicSeen || false;
+newState._c7WinCinematicSeen = saved._c7WinCinematicSeen || this.state._c7WinCinematicSeen || false;
 newState._flowUnlockNotified = saved._flowUnlockNotified || this.state._flowUnlockNotified || false;
 // 完整恢复：成就系统、强者挑战页面所有内容
 newState.realmCount = saved.realmCount || 0;
@@ -5027,6 +5549,12 @@ if (won && ch && ch.id === 'c6' && !this.state._c6WinCinematicSeen) {
   this.playC6WinCinematic();
   return;
 }
+if (won && ch && ch.id === 'c7' && !this.state._c7WinCinematicSeen) {
+  this.state._c7WinCinematicSeen = true;
+  this._pendingC7WinRestore = { ch };
+  this.playC7WinCinematic();
+  return;
+}
 this._finishRestoreUI(won, ch, newState);
 },
 _finishRestoreUI(won, ch, newState) {
@@ -5036,6 +5564,18 @@ document.getElementById('challenge-mode-banner').classList.remove('active');
 const haihubtn = document.getElementById('nav-haihu');
 if (haihubtn && haihubtn.style.display !== 'none') {
   haihubtn.style.display = 'none';
+  document.querySelectorAll('#nav-sidebar .nav-btn').forEach(btn => {
+    btn.style.display = '';
+    btn.style.opacity = '';
+    btn.style.transform = '';
+    btn.style.transition = '';
+  });
+}
+// 若是挑战8引入的仁者暗帝导航，退出后恢复原始导航并移除暗帝主题
+const ankdiBtn = document.getElementById('nav-ankdi');
+if (ankdiBtn && ankdiBtn.style.display !== 'none') {
+  ankdiBtn.style.display = 'none';
+  document.body.classList.remove('darkspace-mode');
   document.querySelectorAll('#nav-sidebar .nav-btn').forEach(btn => {
     btn.style.display = '';
     btn.style.opacity = '';
@@ -5688,6 +6228,262 @@ this._c7CinematicContinue = () => {
   });
 };
 },
+playC7WinCinematic() {
+const screen = document.getElementById('cinematic-screen');
+const textEl = document.getElementById('cinematic-text');
+const restartBtn = document.getElementById('cinematic-restart-btn');
+const confirmBtn = document.getElementById('cinematic-confirm-btn');
+restartBtn.style.display = 'none';
+confirmBtn.style.display = 'none';
+screen.style.display = 'flex';
+const lines = [
+  "你二指刺出，从海虎的三十六万亿细胞中找寻到了那一颗蕴含着其全部精神力量的细胞。",
+  "海虎的面上出现了错愕，很显然他也未曾预料到会败在你的手中。",
+  "只是在这一刻，他却仿佛释然般叹了口气。",
+  "随即将自己的右臂切下，抛入到了你的怀中。",
+];
+const showLine = (text, duration, onDone) => {
+  textEl.classList.remove('visible');
+  setTimeout(() => {
+    textEl.innerText = text;
+    textEl.classList.add('visible');
+    setTimeout(onDone, duration);
+  }, 1800);
+};
+const playLines = (arr, idx, onAllDone) => {
+  if (idx >= arr.length) { onAllDone(); return; }
+  const duration = idx >= arr.length - 1 ? 4000 : 3500;
+  showLine(arr[idx], duration, () => playLines(arr, idx + 1, onAllDone));
+};
+playLines(lines.slice(0, 3), 0, () => {
+  showLine(lines[3], 3500, () => {
+    confirmBtn.style.display = 'block';
+    confirmBtn.innerText = '归于自身';
+  });
+});
+this._c7WinCinematicContinue = () => {
+  confirmBtn.style.display = 'none';
+  confirmBtn.innerText = '是的';
+  screen.style.display = 'none';
+  const pending = this._pendingC7WinRestore;
+  this._pendingC7WinRestore = null;
+  this._c7WinCinematicContinue = null;
+  this._finishRestoreUI(true, pending.ch, this.state);
+};
+},
+playC8Cinematic() {
+const screen = document.getElementById('cinematic-screen');
+const textEl = document.getElementById('cinematic-text');
+const restartBtn = document.getElementById('cinematic-restart-btn');
+const confirmBtn = document.getElementById('cinematic-confirm-btn');
+restartBtn.style.display = 'none';
+confirmBtn.style.display = 'none';
+screen.style.display = 'flex';
+if (this.state.c8CinematicSeen) {
+  textEl.classList.remove('visible');
+  setTimeout(() => {
+    textEl.innerText = '再次前来？那便开始吧。';
+    textEl.classList.add('visible');
+    confirmBtn.style.display = 'block';
+    confirmBtn.innerText = '那便开始吧';
+  }, 800);
+  this._c8CinematicContinue = () => {
+    confirmBtn.style.display = 'none';
+    confirmBtn.innerText = '是的';
+    screen.style.display = 'none';
+    game.playBlackHoleEntry(() => {
+      this._actuallyStartChallenge(this._pendingChallengeId);
+      this._pendingChallengeId = null;
+      this._c8CinematicContinue = null;
+    });
+  };
+  return;
+}
+this.state.c8CinematicSeen = true;
+const lines = [
+  "果然……与我预料的一样。",
+  "能够击败其他的七位强者，并站在这里与我一战的人……",
+  "便只会是你了。",
+  "我……刹暗天其实并不喜欢去争这所谓的『大能力量』。",
+  "但若你想要胜那白武男，凭你现如今的本事还不够……",
+];
+const showLine = (text, onDone) => {
+  textEl.classList.remove('visible');
+  setTimeout(() => {
+    textEl.innerText = text;
+    textEl.classList.add('visible');
+    setTimeout(onDone, 3500);
+  }, 2000);
+};
+const playLines = (arr, idx, onAllDone) => {
+  if (idx >= arr.length) { onAllDone(); return; }
+  showLine(arr[idx], () => playLines(arr, idx + 1, onAllDone));
+};
+playLines(lines.slice(0, 4), 0, () => {
+  showLine(lines[4], () => {
+    confirmBtn.style.display = 'block';
+    confirmBtn.innerText = '那便开始吧';
+  });
+});
+this._c8CinematicContinue = () => {
+  confirmBtn.style.display = 'none';
+  confirmBtn.innerText = '是的';
+  screen.style.display = 'none';
+  game.playBlackHoleEntry(() => {
+    this._actuallyStartChallenge(this._pendingChallengeId);
+    this._pendingChallengeId = null;
+    this._c8CinematicContinue = null;
+  });
+};
+},
+playBlackHoleEntry(onComplete) {
+const overlay = document.getElementById('blackhole-overlay');
+const canvas = document.getElementById('blackhole-canvas');
+const sidebar = document.getElementById('nav-sidebar');
+const body = document.body;
+// 初始化 canvas 尺寸
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const ctx = canvas.getContext('2d');
+const cx = canvas.width / 2, cy = canvas.height / 2;
+
+// 对页面中所有可见的非系统元素应用"被吸入"动画
+const suckTargets = document.querySelectorAll(
+  '#top-bar, .panel-view.active > h2, .panel-view.active > p, .panel-view.active .upgrade-card, .panel-view.active .stat-grid, #challenge-mode-banner, .resource-display, .global-mult, .nav-btn:not(.system-btn)'
+);
+suckTargets.forEach(el => {
+  const rect = el.getBoundingClientRect();
+  const elCX = rect.left + rect.width / 2;
+  const elCY = rect.top + rect.height / 2;
+  const tx = (cx - elCX).toFixed(0) + 'px';
+  const ty = (cy - elCY).toFixed(0) + 'px';
+  el.style.setProperty('--tx', tx);
+  el.style.setProperty('--ty', ty);
+  el.classList.add('being-sucked');
+});
+
+// 黑洞 canvas 动画
+overlay.style.display = 'block';
+let frame = 0;
+let particles = [];
+// 生成粒子
+for (let i = 0; i < 220; i++) {
+  const angle = Math.random() * Math.PI * 2;
+  const dist = 120 + Math.random() * Math.max(cx, cy);
+  particles.push({
+    x: cx + Math.cos(angle) * dist,
+    y: cy + Math.sin(angle) * dist,
+    angle,
+    dist,
+    speed: 0.6 + Math.random() * 1.4,
+    size: 1 + Math.random() * 3,
+    opacity: 0.4 + Math.random() * 0.6,
+    color: Math.random() > 0.5 ? '#ffffff' : '#aaaaaa',
+  });
+}
+const totalFrames = 80;
+const drawFrame = () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const progress = frame / totalFrames;
+  // 黑洞核心：渐扩的黑色圆+外光晕
+  const coreRadius = 20 + progress * 180;
+  const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreRadius * 2.5);
+  gradient.addColorStop(0, `rgba(0,0,0,${Math.min(1, progress * 2)})`);
+  gradient.addColorStop(0.4, `rgba(0,0,0,${Math.min(0.9, progress * 1.5)})`);
+  gradient.addColorStop(0.7, `rgba(20,20,20,${progress * 0.7})`);
+  gradient.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.arc(cx, cy, coreRadius * 2.5, 0, Math.PI * 2);
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  // 白色吸积盘光环
+  if (progress > 0.1) {
+    const ringOpacity = Math.min(1, (progress - 0.1) * 4) * (1 - progress * 0.6);
+    ctx.beginPath();
+    ctx.arc(cx, cy, coreRadius + 8, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(255,255,255,${ringOpacity * 0.9})`;
+    ctx.lineWidth = 3 + progress * 4;
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = `rgba(255,255,255,${ringOpacity})`;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    // 内环
+    ctx.beginPath();
+    ctx.arc(cx, cy, coreRadius * 0.6, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(200,200,200,${ringOpacity * 0.5})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+  // 粒子螺旋
+  particles.forEach(p => {
+    p.dist = Math.max(0, p.dist - p.speed * (1 + progress * 8));
+    p.angle += 0.04 + progress * 0.12;
+    p.x = cx + Math.cos(p.angle) * p.dist;
+    p.y = cy + Math.sin(p.angle) * p.dist;
+    if (p.dist > coreRadius * 0.3) {
+      const fade = Math.min(1, p.dist / 60);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * fade, 0, Math.PI * 2);
+      ctx.fillStyle = p.color.replace(')', `,${p.opacity * fade})`).replace('rgb', 'rgba').replace('rgba(255,255,255', 'rgba(255,255,255');
+      // simpler:
+      ctx.globalAlpha = p.opacity * fade;
+      ctx.fillStyle = p.color;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  });
+  frame++;
+  if (frame < totalFrames) {
+    requestAnimationFrame(drawFrame);
+  } else {
+    // 动画结束：全屏覆黑，过渡到暗帝模式
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // 变换主题
+    body.classList.add('darkspace-mode');
+    // 隐藏所有非系统导航按钮
+    const allNavBtns = sidebar.querySelectorAll('.nav-btn:not(.system-btn)');
+    allNavBtns.forEach(btn => {
+      btn.classList.remove('being-sucked');
+      btn.style.cssText = '';
+      btn.style.display = 'none';
+    });
+    // 隐藏 nav-haihu
+    const haihubtn = document.getElementById('nav-haihu');
+    if (haihubtn) haihubtn.style.display = 'none';
+    // 显示仁者暗帝按钮
+    const ankhdiBtn = document.getElementById('nav-ankdi');
+    ankhdiBtn.style.display = 'block';
+    ankhdiBtn.style.opacity = '0';
+    ankhdiBtn.style.transform = 'translateX(-40px)';
+    ankhdiBtn.style.transition = 'opacity 0.6s, transform 0.6s';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      ankhdiBtn.style.opacity = '1';
+      ankhdiBtn.style.transform = 'translateX(0)';
+    }));
+    ankhdiBtn.classList.add('active');
+    ui.switchTab('ankdi');
+    // 移除所有被吸入类（防止残留），恢复目标元素
+    suckTargets.forEach(el => {
+      el.classList.remove('being-sucked');
+      el.style.removeProperty('--tx');
+      el.style.removeProperty('--ty');
+    });
+    // 淡出 canvas 覆盖层
+    setTimeout(() => {
+      overlay.style.transition = 'opacity 0.8s';
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        overlay.style.opacity = '';
+        overlay.style.transition = '';
+        if (onComplete) onComplete();
+      }, 850);
+    }, 400);
+  }
+};
+requestAnimationFrame(drawFrame);
+},
 playFistSlam(onComplete) {
 const overlay = document.getElementById('fist-overlay');
 const fist = document.getElementById('fist-emoji');
@@ -5775,6 +6571,8 @@ if (cond.flowFull && cond.allFlowUpgrades) {
   });
   if (flowFull && allUpgDone) won = true;
 }
+// c7：购买指定时间力量升级
+if (cond.haihuUpg && (s.haihuUpgrades || {})[cond.haihuUpg]) won = true;
 // c3：需要tier3且学会修罗道
 if (cond.skillDao) {
   won = s.tier >= (cond.tier || 3) && !!(s.skills && s.skills['dao']);
@@ -6336,12 +7134,20 @@ const s = game.state;
 if (s.activeChallenge) {
 // Restoring mid-challenge: show correct tab
 if (s.activeChallenge === 'c7') {
-  // 恢复终极海虎：隐藏普通导航，显示海虎按钮
-  document.querySelectorAll('.nav-btn').forEach(b => b.style.display = 'none');
+  // 恢复终极海虎：隐藏普通导航标签按钮，保留系统按钮
+  document.querySelectorAll('.nav-btn:not(.system-btn)').forEach(b => b.style.display = 'none');
   const haihubtn = document.getElementById('nav-haihu');
-  if (haihubtn) { haihubtn.style.display = ''; haihubtn.classList.add('active'); }
+  if (haihubtn) { haihubtn.style.display = 'block'; haihubtn.classList.add('active'); }
   this.switchTab('haihu');
   game.rhythm.init();
+} else if (s.activeChallenge === 'c8') {
+  // 恢复仁者暗帝：黑洞模式 — 隐藏普通导航，显示暗帝按钮，切换暗色主题
+  document.querySelectorAll('.nav-btn:not(.system-btn)').forEach(b => b.style.display = 'none');
+  document.getElementById('nav-haihu').style.display = 'none';
+  const ankdiBtn = document.getElementById('nav-ankdi');
+  if (ankdiBtn) { ankdiBtn.style.display = 'block'; ankdiBtn.classList.add('active'); }
+  document.body.classList.add('darkspace-mode');
+  this.switchTab('ankdi');
 } else {
   this.switchTab('tier1');
 }
@@ -6417,8 +7223,18 @@ if (tabId === 'achievements') btn.classList.add('achievement-active');
 // 进入/离开终极海虎时启停节拍游戏
 if (tabId === 'haihu') {
   game.rhythm.init();
+  const panel = document.getElementById('view-haihu');
+  if (panel) panel.scrollTop = 0;
+  const log = document.getElementById('log-container');
+  if (log) log.style.display = 'none';
+} else if (tabId === 'ankdi') {
+  if (game.rhythm && game.rhythm.active) game.rhythm.pause();
+  const log = document.getElementById('log-container');
+  if (log) log.style.display = 'none';
 } else {
   if (game.rhythm.active) game.rhythm.pause();
+  const log = document.getElementById('log-container');
+  if (log) log.style.display = '';
 }
 },
 unlockTab(tabId) {
@@ -6564,6 +7380,7 @@ crackSelectors.forEach(sel => {
 updateAutoToggleButtons() {
 const s = game.state;
 const t = s.autoUpgToggles || { tier1: true, tier2: true, tier3: true };
+const c1Done = (s.completedChallenges || []).includes('c1');
 const configs = [
   { statusId: 'auto-t1-status', btnId: 'btn-auto-t1', key: 'tier1' },
   { statusId: 'auto-t2-status', btnId: 'btn-auto-t2', key: 'tier2' },
@@ -6573,6 +7390,8 @@ configs.forEach(({ statusId, btnId, key }) => {
   const el = document.getElementById(statusId);
   const btn = document.getElementById(btnId);
   if (!el || !btn) return;
+  btn.style.display = c1Done ? '' : 'none';
+  if (!c1Done) return;
   const on = t[key] !== false;
   el.innerText = on ? '开' : '关';
   el.style.color = on ? '#00ff88' : '#ff4444';
@@ -6990,8 +7809,8 @@ document.getElementById('res-val').innerText = this.formatNum(s.timePower || 0);
 document.getElementById('res-val').style.color = '#cccccc';
 document.getElementById('res-val').style.textShadow = '0 0 12px #999, 0 0 24px #666';
 document.getElementById('res-unit').innerText = '';
-// 刷新升级按钮可购买状态（每次都刷新，保证 disabled 正确）
-game.renderHaihuUpgrades();
+// 刷新升级按钮可购买状态（只更新 disabled，不重建 DOM）
+game.refreshHaihuUpgradeStates();
 } else {
 document.getElementById('res-name').innerText = resName;
 document.getElementById('res-name').style.color = resColor;
